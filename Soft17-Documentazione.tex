@@ -1,8 +1,14 @@
-\documentclass{article}
-\usepackage{graphicx} % Required for inserting images
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
 \usepackage{hyperref}
-\title{Soft17 - An Agent for Blackjack}
-\author{Abbatiello Simone, Nappi Vincenzo , Niemiec Francesco }
+\usepackage{amsmath}
+\usepackage{enumitem}
+
+\title{Soft17 -- An Intelligent Agent for Blackjack}
+\author{Abbatiello Simone, Nappi Vincenzo, Niemiec Francesco}
 \date{January 2025}
 
 \begin{document}
@@ -10,75 +16,96 @@
 \maketitle
 
 \section{Introduzione}
-\subsection{Genesi del progetto}
-Da modificare
-Durante la seconda parte del corso di Fondamenti di Intelligenza Artificiale, in particolare quella relativa agli argomenti di \textbf{Machine Learning},  il parallelo tra gli argomenti del corso stesso ed il mondo della statistica è diventato sempre più palese. Abbiamo deciso di sfruttare l'occasione del dover sviluppare un progetto per il corso per approfondire la genuina curisità relativa a questa correlazione.
-Detto ciò abbiamo quindi fatto un brainstorming per comprendere quale ambito fissare per unire questi due mondi ancor di più. 
-Guardando i documenti messi a disposizione dal docente abbiamo trovato un denominatore comune, ovvero i giochi. 
-Dettati dalla curiosità e dalla sua semplicità abbiamo quindi optato per il gioco del Blackjack.
-Da ciò nasce l'idea di voler sviluppare un agente intelligente che fosse in grado di poter giocare autonomamente a blackjack.
-\section{Descrizione dell'agente}
-\subsection{Obiettivi}
-Lo scopo del progetto è quello di sviluppare un \textbf{agente intelligente} che sia in grado di eseguire i seguenti compiti:
-\begin{itemize}
-    \item Selezionare per ogni mano osservabile l'azione più appropriata per massimizzare il Win Rate. Le azioni in questione sono: 
-    \begin{itemize}
-        \item[Hit]: richiedere la carta successiva;
-        \item[Stand]: rimanere con la mano attuale;
-        \item[Double]: raddoppiare la puntata iniziale;
-        \item[Split]: in caso di due carte uguali poter dividerle in due mani diverse da giocare.
-    \end{itemize}
-    \item L'agente deve essere in grado di prendere decisioni solo sulla base della propria mano e di quella del dealer, senza conoscere il resto del mazzo o le carte rimanenti.
-    \item Migliorare le proprie prestazioni nel tempo.
-\end{itemize}
-\subsection{Specifica dell'ambiente}
-Per descrivere l'ambiente in cui l'agente andrà ad operare abbiamo utilizzato la specifica PEAS:
-P: La misura di prestazione utilizzata per valutare l’operato dell'agente.
-E: Descrizione di tutti gli elementi che formano l’ambiente.
-A: attuatori che l’agente usa per svolgere le azioni.
-S: sensori con i quali riceve i vari input.
-In particolare l'ambiente è caratterizzato in questo modo:
-\begin{description}
-    \item[Performance:] la misura di prestazione dell'agente è la sua capacità di massimizzare il successo nel gioco, ciò include il numero totale di vittorie rispetto alle mani giocate, la somma delle vincite e delle perdite ottenute e capacità di intraprendere azioni ottimali in mani rischiose.  
-    \item[Enviroment:] Il tavolo di Blackjack con:
-    - mazzo di carte (stocastico)
-    - dealer a policy fissa
-    - mano del giocatore
-    - regole del gioco.
-    Le proprietà dell'ambiente sono le seguenti: 
-    -\textbf{Parzialmente osservabile}: l'agente è a conoscenza solo delle carte che ha attualmente in mano e le carte scoperte del dealer, non è a conoscenza dell'ordine delle carte rimanenti nel mazzo.
-    Stocastico: l'ordinamento del mazzo è pseudocasuale e la distribuzione di esse è casuale.
-    Sequenziale: ogni azione influenza l'esito finale.
-    Statico: l'ambiente è invariato mentre un agente sta deliberando.
-    Discreto: sebbene consideriamo più di un mazzo, il numero delle carte è pur sempre finito, di conseguenza abbiamo un numero finito sia di azioni che di stati.
-    Singolo agente: il dealer opera seguendo una politica ben precisa, l'agente è l'unico "agente decisionale". 
-    \item[Attuatori:] le azioni che può intraprendere l'agente sono quelle di Hit, Stand, Double e Split sopracitate.
-    \item[Sensori:] - "Occhio virtuale" sul tavolo: percepisce le carte visibili nella propria mano e le carte scoperte del dealer.
-    - Contatore di puntate:  rileva la propria puntata corrente e quella del dealer.
-    - Segnalatore di possibilità di azione: informa l’agente se può eseguire azioni come come double e split.
-    - Segnalatore di esito della mano: rileva i casi di vittoria, sconfitta e pareggio.
-    Abbiamo identificato ulteriori sensori che potrebbero essere di aiuto ma in questa fase di sviluppo non siamo totalmente sicuri della loro utilità:
-    - Contatore sul mazzo: determina il numero di carte rimaste nel mazzo.
-    \end{description}
-    \subsection{Scelta della strategia}
-    Un primo approccio al problema sarebbe potuto essere quello di sfruttare una strategia basata sulla teoria dei giochi ed affrontare il problema con un algoritmo genetico, tuttavia questo approccio risulta essere problematico per i seguenti motivi:
-    \begin{description}
-        \item[Variabilità dei cromosomi:] la codifica dei cromosomi sarebbe soggetta ad una variabilità troppo grande, si potrebbe optare per array che descrivono le mossa da prendere, ma il numero di mosse non è mai fisso.
-        \item[Complessità delle soluzioni:] un numero fin troppo elevato di stati e numerose scelte per ciascuno di essi portano ad avere uno spazio di ricerca enorme, ciò comporta ad un'elaborazione estremamente lenta o addirittura impossibile.
-        \item[Fitness troppo inaccurata:] avendo chiarito la stocasticità dell'ambiente, viene naturale considerare che qualunque funzione di fitness venga utilizzata verrà influenzata fortemente dalla casualità.
-    \end{description}    
-    Tenendo a mente queste considerazioni abbiamo deciso di affrontare il problema applicando le tecniche di machine learning viste nella seconda parte del corso. In particolare abbiamo pensato di adottare una \textbf{classificazione supervisionata}, poichè il modello deve essere in grado di selezionare l'azione più adeguata dato uno stato osservabile del gioco. L'etichetta che abbiamo individuato in questa fase è quella dell'esito della partita.
-    \section{Raccolta, analisi e preprocessing dei dati}
-    \subsection{Scelta del dataset}
-    Tra le possibili strategie che possono essere scelte per ricavare il nostro dataset ci sono: 
-        \begin{enumerate}
-            \item Creare un dataset da zero: online è presente un algoritmo che permette di generare un dataset di una grandezza prestabilita che conterrà una serie di mani realistiche. \footnote{Sorgente: Kaggle [Sezione Code] (\url{https://www.kaggle.com/datasets/dennisho/blackjack-hands/data})}
-            \item Cercare un dataset online adatto alle caratteristiche del problema: sono presenti vari dataset online di ingenti dimensioni.
-            \footnote{Sorgente: Kaggle (\url{https://www.kaggle.com/datasets/mojocolors/900000-hands-of-blackjack-results})}
-        \end{enumerate} 
-    Entrambi le opzioni sono molto valide ma abbiamo preferito la prima in quanto potevamo decidere autonomamente la grandezza del dataset ed avere vari vantaggi, tra cui la semplicità nell'elaborazione, nella scelta delle feature e nel bilanciamento dei dati.
 
-    \subsection{Analisi e pulizia dei dati}
-    Questi dati simulati seguono le regole del blackjack 
+\subsection{Genesi del progetto}
+
+Durante la seconda parte del corso di \textit{Fondamenti di Intelligenza Artificiale}, in particolare quella dedicata agli argomenti di \textbf{Machine Learning}, è emerso in modo sempre più evidente il forte legame tra le tecniche di apprendimento automatico e il mondo della statistica.  
+
+Abbiamo deciso di cogliere l’occasione offerta dallo sviluppo del progetto finale per approfondire tale correlazione, analizzandola in un contesto applicativo concreto. In seguito a una fase di brainstorming, volta a individuare un dominio che consentisse di unire questi due ambiti, abbiamo preso in considerazione i documenti forniti dal docente, nei quali il tema dei \textit{giochi} emerge come un caso di studio ricorrente.  
+
+Guidati dalla curiosità e dalla relativa semplicità delle regole, abbiamo quindi scelto il gioco del \textbf{Blackjack}. Da questa scelta nasce l’idea di sviluppare un agente intelligente in grado di giocare autonomamente a Blackjack, prendendo decisioni razionali sulla base delle informazioni disponibili.
+
+\section{Descrizione dell’agente}
+
+\subsection{Obiettivi}
+
+L’obiettivo del progetto è lo sviluppo di un \textbf{agente intelligente} in grado di:
+
+\begin{itemize}
+    \item selezionare, per ogni mano osservabile, l’azione più appropriata al fine di massimizzare il \textit{win rate}. Le azioni considerate sono:
+    \begin{itemize}
+        \item \textbf{Hit}: richiedere una carta aggiuntiva;
+        \item \textbf{Stand}: mantenere la mano attuale;
+        \item \textbf{Double}: raddoppiare la puntata iniziale e ricevere una sola carta;
+        \item \textbf{Split}: dividere la mano in due mani distinte in presenza di due carte uguali.
+    \end{itemize}
+    \item prendere decisioni esclusivamente sulla base della propria mano e della carta scoperta del dealer, senza conoscere l’ordine delle carte rimanenti nel mazzo;
+    \item migliorare le proprie prestazioni nel tempo, apprendendo dai dati osservati.
+\end{itemize}
+
+\subsection{Specifica dell’ambiente (PEAS)}
+
+L’ambiente in cui opera l’agente viene descritto attraverso la specifica \textbf{PEAS} (Performance, Environment, Actuators, Sensors).
+
+\begin{description}
+    \item[Performance:] la misura di prestazione dell’agente è legata alla sua capacità di massimizzare il risultato economico nel gioco. In particolare vengono considerate il numero di vittorie rispetto alle mani giocate, il guadagno netto complessivo e la capacità di adottare azioni ottimali in situazioni rischiose.
     
+    \item[Environment:] l’ambiente è rappresentato da un tavolo di Blackjack comprendente:
+    \begin{itemize}
+        \item uno o più mazzi di carte con distribuzione stocastica;
+        \item un dealer che segue una policy fissa;
+        \item la mano del giocatore;
+        \item l’insieme delle regole del gioco.
+    \end{itemize}
+    Le proprietà dell’ambiente sono:
+    \begin{itemize}
+        \item \textbf{Parzialmente osservabile}: l’agente conosce solo la propria mano e la carta scoperta del dealer;
+        \item \textbf{Stocastico}: l’ordine delle carte nel mazzo è pseudocasuale;
+        \item \textbf{Sequenziale}: ogni azione influenza l’esito finale della mano;
+        \item \textbf{Statico}: l’ambiente non cambia mentre l’agente sta deliberando;
+        \item \textbf{Discreto}: il numero di stati e azioni è finito;
+        \item \textbf{A singolo agente}: il dealer segue una strategia prefissata e non è considerato un agente decisionale.
+    \end{itemize}
+
+    \item[Actuators:] gli attuatori dell’agente corrispondono alle azioni disponibili: Hit, Stand, Double e Split.
+
+    \item[Sensors:] l’agente percepisce:
+    \begin{itemize}
+        \item le carte della propria mano;
+        \item la carta scoperta del dealer;
+        \item le azioni consentite in un determinato stato (ad esempio la possibilità di effettuare double o split);
+        \item l’esito finale della mano (vittoria, sconfitta o pareggio).
+    \end{itemize}
+\end{description}
+
+\subsection{Scelta della strategia}
+
+Un primo approccio al problema avrebbe potuto basarsi sulla teoria dei giochi e sull’utilizzo di algoritmi genetici. Tuttavia, tale soluzione presenta diverse criticità:
+
+\begin{description}
+    \item[Variabilità dei cromosomi:] la rappresentazione delle soluzioni risulterebbe altamente variabile, rendendo complessa la codifica delle strategie.
+    \item[Complessità dello spazio di ricerca:] l’elevato numero di stati e azioni comporta uno spazio di ricerca estremamente ampio, con conseguenti tempi di elaborazione proibitivi.
+    \item[Inaccuratezza della fitness:] la natura stocastica dell’ambiente rende la funzione di fitness fortemente influenzata dalla casualità.
+\end{description}
+
+Alla luce di queste considerazioni, abbiamo deciso di affrontare il problema tramite tecniche di \textbf{apprendimento supervisionato}. In questo contesto, l’agente apprende una funzione che associa a ogni stato osservabile del gioco un’etichetta nota, rappresentata dall’esito della mano, utilizzando un dataset di mani simulate.
+
+\section{Raccolta, analisi e preprocessing dei dati}
+
+\subsection{Scelta del dataset}
+
+Per la costruzione del dataset sono state considerate due possibili strategie:
+\begin{enumerate}
+    \item Generare un dataset sintetico tramite un simulatore di Blackjack, in grado di produrre un numero arbitrario di mani realistiche (\url{https://www.kaggle.com/datasets/dennisho/blackjack-hands/data}).
+    
+    \item Utilizzare dataset già disponibili online (\url{https://www.kaggle.com/datasets/mojocolors/900000-hands-of-blackjack-results}).
+\end{enumerate}
+
+
+È stata scelta la prima opzione, in quanto consente un maggiore controllo sulla dimensione del dataset, sulla struttura delle feature e sulla distribuzione delle classi.
+
+\subsection{Analisi e pulizia dei dati}
+
+Il dataset generato non presenta valori mancanti. Tuttavia, è stato necessario effettuare una fase di \textit{data cleaning} al fine di garantire la coerenza semantica dei dati e la corretta rappresentazione delle variabili, rendendole idonee alle successive fasi di feature engineering e apprendimento automatico.
+
 \end{document}
