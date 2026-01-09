@@ -92,6 +92,24 @@ Alla luce di queste considerazioni, abbiamo deciso di affrontare il problema tra
 
 \section{Raccolta, analisi e preprocessing dei dati}
 
+\subsection{Metodologia di sviluppo: CRISP-DM}
+
+Lo sviluppo del progetto è stato guidato dal modello CRISP-DM (Cross-Industry Standard Process for Data Mining), un processo standard ampiamente adottato per la realizzazione di sistemi di data mining e machine learning. Tale modello fornisce una visione strutturata e iterativa del ciclo di vita di un progetto di apprendimento automatico, suddividendolo in fasi ben definite.
+
+In particolare, il CRISP-DM prevede le seguenti fasi principali:
+\begin{itemize}
+    \item \textbf{Business Understanding}: definizione degli obiettivi del sistema e dei criteri di successo;
+    \item \textbf{Data Understanding}: raccolta dei dati, analisi esplorativa e valutazione della loro qualità;
+    \item \textbf{Data Preparation}: pulizia dei dati e costruzione delle feature rilevanti;
+    \item \textbf{Modeling}: selezione e addestramento dei modelli di apprendimento automatico;
+    \item \textbf{Evaluation}: valutazione delle prestazioni del modello rispetto agli obiettivi prefissati;
+    \item \textbf{Deployment}: integrazione del modello all’interno di un sistema utilizzabile.
+\end{itemize}
+
+Nel contesto del presente lavoro, le fasi di \emph{Business Understanding} e \emph{Data Understanding} sono state affrontate attraverso la definizione degli obiettivi dell’agente intelligente e l’analisi preliminare dei dati generati dal simulatore di Blackjack. Le successive operazioni di data cleaning e feature engineering rientrano nella fase di \emph{Data Preparation}, il cui obiettivo è rendere i dati idonei all’addestramento di modelli di apprendimento supervisionato.
+
+In conclusione, il modello CRISP-DM è stato utilizzato come \textbf{riferimento metodologico} per strutturare il progetto, senza l’obiettivo di coprirne esplicitamente tutte le fasi, ma adottandone i principi per guidare le scelte progettuali effettuate.
+
 \subsection{Scelta del dataset}
 
 Per la costruzione del dataset sono state considerate due possibili strategie:
