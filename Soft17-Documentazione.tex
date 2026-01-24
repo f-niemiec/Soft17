@@ -1,61 +1,159 @@
-\documentclass{article}
-\usepackage{graphicx} % Required for inserting images
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
 \usepackage{hyperref}
-\title{Soft17 - An Agent for Blackjack}
-\author{Abbatiello Simone, Nappi Vincenzo , Niemiec Francesco }
-\date{January 2025}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{tabularx} % Per tabelle a larghezza fissa
+\usepackage{booktabs} % Per linee professionali (toprule, midrule, bottomrule)
+\usepackage[table,dvipsnames]{xcolor} % Per colorare le righe
+
+\title{Soft17 -- An Intelligent Agent for Blackjack}
+\author{Abbatiello Simone, Nappi Vincenzo, Niemiec Francesco}
+\date{January 2026}
 
 \begin{document}
 
 \maketitle
 
 \section{Introduzione}
+
 \subsection{Genesi del progetto}
-Durante la seconda parte del corso di Fondamenti di Intelligenza Artificiale, in particolare quella relativa agli argomenti di Machine Learning,  il parallelo tra gli argomenti del corso stesso ed il mondo della statistica è diventato sempre più palese. Abbiamo deciso di sfruttare l'occasione del dover sviluppare un progetto per il corso per approfondire la genuina curisità relativa a questa correlazione.
-Detto ciò abbiamo quindi fatto un brainstorming per comprendere quale ambito fissare per unire questi due mondi ancor di più. 
-Guardando i documenti messi a disposizione dal docente abbiamo trovato un denominatore comune, ovvero i giochi. 
-Dettati dalla curiosità e dalla sua semplicità abbiamo quindi optato per il gioco del Blackjack.
-Da ciò nasce l'idea di voler sviluppare un agente intelligente che fosse in grado di poter giocare autonomamente a blackjack.
-\section{Descrizione dell'agente}
-\subsection{Obiettivi}
-Lo scopo del progetto è quello di sviluppare un agente intelligente che sia in grado di eseguire i seguenti compiti:
+
+Durante la seconda parte del corso di \textit{Fondamenti di Intelligenza Artificiale}, in particolare quella dedicata agli argomenti di \textbf{Machine Learning}, è emerso in modo sempre più evidente il forte legame tra le tecniche di apprendimento automatico e il mondo della statistica.  
+
+Abbiamo deciso di cogliere l’occasione offerta dallo sviluppo del progetto finale per approfondire tale correlazione, analizzandola in un contesto applicativo concreto. In seguito a una fase di brainstorming, volta a individuare un dominio che consentisse di unire questi due ambiti, abbiamo preso in considerazione i documenti forniti dal docente, nei quali il tema dei \textit{giochi} emerge come un caso di studio ricorrente.  
+
+Guidati dalla curiosità e dalla relativa semplicità delle regole, abbiamo quindi scelto il gioco del \textbf{Blackjack}. Da questa scelta nasce l’idea di sviluppare un agente intelligente in grado di giocare autonomamente a Blackjack, prendendo decisioni razionali sulla base delle informazioni disponibili.
+
+\section{Descrizione dell’agente}
+
+\subsection{Obiettivi di business}
+
+L’obiettivo del progetto è lo sviluppo di un \textbf{agente intelligente} in grado di:
+
 \begin{itemize}
-    \item Selezionare per ogni mano osservabile l'azione più appropriata tra: 
+    \item selezionare, per ogni mano osservabile, l’azione più appropriata al fine di massimizzare il \textit{win rate}. Le azioni considerate sono:
     \begin{itemize}
-        \item[Hit]: richiedere la carta successiva;
-        \item[Stand]: rimanere con la mano attuale;
-        \item[Double]: raddoppiare la puntata iniziale;
-        \item[Split]: in caso di due carte uguali poter dividerle in due mani diverse da giocare.
+        \item \textbf{Hit}: richiedere una carta aggiuntiva;
+        \item \textbf{Stand}: mantenere la mano attuale;
+        \item \textbf{Double}: raddoppiare la puntata iniziale e ricevere una sola carta; //Da togliere 
+        \item \textbf{Split}: dividere la mano in due mani distinte in presenza di due carte uguali.
     \end{itemize}
-    \item Adattarsi all'ambiente parzialmente osservabile, ovvero prendere decisioni solo sulla base della propria mano e di quella del dealer, senza conoscere il resto del mazzo o le carte rimanenti.
-    \item Migliorare le proprie prestazioni nel tempo.
+    \item prendere decisioni esclusivamente sulla base della propria mano e della carta scoperta del dealer, senza conoscere le carte rimanenti nel mazzo;
+    \item migliorare le proprie prestazioni nel tempo, apprendendo dai dati osservati.
 \end{itemize}
-\subsection{Specifica dell'ambiente}
-Per caratterizzare l'ambiente in cui l'agente andrà ad operare abbiamo utilizzato la specifica PEAS:
-P: La misura di prestazione utilizzata per valutare l’operato dell'agente.
-E: Descrizione di tutti gli elementi che formano l’ambiente.
-A: attuatori che l’agente usa per svolgere le azioni.
-S: sensori con i quali riceve i vari input.
-In particolare l'ambiente è caratterizzato in questo modo:
+
+\subsection{Specifica dell’ambiente (PEAS)}
+
+L’ambiente in cui opera l’agente viene descritto attraverso la specifica \textbf{PEAS} (Performance, Environment, Actuators, Sensors).
+
 \begin{description}
-    \item[Performance:] la misura di prestazione dell'agente è la sua capacità di massimizzare il successo nel gioco, ciò include il numero totale di vittorie rispetto alle mani giocate, la somma delle vincite e delle perdite ottenute e capacità di intraprendere azioni ottimali in mani rischiose.  
-    \item[Enviroment:] Il tavolo di Blackjack con:
-    - mazzo di carte (stocastico)
-    - dealer a policy fissa
-    - mano del giocatore
-    - regole del gioco.
-    Le proprietà dell'ambiente sono le seguenti: -Parzialmente osservabile: l'agente è a conoscenza solo delle carte che ha attualmente in mano e le carte scoperte del dealer, non è a conoscenza dell'ordine delle carte rimanenti nel mazzo.
-    Stocastico: l'ordinamento del mazzo è pseudocasuale e la distribuzione di esse è casuale.
-    Sequenziale: ogni azione influenza l'esito finale.
-    Statico: l'ambiente è invariato mentre un agente sta deliberando.
-    Discreto: sebbene consideriamo più di un mazzo, il numero delle carte è pur sempre finito, di conseguenza abbiamo un numero finito sia di azioni che di stati.
-    Singolo agente: il dealer opera seguendo una politica ben precisa, l'agente è l'unico "agente decisionale". 
-    \item[Attuatori:] le azioni che può intraprendere l'agente sono quelle di Hit, Stand, Double e Split sopracitate.
-    \item[Sensori:] - "Occhio virtuale" sul tavolo: percepisce le carte visibili nella propria mano e le carte scoperte del dealer.
-    - Contatore di puntate:  rileva la propria puntata corrente e quella del dealer.
-    - Segnalatore di possibilità di azione: informa l’agente se può eseguire azioni come come double e split.
-    - Segnalatore di esito della mano: rileva i casi di vittoria, sconfitta e pareggio.
-    Abbiamo identificato ulteriori sensori che potrebbero essere di aiuto ma in questa fase di sviluppo non siamo totalmente sicuri della loro utilità:
-    - Contatore sul mazzo: determina il numero di carte rimaste nel mazzo.
+    \item[Performance:] la misura di prestazione dell’agente è legata alla sua capacità di massimizzare il risultato economico nel gioco. In particolare vengono considerate il numero di vittorie rispetto alle mani giocate, il guadagno netto complessivo e la capacità di adottare azioni ottimali in situazioni rischiose.
+    
+    \item[Environment:] l’ambiente è rappresentato da un tavolo di Blackjack comprendente:
+    \begin{itemize}
+        \item uno o più mazzi di carte con distribuzione stocastica;
+        \item un dealer che segue una policy fissa;
+        \item la mano del giocatore;
+        \item l’insieme delle regole del gioco.
+    \end{itemize}
+    Le proprietà dell’ambiente sono:
+    \begin{itemize}
+        \item \textbf{Parzialmente osservabile}: l’agente conosce solo la propria mano e la carta scoperta del dealer;
+        \item \textbf{Stocastico}: l’ordine delle carte nel mazzo è pseudocasuale;
+        \item \textbf{Sequenziale}: ogni azione influenza l’esito finale della mano;
+        \item \textbf{Statico}: l’ambiente non cambia mentre l’agente sta deliberando;
+        \item \textbf{Discreto}: il numero di stati e azioni è finito;
+        \item \textbf{A singolo agente}: il dealer segue una strategia prefissata e non è considerato un agente decisionale.
+    \end{itemize}
+
+    \item[Actuators:] gli attuatori dell’agente corrispondono alle azioni disponibili: Hit, Stand, Double e Split.
+
+    \item[Sensors:] l’agente percepisce:
+    \begin{itemize}
+        \item le carte della propria mano;
+        \item la carta scoperta del dealer;
+        \item le azioni consentite in un determinato stato (ad esempio la possibilità di effettuare double o split);
+        \item l’esito finale della mano (vittoria, sconfitta o pareggio).
+    \end{itemize}
 \end{description}
+
+\subsection{Scelta della strategia}
+
+Un primo approccio al problema avrebbe potuto basarsi sulla teoria dei giochi e sull’utilizzo di algoritmi genetici. Tuttavia, tale soluzione presenta diverse criticità:
+
+\begin{description}
+    \item[Variabilità dei cromosomi:] la rappresentazione delle soluzioni risulterebbe altamente variabile, rendendo complessa la codifica delle strategie.
+    \item[Complessità dello spazio di ricerca:] l’elevato numero di stati e azioni comporta uno spazio di ricerca estremamente ampio, con conseguenti tempi di elaborazione proibitivi.
+    \item[Inaccuratezza della fitness:] la natura stocastica dell’ambiente rende la funzione di fitness fortemente influenzata dalla casualità.
+\end{description}
+
+Alla luce di queste considerazioni, abbiamo deciso di affrontare il problema tramite tecniche di \textbf{apprendimento supervisionato}. In questo contesto, l’agente apprende una funzione che associa a ogni stato osservabile del gioco un’etichetta nota, rappresentata dall’esito della mano, utilizzando un dataset di mani simulate.
+
+\section{Raccolta, analisi e preprocessing dei dati}
+
+\subsection{Metodologia di sviluppo: CRISP-DM}
+
+Lo sviluppo del progetto è stato guidato dal modello CRISP-DM (Cross-Industry Standard Process for Data Mining), un processo standard ampiamente adottato per la realizzazione di sistemi di data mining e machine learning. Tale modello fornisce una visione strutturata e iterativa del ciclo di vita di un progetto di apprendimento automatico, suddividendolo in fasi ben definite.
+
+In particolare, il CRISP-DM prevede le seguenti fasi principali:
+\begin{itemize}
+    \item \textbf{Business Understanding}: definizione degli obiettivi del sistema e dei criteri di successo;
+    \item \textbf{Data Understanding}: raccolta dei dati, analisi esplorativa e valutazione della loro qualità;
+    \item \textbf{Data Preparation}: pulizia dei dati e costruzione delle feature rilevanti;
+    \item \textbf{Modeling}: selezione e addestramento dei modelli di apprendimento automatico;
+    \item \textbf{Evaluation}: valutazione delle prestazioni del modello rispetto agli obiettivi prefissati;
+    \item \textbf{Deployment}: integrazione del modello all’interno di un sistema utilizzabile.
+\end{itemize}
+
+Nel contesto del presente lavoro, le fasi di \emph{Business Understanding} e \emph{Data Understanding} sono state affrontate attraverso la definizione degli obiettivi dell’agente intelligente e l’analisi preliminare dei dati generati dal simulatore di Blackjack. Le successive operazioni di data cleaning e feature engineering rientrano nella fase di \emph{Data Preparation}, il cui obiettivo è rendere i dati idonei all’addestramento di modelli di apprendimento supervisionato.
+
+In conclusione, il modello CRISP-DM è stato utilizzato come \textbf{riferimento metodologico} per strutturare il progetto, senza l’obiettivo di coprirne esplicitamente tutte le fasi, ma adottandone i principi per guidare le scelte progettuali effettuate.
+
+\subsection{Scelta del dataset}
+
+Per la scelta del dataset sono state considerate due possibili strategie:
+\begin{enumerate}
+    \item Generare un dataset sintetico tramite un simulatore di Blackjack, in grado di produrre un numero arbitrario di mani realistiche.
+    
+    \item Utilizzare dataset già disponibili online (\url{https://www.kaggle.com/datasets/mojocolors/900000-hands-of-blackjack-results}) e (\url{https://www.kaggle.com/datasets/dennisho/blackjack-hands/data}).
+\end{enumerate}
+
+La prima opzione come pro avrebbe garantito un grande controllo sui dati, ma un errore minimo nel simulatore avrebbe o una nostra scelta sbagliata e/o inesperta nella categorizzazione dei dati avrebbe avuto un impatto troppo impatto sul modello.
+La seconda opzione seppur all'apparenza più facile, avrebbe potuto celare delle insidie, come una difficile comprensione dei dataset oppure "fastidi" dovuti alla loro enorme dimensione. 
+Avendo valutato per bene ambo le alternativi ci siamo trovati inizialmente di fronte ad un bivio, successivamente abbiamo optato per una soluzione "ibrida".
+Il più corposo tra i principali due dataset trovati contava cinquanta milioni di mani di blackjack simulate, un numero talmente elevato che il training del modello con le risorse a nostra disposizione sarebbe risultato infito. Esso però riportava anche una repository \textbf{GitHub} con il programma usato per simulare queste mani.
+Abbiamo quindi preso questo programma e generato un dataset con circa cinquecentomila mani giocate, una quantità tale da poter effettuare un buon training in tempi tutto sommato contenuti.
+È importante notare come la scelta di mantenere inalterato l'algoritmo nasce da due ragioni: la prima mantenere inalterati gli ottimi risultati relativi all'usabilità del dataset, la seconda (nonchè forse la più importante) è quella di voler andare ad operare direttamente sui dati anzichè sulla loro generazione.
+
+\subsection{Analisi e pulizia dei dati}
+Il formato del dataset generato e .csv, quindi dati strutturati. 
+C'è necessità di feature scaling? 
+Feature construction, Feature extraction e 
+
+Il dataset generato non presenta valori mancanti. Tuttavia, è stato necessario effettuare una fase di \textit{data cleaning} al fine di garantire la coerenza semantica dei dati e la corretta rappresentazione delle variabili, rendendole idonee alle successive fasi di feature engineering e apprendimento automatico.
+
+\subsection{Glossario}
+
+\renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
+\setlength{\arrayrulewidth}{0.5pt}
+
+\noindent
+\begin{tabularx}{\textwidth}{>{\bfseries}l X} % Prima colonna in grassetto, seconda estesa
+    \rowcolor{Gray!20} % Colore dell'intestazione
+    Termine & Definizione \\ \toprule
+    
+    Data binning & Tecnica di data preprocessing utilizzata per diminuire l'errore osservabile.I dati originali sono ridotti a un piccolo range di intervalli decisi tramite varie metodologie. \\ 
+    \midrule
+    
+    Data leakage & Problema di un modello di ML: il modello è capace di lavorare accuratamente solo in fase di addestramento e non in fase di rilascio. \\ 
+    \midrule
+ 
+    \bottomrule
+\end{tabularx}
+
+
 \end{document}
