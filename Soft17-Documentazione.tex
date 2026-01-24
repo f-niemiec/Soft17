@@ -28,6 +28,42 @@ Abbiamo deciso di cogliere l’occasione offerta dallo sviluppo del progetto fin
 
 Guidati dalla curiosità e dalla relativa semplicità delle regole, abbiamo quindi scelto il gioco del \textbf{Blackjack}. Da questa scelta nasce l’idea di sviluppare un agente intelligente in grado di giocare autonomamente a Blackjack, prendendo decisioni razionali sulla base delle informazioni disponibili.
 
+\section{Nozioni basilari di Blackjack}
+\subsection{Overview}
+Il Blackjack è un gioco di carte dalla forte semplicità, non a caso è tra i più diffusi nei casinò di tutto il mondo.
+Nella sua versione comune il prevede l'uso di un numero di mazzi standard di 52 carte francesi che va da 1 a 8, e coinvolge solo due tipologie di figure: il "banco" (anche detto "dealer") ed i giocatori. L’obiettivo del singolo giocatore è ottenere una mano il cui valore totale sia pari o quanto più possibile vicino a 21, senza superare tale soglia, e che risulti superiore a quello del banco. Il banco gioca secondo le stesse regole e di conseguenza perde nel momento in cui totalizza un valore minore del giocatore o quando esso sfora la soglia del ventuno. Le carte numeriche mantengono il loro normale valore, le figure valgono ciascuna 10 punti, mentre l’asso può assumere valore 1 o 11 a seconda della scelta del giocatore. 
+Il gioco prende il nome dalla combinazione delle carte asso e jack nero, ma nella sua terminologia viene chiamata blackjack qualunque combinazione di un asso con una figura. Ogni partecipante compete esclusivamente contro il banco, non contro gli altri giocatori al tavolo, e può compiere una serie di scelte (come chiedere carta, stare, raddoppiare o dividere) che incidono direttamente sull’esito della mano. Ciò nonostante nella sua variante a più giocatori nel momento in cui il dealer sfora, tutti i giocatori che non sforano vincono, avendo ognuno di fatto un'influenza, anche se implicita su ciascuna partita.
+La situazione iniziale di ogni partita è costituita dal dealer con due carte: una scoperta ed una coperta, ed il giocatore sulla base delle due carte che riceve deve stabilire se pescare ancora (\textbf{HIT}) o rimanere con solo quelle due carte (\textbf{STAND}).
+Vi sono anche ulteriori possibilità, lo \textbf{SPLIT} può verificarsi quando vengono pescate come prime due carte dal giocatore due carte dallo stesso valore, in tal caso è possibile considerarle come due "prime carte" e giocare due mani contemporaneamente.
+L'ultimo caso è il \textbf{DOUBLE} nel quale si va a raddoppiare la puntata iniziale.
+
+Un elemento distintivo del blackjack rispetto ad altri giochi da casinò è la possibilità di intervento razionale del giocatore sull’andamento della partita. Sebbene il gioco resti fondamentalmente basato sul caso, esistono strategie matematicamente fondate, in grado di aiutare il giocatore.
+Proprio quest'ultimo aspetto matematico ha portato moltissima attenzione dalla comunità scientifica sul gioco,
+aprendo le porte prima ad analisi statistiche e poi a nuovi orizzonti come algoritmi genetici e modelli di Machine Learning.
+\subsection{Vantaggio del banco}
+Chiamiamo vantaggio del banco la misura quantitativa dello svantaggio strutturale a cui è sottoposto il giocatore di blackjack nel lungo periodo. Esso esprime la perdita media attesa per unità di puntata ed è un indicatore fondamentale per l’analisi matematica ed economica del gioco, in quanto sintetizza l’effetto congiunto delle regole, delle probabilità e dell’ordine delle decisioni.
+
+A differenza di altri giochi da casinò, il vantaggio del banco nel blackjack non è fisso, ma dipende in modo significativo dalla configurazione regolamentare del tavolo e dal comportamento del giocatore.
+L’origine del vantaggio del banco è riconducibile a una serie di asimmetrie strutturali.
+La più rilevante è l’ordine di gioco: il giocatore è obbligato ad agire per primo e perde immediatamente la puntata nel caso in cui superi 21, indipendentemente dal risultato finale del banco. Questa regola, apparentemente neutrale, introduce un vantaggio matematico stabile a favore del casinò. A ciò si aggiungono le regole fisse del banco, che ne limitano la discrezionalità ma risultano, nel complesso, statisticamente ottimali.
+
+Ulteriori contributi al vantaggio del banco derivano dalla struttura dei pagamenti. Il pagamento del blackjack naturale è un elemento cruciale: una remunerazione pari a 3:2 riduce significativamente il margine del casinò, mentre formule meno favorevoli al giocatore, come il pagamento 6:5, possono incrementare il vantaggio del banco. 
+Anche il numero di mazzi utilizzati e le restrizioni sulle opzioni di gioco (raddoppio, divisione, resa) incidono in modo misurabile sul margine complessivo.
+
+Dal punto di vista teorico, il vantaggio del banco nel blackjack è di particolare interesse perché non è imposto esclusivamente dal caso, ma emerge dall’interazione tra regole istituzionali e decisioni individuali. Esso rappresenta quindi un esempio di come un sistema apparentemente equo possa generare, attraverso vincoli asimmetrici, un esito statisticamente sfavorevole a una delle parti.
+
+Attraverso l'attuazione di alcuni comportamenti è possibile ridurre questo svantaggio, primo di tutti è l'applicazione della strategia di base.
+
+\subsection{Strategia di base}
+Parliamo di strategia di base come dell’insieme di decisioni ottimali che il giocatore dovrebbe adottare in ogni possibile configurazione della propria mano e della carta scoperta del banco, assumendo condizioni di gioco standard e l’assenza di informazioni supplementari sull’ordine delle carte. Essa costituisce il riferimento teorico fondamentale per l’analisi razionale del gioco e per la valutazione del vantaggio statistico del banco.
+Per ciascuna combinazione di mano del giocatore e carta visibile del banco, viene determinata l’azione che massimizza il valore atteso della giocata.
+È importante effettuare una distinzione tra \textbf{hard-hand}, in cui l’asso ha valore fisso pari a 1, e \textbf{soft-hand}, in cui l’asso può assumere valore 11 senza rischio immediato di sballo.
+L’adozione coerente della strategia di base consente di ridurre il margine di vantaggio del banco a valori minimi, che in condizioni regolamentari favorevoli possono scendere a meno del'uno percento. 
+È tuttavia importante sottolineare che la strategia di base non elimina il rischio né garantisce vincite nel breve periodo: essa opera esclusivamente sul piano statistico, ottimizzando le decisioni nel lungo termine.
+Nel dettaglio questa strategia è stata formalizzata nel 1956 da Roger R. Baldwin, nell'articolo "The Optimal Strategy in Blackjack". Di seguito riportiamo le tabelle relative alla strategia di base del Blackjack.
+
+---PLACEHOLDER---
+
 \section{Descrizione dell’agente}
 
 \subsection{Obiettivi di business}
@@ -129,9 +165,36 @@ Il più corposo tra i principali due dataset trovati contava cinquanta milioni d
 Abbiamo quindi preso questo programma e generato un dataset con circa cinquecentomila mani giocate, una quantità tale da poter effettuare un buon training in tempi tutto sommato contenuti.
 È importante notare come la scelta di mantenere inalterato l'algoritmo nasce da due ragioni: la prima mantenere inalterati gli ottimi risultati relativi all'usabilità del dataset, la seconda (nonchè forse la più importante) è quella di voler andare ad operare direttamente sui dati anzichè sulla loro generazione.
 
+\subsection{Regole seguite}
+Per generare il dataset si è quindi scelto di utilizzare le stesse regole indicate dal dataset (\url{https://www.kaggle.com/datasets/dennisho/blackjack-hands/data}).
+Le regole in questione sono:
+\begin{itemize}
+    \item \textbf{Shoe da 8 mazzi} (penetrazione di 6,5 mazzi)
+    \item La prima carta dello shoe viene scartata
+    \item Il Blackjack paga 3:2
+    \item È possibile raddoppiare su qualsiasi combinazione iniziale di due carte
+    \item Il raddoppio dopo lo split è consentito
+    \item È possibile splittare qualsiasi coppia iniziale fino a un massimo di 4 mani
+    \item Non è consentito il re-split degli Assi
+    \item Dopo lo split degli Assi viene distribuita una sola carta per mano e non è possibile ottenere Blackjack
+    \item Non è consentita la resa dopo uno split
+    \item Il banco pesca su soft 17 (H17)
+\end{itemize}
+Bisogna notare anche quanto segue:
+\begin{itemize}
+    \item Tutte le mani sono giocate \textbf{heads-up} (un solo giocatore contro il banco)
+    \item La puntata iniziale per ogni mano è sempre pari a 1
+    \item Le carte 10, J, Q e K sono considerate equivalenti e registrate come 10
+    \item Gli Assi sono sempre registrati come 11, indipendentemente dal loro valore effettivo nella mano
+    \item I semi non vengono considerati e non sono registrati
+    \item Il \textbf{Running Count} e il \textbf{True Count} (troncati all’intero) sono calcolati con il sistema \textbf{Hi-Lo} e registrati all’inizio di ogni mano, prima della distribuzione delle carte
+    \item Il numero di carte rimanenti nello shoe è registrato all’inizio di ogni mano e include anche le carte che non verranno utilizzate a causa di una penetrazione inferiore al cento percento
+\end{itemize}
+
+
 \subsection{Analisi e pulizia dei dati}
 Il formato del dataset generato e .csv, quindi dati strutturati. 
-C'è necessità di feature scaling? 
+C'è necessità di Feature scaling, 
 Feature construction, Feature extraction e 
 
 Il dataset generato non presenta valori mancanti. Tuttavia, è stato necessario effettuare una fase di \textit{data cleaning} al fine di garantire la coerenza semantica dei dati e la corretta rappresentazione delle variabili, rendendole idonee alle successive fasi di feature engineering e apprendimento automatico.
@@ -154,6 +217,5 @@ Il dataset generato non presenta valori mancanti. Tuttavia, è stato necessario 
  
     \bottomrule
 \end{tabularx}
-
 
 \end{document}
