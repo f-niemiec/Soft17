@@ -129,7 +129,7 @@ Un primo approccio al problema avrebbe potuto basarsi sulla teoria dei giochi e 
 
 Alla luce di queste considerazioni, abbiamo deciso di affrontare il problema tramite tecniche di \textbf{apprendimento supervisionato}. In questo contesto, l’agente apprende una funzione che associa a ogni stato osservabile del gioco un’etichetta nota, rappresentata dall’esito della mano, utilizzando un dataset di mani simulate.
 
-\section{Raccolta, analisi e preprocessing dei dati}
+\section{Metodologia e Raccolta dati}
 
 \subsection{Metodologia di sviluppo: CRISP-DM}
 
@@ -192,13 +192,83 @@ Bisogna notare anche quanto segue:
 \end{itemize}
 
 
-\subsection{Analisi e pulizia dei dati}
-Il formato del dataset generato e .csv, quindi dati strutturati. 
-C'è necessità di Feature scaling, 
-Feature construction, Feature extraction e 
-
-Il dataset generato non presenta valori mancanti. Tuttavia, è stato necessario effettuare una fase di \textit{data cleaning} al fine di garantire la coerenza semantica dei dati e la corretta rappresentazione delle variabili, rendendole idonee alle successive fasi di feature engineering e apprendimento automatico.
-
+\section{Prima pipeline}
+\subsection{Esplorazione}
+Il dataset generato necessità di varie operazioni di pulizia dei dati ed in generale di data engineering per renderlo consono ai nostri scopi.
+C'è necessità di \textbf{Feature scaling}, \textbf{Feature construction}, \textbf{Feature extraction}. 
+Iniziamo però da una fase iniziale di esplorazione dei dati, la quale serve per comprendere su quali aree andare ad agire.
+Data la natura condivisa di questa fase abbiamo deciso di usare \textit{Colab}(quindi i comandi che andremo a specificare successivamente faranno riferimento alla sua sintassi).
+Come prima cosa quindi abbiamo importato il file del dataset (in formato .csv) e abbiamo visualizzato le sue colonne. In particolare il dataset iniziale era composto da queste colonne: 
+\begin{itemize}
+    \item \textbf{shoe\_id}: Identificativo del mazzo utilizzato per la mano.
+    \item \textbf{cards\_remaining}: Numero di carte rimanenti nel mazzo all'inizio della mano.
+    \item \textbf{dealer\_up}: Carta scoperta del dealer.
+    \item \textbf{initial\_hand}: Mano iniziale del giocatore.
+    \item \textbf{dealer\_final}: Mano finale del dealer.
+    \item \textbf{dealer\_final\_value}: Valore finale della mano del banco.
+    \item \textbf{player\_final}: Mano finale del giocatore dopo tutte le azioni.
+    \item \textbf{player\_final\_value}: Valore finale della mano del giocatore.
+    \item \textbf{actions\_taken}: Sequenza di azioni effettuate dal giocatore.
+    \item \textbf{run\_count}: Numero di round giocati nella simulazione.
+    \item \textbf{true\_count}: Conteggio all'inizio della mano.
+    \item \textbf{win}: Risultato della mano per il giocatore.
+    \end{itemize}
+Successivamente abbiamo individuato \textit{WIN} come colonna utile per la nostra classificazione, di fatto abbiamo analizzato quali fossero i valori che potesse assumere e li abbiamo raggruppati in tre categorie, ovvero minori di zero, uguali a zero e maggiori di zero.
+Fatto ciò abbiamo visualizzato il numero di istanze per ciascuna categoria:
+- 421940 istanze con win maggiore di zero.
+- 493992 istanze con win minore di zero.
+- 84068 istanze con win uguale a zero.
+A primo impatto il dataset presentava uno sbilanciamento verso le "sconfitte", tuttavia abbiamo scelto di non considerarlo alla luce di due considerazioni: la prima è che è inerente nella natura del gioco (favorevole al banco) che siano presenti molte più sconfitte che vittorie, e la seconda è che andando a considerare semplicemente i casi "favorevoli" ovvero quelli dove la win è maggiore o uguale a zero, il dataset sarebbe apparso come bilanciato.
+Successivamente abbiamo verificato quanti valori nulli fossero presenti nelle colonne, i risultati hanno mostrato che nessuna colonna presentava valori nulli. Ciò non era assolutamente inaspettato data la natura "sintetica" dei dati.
+\subsection{Data Cleaning}
+Siccome tutte le colonne del dataset non presentano dati mancanti, questa fase non comprende all'atto pratico nessun cambiamento.
+\subsection{Feature Scaling}
+Avendo precedentemente specificato che non vogliamo concentrarci sull'aspetto economico delle singole puntate, ci viene naturale
+il voler normalizzare i valori di win per identificare semplicemente i tre casi possibili:
+\begin{itemize}
+    \item Vittoria (attualmente 0 < x <= 7, vorremmo solamente 1)
+    \item Pareggio (attualmente == 0)
+    \item Sconfitta (attualmente da < 0 a -7, vorremmo solamente -1)
+\end{itemize}
+Per fare ciò abbiamo valutato diverse opzioni:
+\begin{description}
+    \item[Normalizzazione min-max:] il problema di questo tipo di normalizzazione era che a noi interessava mantenere anche lo zero a fini statistici ma applicandola ciò non sarebbe possibile (se invece avessimo considerato lo 0 come parte della vittoria allora sarebbe stata perfetta)
+    \item [Normalizzazione Z-score:] qui non avremmo avuto pieno controllo ma la trasformazione sarebbe stata attuata sulla densità media.
+    \end{description}
+Abbiamo quindi optato per una strategia di "Discretizzazione con soglie"(\textbf{da aggiungere nel glossario}) che ci permette di fare esattamente ciò che
+ci serve.
+\subsection{Feature Engineering}
+Nonostante il lavoro effettuato nella fase precedente, il dataset risultava fortemente inadeguato ai nostri scopi, quindi in questa fase tramite tecniche di Feature Selection e Feature Construction abbiamo cercato di plasmarlo al meglio per i nostri scopi.
+\subsubsection{Feature Selection}
+Iniziamo da ciò che siamo andati a rimuovere.
+Primo step è stato quello di eliminare shoe\_id in quanto è un semplice indicatore del mazzo di carte e non ha alcuna correlazione con la decisione nel nostro contesto.
+Fatto ciò passiamo all'eliminazione di colonne che potrebbero causare \textbf{Data Leakage}, in particolare facciamo riferimento
+a:
+\begin{itemize}
+    \item \textbf{dealer\_final}: rappresenta la mano finale del dealer e, di conseguenza, non è un'informazione disponibile al momento della decisione del giocatore.
+    \item \textbf{dealer\_final\_value}: valore finale della mano del dealer; per le stesse motivazioni espresse sopra, questa informazione è osservabile solo a fine mano.    
+    \item \textbf{player\_final}: descrive la mano finale del giocatore, includendo carte ottenute attraverso azioni future non ancora osservabili nel momento della decisione.
+    \item \textbf{player\_final\_value}: valore finale della mano del giocatore; analogamente alla variabile precedente, non è disponibile prima del completamento della sequenza di azioni.
+    \item \textbf{actions\_taken}: rappresenta un vero e proprio caso di \emph{data leakage}, in quanto codifica direttamente la sequenza di azioni che il modello dovrebbe invece apprendere a prevedere.
+\end{itemize}
+Detto ciò abbiamo eliminato anche run\_count, true\_count e cards\_remaining perchè relativi al conteggio delle carte.
+\subsubsection{Feature Construction}
+Una volta conclusa la fase di \emph{Feature Selection}, è stato necessario modificare alcune colonne del dataset al fine di renderle utilizzabili dal modello.
+La prima trasformazione riguarda la variabile \textbf{initial\_hand}, che è rappresentata come una lista di carte. Questa rappresentazione risulta poco adatta all’utilizzo diretto da parte del modello; per questo motivo si è deciso di scomporla in tre differenti variabili:
+\begin{itemize}
+    \item \textbf{player\_sum}: la somma dei valori di tutte le carte presenti nella mano del giocatore
+    \item \textbf{player\_is\_soft}: variabile binaria che indica se la mano è \emph{soft}, ovvero se contiene un asso valutabile come 11
+    \item \textbf{player\_pair}: variabile binaria che indica se la mano è composta da due carte dello stesso valore e quindi se è possibile effettuare lo \emph{split}.
+\end{itemize}
+\subsection{Colonne finali del Dataset}
+Al termine della fase di elaborazione, il dataset finale risulta composto dalle seguenti variabili:
+\begin{itemize}
+    \item \textbf{player\_sum}
+    \item \textbf{player\_is\_soft}
+    \item \textbf{player\_pair}
+    \item \textbf{dealer\_up}
+\end{itemize}
+La variabile target è \textbf{win}, che indica l’esito della decisione presa dal giocatore, assumendo i valori di vittoria e sconfitta.
 \subsection{Glossario}
 
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
