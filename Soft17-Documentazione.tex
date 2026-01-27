@@ -338,8 +338,20 @@ rappresenta una soluzione più efficiente e interpretabile.
       \includegraphics[scale=0.8, center]{secondpipeline.png}
 \end{center}
 
-
-
+\section{Reinforcement Learning}
+\subsection{Motivazioni dietro al cambio di approccio}
+Sebbene i precedenti approcci si siano dimostrati efficienti
+nell'affrontare il problema in esame, hanno anche evidenziato delle problematiche:
+\begin{itemize}
+    \item il Blackjack è un processo decisionale sequenziale, in cui ogni azione influenza gli stati futuri della partita, tuttavia ciò non viene riflesso con questi approcci;
+    \item l'assenza di feedback intermedio;
+    \item l’azione ritenuta migliore viene dedotta indirettamente a partire dalle predizioni del modello;
+    ciò risulta essere meno adatto a problemi in cui l’obiettivo principale è l’ottimizzazione di una sequenza di decisioni.
+\end{itemize}
+Inoltre i risultati ottenuti evidenziano che il modello riesce a individuare circa il 60\% dei veri casi positivi. Questo evidenzia una percentuale di falsi negativi fin troppo alta.
+Di fatto quindi l'informazione di "Perdita o non Perdita" ed
+un insieme di feature forse troppo ridotto, portano il nostro modello a non svolgere propriamente il compito prestabilito.
+Rendendoci conto che per la costruzione di un modello che fosse in grado di giocare a Blackjack in maniera efficiente non bastava affrontare il problema come un problema di apprendimento supervisionato, abbiamo deciso di cambiare il nostro approccio.
 
 \subsection{Glossario}
 
