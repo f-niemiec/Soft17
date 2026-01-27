@@ -272,6 +272,15 @@ Al termine della fase di elaborazione, il dataset finale risulta composto dalle 
 \end{itemize}
 La variabile target è \textbf{win}, che indica l’esito della decisione presa dal giocatore, assumendo i valori di vittoria e sconfitta.
 \subsection{Modeling}
+Prima di parlare degli algoritmi utilizzati occorre fare delle premesse. Per scegliere i migliori parametri adatti agli algoritmi e il problema che stiamo affrontando abbiamo deciso di utilizzare \textbf{GridSearchCV} per identificare gli iperparametri. È una classe contenuta nella libreria scikit-learn che ci permette di testare più combinazioni di parametri automaticamente evitando di eseguire a mano i training.
+La prima operazione effettuata è lo splitting del dataset per distinguere i dati di test e i dati per il training. Nello specifico l'80\% dei dati sarà utilizzato per il training e il 20\% per il testing. Avviene successivamente un ulteriore split dei dati di training per training e validazione, nello specifico il 78.5\%  per il training e il restante per la validazione.
+Per la prima versione di questa pipeline (Pipeline 1A) l'algoritmo utilizzato è un albero decisionale di classificazione (DecisionTreeClassifier) specificando i seguenti parametri: 
+
+\begin{itemize}
+    \item \textbf{ max depth che specifica la profondità massimache l'albero può raggiungere con i seguenti valori: [10,20,30]}
+    \item \textbf{ min samples split: che determina numero minimo di campioni prima di effettuare un'ulteriore ramificazione. I valori sono: [2,5]}
+    \item \textbf{ min samples leaf, che determina il numero minimo di campioni che devono essere presenti nelle foglie. I valori sono: [1,2]}
+\end{itemize}
 
 
 
