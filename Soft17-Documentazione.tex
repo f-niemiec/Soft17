@@ -283,6 +283,17 @@ Per la prima versione di questa pipeline (Pipeline 1A) l'algoritmo utilizzato è
     \item \textbf{ min\_samples\_split:} che determina numero minimo di campioni prima di effettuare un'ulteriore ramificazione. I valori sono: [2,5]
     \item \textbf{ min\samples\ leaf:} che determina il numero minimo di campioni che devono essere presenti nelle foglie. I valori sono: [1,2]
 \end{itemize}
+\subsection{Evaluation}
+%Needs improvments 
+I risultati dell'algoritmo sono stati i seguenti: 
+Best params: 'max\_depth': 10, 'min\_samples\_leaf': 1, 'min\_samples\_split': 2
+  F1-Score Test: 0.6562
+  Accuracy:  0.6844
+  Precision:  0.7268
+  Recall:  0.5982
+  \begin{center}
+      \includegraphics[scale=0.8, center]{MatriceDiConfusionePipeline1.png}
+  \end{center}
 \section{Seconda pipeline}
 Per la seconda versione della pipeline (Pipeline 1B) è stato adottato un
 approccio basato su \textbf{ensemble di alberi decisionali, ovvero Random Forest}
@@ -322,20 +333,14 @@ l’aumento della complessità del modello non si traduce in un beneficio
 significativo nel contesto analizzato. Di conseguenza, la pipeline 1B viene
 considerata principalmente come termine di confronto, mentre la pipeline 1A
 rappresenta una soluzione più efficiente e interpretabile.
-}
+
+\begin{center}
+      \includegraphics[scale=0.8, center]{secondpipeline.png}
+\end{center}
 
 
-\subsection{Evaluation}
-%Needs improvments 
-I risultati dell'algoritmo sono stati i seguenti: 
-Best params: 'max\_depth': 10, 'min\_samples\_leaf': 1, 'min\_samples\_split': 2
-  F1-Score Test: 0.6562
-  Accuracy:  0.6844
-  Precision:  0.7268
-  Recall:  0.5982
-  \begin{center}
-      \includegraphics[scale=0.8, center]{MatriceDiConfusionePipeline1.png}
-  \end{center}
+
+
 \subsection{Glossario}
 
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
