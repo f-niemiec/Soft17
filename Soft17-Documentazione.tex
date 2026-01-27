@@ -90,7 +90,7 @@ L’obiettivo del progetto è lo sviluppo di un \textbf{agente intelligente} in 
 L’ambiente in cui opera l’agente viene descritto attraverso la specifica \textbf{PEAS} (Performance, Environment, Actuators, Sensors).
 
 \begin{description}
-    \item[Performance:] la misura di prestazione dell’agente è legata alla sua capacità di massimizzare il risultato economico nel gioco. In particolare vengono considerate il numero di vittorie rispetto alle mani giocate, il guadagno netto complessivo e la capacità di adottare azioni ottimali in situazioni rischiose.
+    \item[Performance:] la misura di prestazione dell’agente è legata alla sua capacità di massimizzare il risultato economico nel gioco. In particolare vengono considerate nelle prime due pipeline l'accuratezza e robustezza nella previsione dell’esito della mano (vittoria o non sconfitta) a partire dallo stato informativo disponibile al momento della decisione, valutate tramite metriche di classificazione supervisionata (F1-score come metrica principale, affiancata da precision e recall). Nell'ultima pipeline invece andiamo a considerare la percentuale di vittorie dell'agente.
     
     \item[Environment:] l’ambiente è rappresentato da un tavolo di Blackjack comprendente:
     \begin{itemize}
@@ -279,9 +279,9 @@ Infine stratify permette di suddividere il dataset in modo che ogni sottoinsieme
 Per la prima versione di questa pipeline (Pipeline 1A) l'algoritmo utilizzato è un albero decisionale di classificazione (DecisionTreeClassifier) specificando i seguenti parametri: 
 
 \begin{itemize}
-    \item \textbf{ max\_depth che specifica la profondità massimache l'albero può raggiungere con i seguenti valori: [10,20,30]}
-    \item \textbf{ min\_samples\_split: che determina numero minimo di campioni prima di effettuare un'ulteriore ramificazione. I valori sono: [2,5]}
-    \item \textbf{ min\_samples\_ leaf, che determina il numero minimo di campioni che devono essere presenti nelle foglie. I valori sono: [1,2]}
+    \item \textbf{ max\_depth:} che specifica la profondità massimache l'albero può raggiungere con i seguenti valori: [10,20,30]
+    \item \textbf{ min\_samples\_split:} che determina numero minimo di campioni prima di effettuare un'ulteriore ramificazione. I valori sono: [2,5]
+    \item \textbf{ min\samples\ leaf:} che determina il numero minimo di campioni che devono essere presenti nelle foglie. I valori sono: [1,2]
 \end{itemize}
 \subsection{Evaluation}
 %Needs improvments 
@@ -292,8 +292,55 @@ Best params: 'max\_depth': 10, 'min\_samples\_leaf': 1, 'min\_samples\_split': 2
   Precision:  0.7268
   Recall:  0.5982
   \begin{center}
-      \includegraphics[scale=0.8, center]{Img/MatriceDiConfusionePipeline1.png}
+      \includegraphics[scale=0.8, center]{MatriceDiConfusionePipeline1.png}
   \end{center}
+\section{Seconda pipeline}
+Per la seconda versione della pipeline (Pipeline 1B) è stato adottato un
+approccio basato su \textbf{ensemble di alberi decisionali, ovvero Random Forest}
+(\textit{RandomForestClassifier}), mantenendo invariate tutte le fasi di
+preprocessing, feature engineering e suddivisione del dataset rispetto alla
+pipeline 1A, al fine di garantire un confronto equo tra i modelli.
+
+Analogamente a quanto fatto per la pipeline 1A, anche in questo caso è stato
+utilizzato \textbf{GridSearchCV} per la selezione degli iperparametri, operando
+sulla medesima formulazione del problema come task di classificazione binaria.
+
+In particolare:
+\begin{itemize}
+    \item vengono utilizzate le stesse feature;
+    \item non vengono introdotte ulteriori trasformazioni dei dati;
+    \item il processo di selezione degli iperparametri è identico a quello
+    adottato per la pipeline 1A.
+\end{itemize}
+
+I principali iperparametri considerati per la Random Forest sono:
+\begin{itemize}
+    \item \textbf{n\_estimators:} numero di alberi presenti.
+    I valori testati sono: [100, 200];
+    \item \textbf{max\_depth:} profondità massima consentita per ciascun albero.
+    I valori considerati sono: [15, 20];
+    \item \textbf{min\_samples\_split:} numero minimo di campioni richiesto per
+    effettuare una suddivisione interna. I valori testati sono: [2, 5].
+\end{itemize}
+
+L’introduzione di questa pipeline consente di valutare l’impatto di un modello
+più complesso rispetto a un singolo albero decisionale sul problema considerato.
+
+Dai risultati sperimentali emerge che la pipeline 1B non fornisce miglioramenti
+sostanziali rispetto alla pipeline 1A in termini di prestazioni predittive.
+Le metriche di valutazione risultano infatti comparabili, indicando che
+l’aumento della complessità del modello non si traduce in un beneficio
+significativo nel contesto analizzato. Di conseguenza, la pipeline 1B viene
+considerata principalmente come termine di confronto, mentre la pipeline 1A
+rappresenta una soluzione più efficiente e interpretabile.
+
+\begin{center}
+      \includegraphics[scale=0.8, center]{secondpipeline.png}
+\end{center}
+
+
+
+
 \subsection{Glossario}
 
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
