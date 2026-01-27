@@ -26,7 +26,9 @@ Durante la seconda parte del corso di \textit{Fondamenti di Intelligenza Artific
 
 Abbiamo deciso di cogliere l’occasione offerta dallo sviluppo del progetto finale per approfondire tale correlazione, analizzandola in un contesto applicativo concreto. In seguito a una fase di brainstorming, volta a individuare un dominio che consentisse di unire questi due ambiti, abbiamo preso in considerazione i documenti forniti dal docente, nei quali il tema dei \textit{giochi} emerge come un caso di studio ricorrente.  
 
-Guidati dalla curiosità e dalla relativa semplicità delle regole, abbiamo quindi scelto il gioco del \textbf{Blackjack}. Da questa scelta nasce l’idea di sviluppare un agente intelligente in grado di giocare autonomamente a Blackjack, prendendo decisioni razionali sulla base delle informazioni disponibili.
+Guidati dalla curiosità e dalla relativa semplicità delle regole, abbiamo quindi scelto il gioco del \textbf{Blackjack}. Da questa scelta nasce l’idea di sviluppare un modello che sia in grado di stimare l’esito atteso di una mano di Blackjack sulla base delle informazioni disponibili e delle strategie tipiche.
+
+
 
 \section{Nozioni basilari di Blackjack}
 \subsection{Overview}
@@ -269,6 +271,11 @@ Al termine della fase di elaborazione, il dataset finale risulta composto dalle 
     \item \textbf{dealer\_up}
 \end{itemize}
 La variabile target è \textbf{win}, che indica l’esito della decisione presa dal giocatore, assumendo i valori di vittoria e sconfitta.
+\subsection{Modeling}
+
+
+
+
 \subsection{Glossario}
 
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
