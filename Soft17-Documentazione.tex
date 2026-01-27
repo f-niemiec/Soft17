@@ -9,6 +9,7 @@
 \usepackage{tabularx} % Per tabelle a larghezza fissa
 \usepackage{booktabs} % Per linee professionali (toprule, midrule, bottomrule)
 \usepackage[table,dvipsnames]{xcolor} % Per colorare le righe
+\usepackage[export]{adjustbox}
 
 \title{Soft17 -- An Intelligent Agent for Blackjack}
 \author{Abbatiello Simone, Nappi Vincenzo, Niemiec Francesco}
@@ -273,18 +274,26 @@ Al termine della fase di elaborazione, il dataset finale risulta composto dalle 
 La variabile target è \textbf{win}, che indica l’esito della decisione presa dal giocatore, assumendo i valori di vittoria e sconfitta.
 \subsection{Modeling}
 Prima di parlare degli algoritmi utilizzati occorre fare delle premesse. Per scegliere i migliori parametri adatti agli algoritmi e il problema che stiamo affrontando abbiamo deciso di utilizzare \textbf{GridSearchCV} per identificare gli iperparametri. È una classe contenuta nella libreria scikit-learn che ci permette di testare più combinazioni di parametri automaticamente evitando di eseguire a mano i training.
-La prima operazione effettuata è lo splitting del dataset per distinguere i dati di test e i dati per il training. Nello specifico l'80\% dei dati sarà utilizzato per il training e il 20\% per il testing. Avviene successivamente un ulteriore split dei dati di training per training e validazione, nello specifico il 78.5\%  per il training e il restante per la validazione.
+La prima operazione effettuata è lo splitting del dataset per distinguere i dati di test e i dati per il training. Nello specifico l'80\% dei dati sarà utilizzato per il training e il 20\% per il testing. Avviene successivamente un ulteriore split dei dati di training per training e validazione, nello specifico il 78.5\%  per il training e il restante per la validazione. È stato inoltre fissato un seme randomico per rendere i test ripetibili. % Da aggiustare%
+Infine stratify permette di suddividere il dataset in modo che ogni sottoinsieme mantenga la stessa identica proporzione di classi del dataset originale.
 Per la prima versione di questa pipeline (Pipeline 1A) l'algoritmo utilizzato è un albero decisionale di classificazione (DecisionTreeClassifier) specificando i seguenti parametri: 
 
 \begin{itemize}
-    \item \textbf{ max depth che specifica la profondità massimache l'albero può raggiungere con i seguenti valori: [10,20,30]}
-    \item \textbf{ min samples split: che determina numero minimo di campioni prima di effettuare un'ulteriore ramificazione. I valori sono: [2,5]}
-    \item \textbf{ min samples leaf, che determina il numero minimo di campioni che devono essere presenti nelle foglie. I valori sono: [1,2]}
+    \item \textbf{ max\_depth che specifica la profondità massimache l'albero può raggiungere con i seguenti valori: [10,20,30]}
+    \item \textbf{ min\_samples\_split: che determina numero minimo di campioni prima di effettuare un'ulteriore ramificazione. I valori sono: [2,5]}
+    \item \textbf{ min\_samples\_ leaf, che determina il numero minimo di campioni che devono essere presenti nelle foglie. I valori sono: [1,2]}
 \end{itemize}
-
-
-
-
+\subsection{Evaluation}
+%Needs improvments 
+I risultati dell'algoritmo sono stati i seguenti: 
+Best params: 'max\_depth': 10, 'min\_samples\_leaf': 1, 'min\_samples\_split': 2
+  F1-Score Test: 0.6562
+  Accuracy:  0.6844
+  Precision:  0.7268
+  Recall:  0.5982
+  \begin{center}
+      \includegraphics[scale=0.8, center]{Img/MatriceDiConfusionePipeline1.png}
+  \end{center}
 \subsection{Glossario}
 
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
