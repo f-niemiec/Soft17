@@ -10,6 +10,7 @@
 \usepackage{booktabs} % Per linee professionali (toprule, midrule, bottomrule)
 \usepackage[table,dvipsnames]{xcolor} % Per colorare le righe
 \usepackage[export]{adjustbox}
+\usepackage{hyperref}
 
 \title{Soft17 -- An Intelligent Agent for Blackjack}
 \author{Abbatiello Simone, Nappi Vincenzo, Niemiec Francesco}
@@ -281,7 +282,7 @@ Per la prima versione di questa pipeline (Pipeline 1A) l'algoritmo utilizzato è
 \begin{itemize}
     \item \textbf{ max\_depth:} che specifica la profondità massimache l'albero può raggiungere con i seguenti valori: [10,20,30]
     \item \textbf{ min\_samples\_split:} che determina numero minimo di campioni prima di effettuare un'ulteriore ramificazione. I valori sono: [2,5]
-    \item \textbf{ min\samples\ leaf:} che determina il numero minimo di campioni che devono essere presenti nelle foglie. I valori sono: [1,2]
+    \item \textbf{ min\_samples\_leaf:} che determina il numero minimo di campioni che devono essere presenti nelle foglie. I valori sono: [1,2]
 \end{itemize}
 \subsection{Evaluation}
 %Needs improvments 
@@ -325,7 +326,6 @@ I principali iperparametri considerati per la Random Forest sono:
 
 L’introduzione di questa pipeline consente di valutare l’impatto di un modello
 più complesso rispetto a un singolo albero decisionale sul problema considerato.
-
 Dai risultati sperimentali emerge che la pipeline 1B non fornisce miglioramenti
 sostanziali rispetto alla pipeline 1A in termini di prestazioni predittive.
 Le metriche di valutazione risultano infatti comparabili, indicando che
@@ -333,7 +333,6 @@ l’aumento della complessità del modello non si traduce in un beneficio
 significativo nel contesto analizzato. Di conseguenza, la pipeline 1B viene
 considerata principalmente come termine di confronto, mentre la pipeline 1A
 rappresenta una soluzione più efficiente e interpretabile.
-
 \begin{center}
       \includegraphics[scale=0.8, center]{secondpipeline.png}
 \end{center}
@@ -352,6 +351,23 @@ Inoltre i risultati ottenuti evidenziano che il modello riesce a individuare cir
 Di fatto quindi l'informazione di "Perdita o non Perdita" ed
 un insieme di feature forse troppo ridotto, portano il nostro modello a non svolgere propriamente il compito prestabilito.
 Rendendoci conto che per la costruzione di un modello che fosse in grado di giocare a Blackjack in maniera efficiente non bastava affrontare il problema come un problema di apprendimento supervisionato, abbiamo deciso di cambiare il nostro approccio.
+\section{Introduzione al ruolo di Markov}
+Parallelamente al corso di \textit{Fondamenti di Intelligenza Artificilae}, uno degli esami che abbiamo seguito era quello di \textit{Musimatica}. All'interno di tale corso è stato introdotto il concetto di "Catena di Markov"\cite{dispensaMusimatica}, come un modello matematico per descrivere sistemi che hanno un'evoluzione casuale guidata da distribuzioni di probabilità. Tale modello possiede due componenti: uno insieme di stati e le probabilità di transizione da uno stato all'altro.
+Abbiamo quindi identificato un facile parallelismo col blackjack, ma con nozioni veramente basilari non sarebbe stato possibile andare avanti.
+Abbiamo quindi condotto delle ricerche basilari, necessarie per capire se stessimo ancora sbagliando strada. 
+Per comprenderne i risultati è quindi necessario dare una serie di definizioni:
+\subsubsection{Processo di Markov}
+Definiamo un \textbf{Processo di Markov} come un processo che non ha memoria degli stati precedenti, e di conseguenza lo stato futuro è dettato esclusivamente dallo stato attuale.
+Di questi processi, quelli che hanno un numero finito (o contabile) di stati sono detti \textbf{Catene di Markov}
+\cite{markovChains}.
+\subsubsection{Stato di Markov}
+Il motivo dietro al quale non si tiene conto degli stati precedenti è che ciascuno stato cattura già le informazioni più rilevanti degli stati precedenti.
+Possiamo dare una definizione più formale di stato markoviano tramite questa formulazione:
+\textit{Uno stato $S_t$ è detto stato di Markov, se e solo se}
+\[
+P(S_{t+1} \mid S_1, S_2, \ldots, S_t)=P(S_{t+1} \mid S_t).       \cite{markovState}
+\]
+
 
 \subsection{Glossario}
 
@@ -372,4 +388,6 @@ Rendendoci conto che per la costruzione di un modello che fosse in grado di gioc
     \bottomrule
 \end{tabularx}
 
+\bibliographystyle{unsrt}
+\bibliography{bibliography.bib}
 \end{document}
