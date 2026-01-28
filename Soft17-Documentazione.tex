@@ -367,10 +367,46 @@ Possiamo dare una definizione più formale di stato markoviano tramite questa fo
 \[
 P(S_{t+1} \mid S_1, S_2, \ldots, S_t)=P(S_{t+1} \mid S_t).       \cite{markovState}
 \]
+\subsubsection{Markov Reward Process}
+Un \textbf{Processo di Ricompensa di Markov} 
+è una catena di Markov con valori di ricompensa (reward).
+Un Processo di Ricompensa di Markov è definito come la quarta:
+\[
+(\mathcal{S}, \mathbf{P}, \mathcal{R}, \gamma),
+\]
+dove:
+\begin{itemize}
+  \item $\mathcal{S}$ è un insieme finito di stati;
+  \item $\mathbf{P}$ è la matrice di transizione degli stati;
+  \item $\mathcal{R}$ è la funzione di ricompensa, tale che
+  \[
+  \mathcal{R}_s = \mathbb{E}[R_{t+1} \mid S_t = s];
+  \]
+  \item $\gamma$ è il fattore di sconto, con $\gamma \in [0,1]$.
+\end{itemize}
+In particolare notiamo questo $\gamma$ che indica quanto valore attribuiamo alle ricompense future rispetto a quelle immediate. Quindi se è uguale a zero ci interessano solo le ricompense immediate, al contrario se è uguale a uno consideriamo le ricompense future quasi allo stesso modo di quelle attuali.
+\subsubsection{Markov Decision Process}
+Un \textbf{Markov Decision Process} (MDP) è un processo di ricompensa di Markov con azioni. 
+È un ambiente in cui tutti gli stati sono Markov, è definito dalla quintupla:
+\[
+(\mathcal{S}, \mathcal{A}, \mathbf{P}, \mathcal{R}, \gamma),
+\]
+dove $\mathcal{A}$ è un set finito di azioni a.
+Questo particolare tipo di processo è spesso associato ad una policy $\pi$, ovvero una distribuzione delle azioni $a$ dato lo stato $s$:
+\[
+\pi(a \mid s) = P(A_t = a \mid S_t = s)
+\]
+Definiamo in particolare un \textbf{MDP Parzialmente Osservabile} (POMDP) un processo decisionale di Markov con stati nascosti, ovvero composto dalla dalla 7-tupla:
+\[
+(\mathcal{S}, \mathcal{A}, \mathcal{O}, \mathbf{P}, \mathcal{R}, \mathcal{Z}, \gamma),
+\]
+dove $\mathcal{O}$  un insieme finito di osservazioni e $\mathcal{Z}$ la funzione di osservazione.
 
-
+\subsubsection{Markov ed il Blackjack}
+Il problema del Blackjack è stato modellato come un MDP. Lo stato dell’ambiente è definito esclusivamente dalle informazioni osservabili dal giocatore al momento della decisione, ovvero: la somma della propria mano, la presenza di una mano soft, e la carta scoperta del dealer. Sebbene il gioco del Blackjack, nella sua formulazione completa, sia più propriamente descrivibile come un Processo Decisionale Parzialmente Osservabile (POMDP) a causa della dipendenza dall’ordine delle carte nel mazzo, abbiamo assunto una formulazione \textit{puramente} markoviana rispetto allo stato informativo del giocatore, ignorando volontariamente informazioni non osservabili. 
+Tale approssimazioni consente quindi di affrontare il problema come un MDP episodico con stati e azioni discrete, con ricompensa associata all’esito finale della mano.
+Abbiamo trovato riscontro con tale affermazione\cite{mdpBJ}, ciò ci ha moralmente dato un via libera per il procedere con questo approccio.
 \subsection{Glossario}
-
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
 
