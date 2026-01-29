@@ -274,20 +274,19 @@ Al termine della fase di elaborazione, il dataset finale risulta composto dalle 
 \end{itemize}
 La variabile target è \textbf{win}, che indica l’esito della decisione presa dal giocatore, assumendo i valori di vittoria e sconfitta.
 \subsection{Modeling}
-Prima di parlare degli algoritmi utilizzati occorre fare delle premesse. Per scegliere i migliori parametri adatti agli algoritmi e il problema che stiamo affrontando abbiamo deciso di utilizzare \textbf{GridSearchCV} per identificare gli iperparametri. È una classe contenuta nella libreria scikit-learn che ci permette di testare più combinazioni di parametri automaticamente evitando di eseguire a mano i training.
-La prima operazione effettuata è lo splitting del dataset per distinguere i dati di test e i dati per il training. Nello specifico l'80\% dei dati sarà utilizzato per il training e il 20\% per il testing. Avviene successivamente un ulteriore split dei dati di training per training e validazione, nello specifico il 78.5\%  per il training e il restante per la validazione. È stato inoltre fissato un seme randomico per rendere i test ripetibili. % Da aggiustare%
+Prima di parlare degli algoritmi utilizzati occorre fare delle premesse. Per scegliere i migliori parametri adatti agli algoritmi e il problema che stiamo affrontando abbiamo deciso di utilizzare una \textbf{griglia di ricerca} per identificare gli iperparametri. È una classe contenuta nella libreria scikit-learn che ci permette di testare più combinazioni di parametri automaticamente evitando di eseguire a mano i training.
+La prima operazione effettuata è lo splitting del dataset per distinguere i dati di test e i dati per il training. Nello specifico l'80\% dei dati sarà utilizzato per il training e il 20\% per il testing. Avviene successivamente un ulteriore split dei dati di training distinguendo tra training e validazione, nello specifico il 78.5\%  per il training e il restante per la validazione. È stato inoltre fissato un seme randomico per rendere i test ripetibili. % Da aggiustare%
 Infine stratify permette di suddividere il dataset in modo che ogni sottoinsieme mantenga la stessa identica proporzione di classi del dataset originale.
 Per la prima versione di questa pipeline (Pipeline 1A) l'algoritmo utilizzato è un albero decisionale di classificazione (DecisionTreeClassifier) specificando i seguenti parametri: 
 
 \begin{itemize}
-    \item \textbf{ max\_depth:} che specifica la profondità massimache l'albero può raggiungere con i seguenti valori: [10,20,30]
+    \item \textbf{ max\_depth:} che specifica la profondità massima che l'albero può raggiungere con i seguenti valori: [10,20,30]
     \item \textbf{ min\_samples\_split:} che determina numero minimo di campioni prima di effettuare un'ulteriore ramificazione. I valori sono: [2,5]
     \item \textbf{ min\_samples\_leaf:} che determina il numero minimo di campioni che devono essere presenti nelle foglie. I valori sono: [1,2]
 \end{itemize}
 \subsection{Evaluation}
-%Needs improvments 
-I risultati dell'algoritmo sono stati i seguenti: 
-Best params: 'max\_depth': 10, 'min\_samples\_leaf': 1, 'min\_samples\_split': 2
+I migliori parametri scelti dalla griglia sono: max\_depth = 10, 'min\_samples\_leaf'= 1, 'min\_samples\_split'= 2 .
+Le metriche invece ci hanno fornito i seguenti risultati: 
   F1-Score Test: 0.6562
   Accuracy:  0.6844
   Precision:  0.7268
@@ -303,7 +302,7 @@ preprocessing, feature engineering e suddivisione del dataset rispetto alla
 pipeline 1A, al fine di garantire un confronto equo tra i modelli.
 
 Analogamente a quanto fatto per la pipeline 1A, anche in questo caso è stato
-utilizzato \textbf{GridSearchCV} per la selezione degli iperparametri, operando
+utilizzata una \textbf{griglia di ricerca} per la selezione degli iperparametri, operando
 sulla medesima formulazione del problema come task di classificazione binaria.
 
 In particolare:
@@ -313,7 +312,6 @@ In particolare:
     \item il processo di selezione degli iperparametri è identico a quello
     adottato per la pipeline 1A.
 \end{itemize}
-
 I principali iperparametri considerati per la Random Forest sono:
 \begin{itemize}
     \item \textbf{n\_estimators:} numero di alberi presenti.
@@ -351,11 +349,11 @@ Inoltre i risultati ottenuti evidenziano che il modello riesce a individuare cir
 Di fatto quindi l'informazione di "Perdita o non Perdita" ed
 un insieme di feature forse troppo ridotto, portano il nostro modello a non svolgere propriamente il compito prestabilito.
 Rendendoci conto che per la costruzione di un modello che fosse in grado di giocare a Blackjack in maniera efficiente non bastava affrontare il problema come un problema di apprendimento supervisionato, abbiamo deciso di cambiare il nostro approccio.
-\section{Introduzione al ruolo di Markov}
+\subsection{Introduzione al ruolo di Markov}
 Parallelamente al corso di \textit{Fondamenti di Intelligenza Artificilae}, uno degli esami che abbiamo seguito era quello di \textit{Musimatica}. All'interno di tale corso è stato introdotto il concetto di "Catena di Markov"\cite{dispensaMusimatica}, come un modello matematico per descrivere sistemi che hanno un'evoluzione casuale guidata da distribuzioni di probabilità. Tale modello possiede due componenti: uno insieme di stati e le probabilità di transizione da uno stato all'altro.
 Abbiamo quindi identificato un facile parallelismo col blackjack, ma con nozioni veramente basilari non sarebbe stato possibile andare avanti.
 Abbiamo quindi condotto delle ricerche basilari, necessarie per capire se stessimo ancora sbagliando strada. 
-Per comprenderne i risultati è quindi necessario dare una serie di definizioni:
+Per comprenderne i risultati è quindi necessario dare una serie di definizioni.
 \subsubsection{Processo di Markov}
 Definiamo un \textbf{Processo di Markov} come un processo che non ha memoria degli stati precedenti, e di conseguenza lo stato futuro è dettato esclusivamente dallo stato attuale.
 Di questi processi, quelli che hanno un numero finito (o contabile) di stati sono detti \textbf{Catene di Markov}
@@ -370,7 +368,7 @@ P(S_{t+1} \mid S_1, S_2, \ldots, S_t)=P(S_{t+1} \mid S_t).       \cite{markovSta
 \subsubsection{Markov Reward Process}
 Un \textbf{Processo di Ricompensa di Markov} 
 è una catena di Markov con valori di ricompensa (reward).
-Un Processo di Ricompensa di Markov è definito come la quarta:
+Un Processo di Ricompensa di Markov è definito come la quadrupla:
 \[
 (\mathcal{S}, \mathbf{P}, \mathcal{R}, \gamma),
 \]
@@ -396,13 +394,14 @@ Questo particolare tipo di processo è spesso associato ad una policy $\pi$, ovv
 \[
 \pi(a \mid s) = P(A_t = a \mid S_t = s)
 \]
+L'oobiettivo è quello di trovare una policy ottimale, ovvero una strategia che massimizza la ricompensa cumulativa a lungo termine, e che quindi rispetto alle altre policy produrrà un risultato almeno uguale.
 Definiamo in particolare un \textbf{MDP Parzialmente Osservabile} (POMDP) un processo decisionale di Markov con stati nascosti, ovvero composto dalla dalla 7-tupla:
 \[
 (\mathcal{S}, \mathcal{A}, \mathcal{O}, \mathbf{P}, \mathcal{R}, \mathcal{Z}, \gamma),
 \]
 dove $\mathcal{O}$  un insieme finito di osservazioni e $\mathcal{Z}$ la funzione di osservazione.
 
-\subsubsection{Markov ed il Blackjack}
+\subsection{Markov ed il Blackjack}
 Il problema del Blackjack è stato modellato come un MDP. Lo stato dell’ambiente è definito esclusivamente dalle informazioni osservabili dal giocatore al momento della decisione, ovvero: la somma della propria mano, la presenza di una mano soft, e la carta scoperta del dealer. Sebbene il gioco del Blackjack, nella sua formulazione completa, sia più propriamente descrivibile come un Processo Decisionale Parzialmente Osservabile (POMDP) a causa della dipendenza dall’ordine delle carte nel mazzo, abbiamo assunto una formulazione \textit{puramente} markoviana rispetto allo stato informativo del giocatore, ignorando volontariamente informazioni non osservabili. 
 Tale approssimazioni consente quindi di affrontare il problema come un MDP episodico con stati e azioni discrete, con ricompensa associata all’esito finale della mano.
 Abbiamo trovato riscontro con tale affermazione\cite{mdpBJ}, ciò ci ha moralmente dato un via libera per il procedere con questo approccio.
@@ -471,7 +470,33 @@ dove \( \alpha \in (0,1] \) è il tasso di apprendimento e \( \gamma \in [0,1] \
 Essendo un algoritmo \textbf{off-policy}, il Q-learning aggiorna le proprie stime
 assumendo che, a partire dallo stato successivo, venga seguita una policy ottimale, indipendentemente dall’azione effettivamente scelta durante l’esplorazione.
 Questa caratteristica consente all’algoritmo di convergere verso una policy ottimale anche in presenza di comportamenti esplorativi e di fatto rischiosi.
-\subsection{Glossario}
+\section{SARSA}
+L'algoritmo \textbf{SARSA} (State-Action-Reward-State-Action) è un altro algoritmo di Reinforcement Learning
+\textit{on-policy}, introdotto per apprendere una policy direttamente a partire dal comportamento effettivamente adottato dall’agente durante l’interazione con l’ambiente.
+\section{Origine e contesto}
+SARSA fa la sua prima apparizione nel paper "On-Line Q-Learning Using Connectionist System"\cite{SARSA}, sotto il nome di "Modified Connectionist Q-Learning".
+L'algoritmo ha due idee cardine dietro al suo funzionamento:
+\begin{description}
+    \item[Temporal Difference Learning:] l'agente impara da una differenza temporale tra due stime successive, non dal risultato finale completo, permettendo di aggiornare la stima del valore corrente durante il training.
+    \item[Exploration-Exploitation tradeoff:] trovare un buon compromesso tra \textit{esplorazione} (quando l’agente compie azioni che lo portano in nuovi stati e situazioni mai sperimentate prima)  ed \textit{exploitation} ( quando l’agente sfrutta le esperienze passate per ottenere prestazioni migliori nell’ambiente in cui si trova attualmente).
+\end{description}\cite{medium1}
+\subsection{Definizione e differenza col Q-Learning }
+L’algoritmo SARSA apprende una funzione di valore azione-stato \( Q(s,a) \), che rappresenta il ritorno atteso cumulativo ottenibile eseguendo l’azione \( a \) nello stato \( s \) e seguendo la stessa policy utilizzata per l’esplorazione.
+Il nome stesso dell'algoritmo deriva dalla sequenza di variabili utilizzate nell’aggiornamento.
+A differenza del Q-learning, non assume che l’agente segua una policy ottimale nello stato successivo, rendendolo più adatto a contesti in cui il rischio associato all’esplorazione deve essere tenuto in considerazione.
+\subsection{Funzionamento dell’algoritmo}
+Durante l’interazione con l’ambiente, l’agente osserva lo stato \( s_t \), sceglie un’azione \( a_t \), riceve una ricompensa \( r_{t+1} \) e transita nello stato successivo \( s_{t+1} \), selezionando quindi una nuova azione \( a_{t+1} \) secondo la stessa policy.
+L’aggiornamento della funzione \( Q \) è dato da:
+\[
+Q(s_t,a_t) \leftarrow Q(s_t,a_t) +
+\alpha \left[
+r_{t+1} + \gamma Q(s_{t+1},a_{t+1}) - Q(s_t,a_t)
+\right].
+\]
+Essendo un algoritmo \textbf{on-policy}, SARSA apprende una policy che riflette
+direttamente il comportamento esplorativo dell’agente,risultando in strategie più conservative rispetto a quelle apprese tramite Q-learning, ed è per questo che abbiamo deciso di usarlo.
+
+\section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
 
