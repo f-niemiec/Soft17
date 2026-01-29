@@ -422,7 +422,27 @@ All'istante successivo, come conseguenza dell’azione intrapresa, l’agente ri
       \includegraphics[scale=0.6, center]{agent.png}
   \end{center}\cite{stanfordRL}
 Il problema adesso è quindi quello di far apprendere una policy che massimizzi il ritorno atteso nel lungo periodo. 
-
+\subsection{On-policy vs Off-policy}
+Per comprendere le nostre scelte è necessario prima comprendere una differenza sostanziale tra due tipi di Reinforcement Learning: on-policy ed off-policy.
+Nel Reinforcement Learning, gli algoritmi possono essere classificati in base al rapporto tra la
+\textbf{policy utilizzata per interagire con l’ambiente}(\textit{comportamentale}) e la \textbf{policy che viene appresa}(\textit{target}).
+Un algoritmo è detto \textbf{off-policy} quando la policy comportamentale è diversa dalla policy target.
+Questo consente di apprendere una policy ottimale indipendentemente dalla strategia di
+esplorazione adottata. 
+In questo caso quindi l'agente apprende il valore
+delle azioni assumendo che in futuro venga seguita una policy ottimale, indipendentemente dal comportamento esplorativo corrente. Questo consente di convergere più facilmente verso una strategia teoricamente ottimale, ma che potrebbe risultare più \textit{aggressiva}, che potrebbe non tener conto del rischio associato all’esplorazione durante la fase di apprendimento.
+Invece l'algoritmo è detto \textbf{on-policy} quando la policy utilizzata per selezionare le azioni
+durante l’interazione con l’ambiente coincide con la policy che viene aggiornata e migliorata nel processo di apprendimento. In questo caso, l’agente apprende il valore delle azioni effettivamente intraprese, includendo esplicitamente il comportamento esplorativo.
+Nel nostro caso la policy appresa riflette anche il rischio introdotto dalle azioni esplorative. Questo porta l’agente a sviluppare una strategia generalmente più
+\textit{conservativa}, penalizzando azioni che, pur essendo ottimali in teoria,
+possono risultare rischiose in presenza di esplorazione.
+Vale la pena osservare ambo gli approcci, per comprenderne al meglio i trade-off che si ottengono applicandone uno rispetto all'altro nel caso del Blackjack.
+Abbiamo quindi selezionato due algoritmi:
+\begin{description}
+    \item[- Q-learning:] che è un algoritmo di tipo off-policy.
+    \item[- Sarsa:] che p un algoritmo di tipo on-policy.
+\end{description}
+Abbiamo deciso di partire dal primo di questi.
 
 \subsection{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
