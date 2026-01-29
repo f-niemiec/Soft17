@@ -443,7 +443,34 @@ Abbiamo quindi selezionato due algoritmi:
     \item[- Sarsa:] che p un algoritmo di tipo on-policy.
 \end{description}
 Abbiamo deciso di partire dal primo di questi.
-
+\section{Q-learning}
+Il \textbf{Q-learning} è un algoritmo di Reinforcement Learning \textit{off-policy}, introdotto da Christopher J. C. Watkins nel 1989 \cite{watkins1989learning}, conl’obiettivo di apprendere una policy ottimale
+per un Processo Decisionale di Markov senza richiedere la conoscenza delle dinamiche dell’ambiente.
+\subsection{Definizione formale}
+Il Q-learning si basa sull’apprendimento di una funzione di valore stato-azione \( Q(s,a) \), che rappresenta il ritorno atteso cumulativo ottenibile eseguendo l’azione \( a \) nello stato \( s \) e seguendo successivamente
+la policy ottimale. 
+Formalmente:
+\[
+Q^*(s,a) = \max_{\pi} \mathbb{E} \left[ \sum_{t=0}^{\infty} \gamma^t R_{t+1}
+\;\middle|\; S_0 = s, A_0 = a, \pi \right].
+\]
+\paragraph{Origine storica}
+L’algoritmo è stato proposto da Watkins nel suo lavoro di dottorato come estensione dei metodi di programmazione dinamica a contesti in cui il modello dell’ambiente non è noto. 
+La sua formulazione consente di aggiornare le stime di \( Q(s,a) \) ad ogni iterazione utilizzando esclusivamente
+esperienza diretta, rendendolo particolarmente adatto a problemi stocastici ed episodici.
+\subsection{Funzionamento}
+Durante l’interazione con l’ambiente, l’agente osserva lo stato corrente \( s_t \), seleziona un’azione \( a_t \) secondo una politica esplorativa , riceve una ricompensa \( r_{t+1} \) e avanza allo stato successivo \( s_{t+1} \).
+La stima della funzione \( Q \) viene aggiornata secondo la regola:
+\[
+Q(s_t,a_t) \leftarrow Q(s_t,a_t) +
+\alpha \left[
+r_{t+1} + \gamma \max_{a'} Q(s_{t+1},a') - Q(s_t,a_t)
+\right],
+\]
+dove \( \alpha \in (0,1] \) è il tasso di apprendimento e \( \gamma \in [0,1] \) è il fattore di sconto.
+Essendo un algoritmo \textbf{off-policy}, il Q-learning aggiorna le proprie stime
+assumendo che, a partire dallo stato successivo, venga seguita una policy ottimale, indipendentemente dall’azione effettivamente scelta durante l’esplorazione.
+Questa caratteristica consente all’algoritmo di convergere verso una policy ottimale anche in presenza di comportamenti esplorativi e di fatto rischiosi.
 \subsection{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
