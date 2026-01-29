@@ -496,6 +496,11 @@ r_{t+1} + \gamma Q(s_{t+1},a_{t+1}) - Q(s_t,a_t)
 Essendo un algoritmo \textbf{on-policy}, SARSA apprende una policy che riflette
 direttamente il comportamento esplorativo dell’agente,risultando in strategie più conservative rispetto a quelle apprese tramite Q-learning, ed è per questo che abbiamo deciso di usarlo.
 
+\section{Applicazione del Reinforcement Learning}
+Occorre infine definire come un'ultima distinzione, fondamentale per comprendere le nostre implementazioni, quella tra \textit{online} ed \textit{offline} reinforcement learning.
+Per quanto riguarda \textbf{l'online RL} prevede di simulare interazioni con l'ambiente per apprendere delle policy ottimali. Utilizza di volta in volta l'esperienza immediatamente appresa nelle successive interazioni con l'ambiente ed ha il vantaggio di potersi adattare ai cambiamenti data la continua interazione con esso. Il grande problema di questo approccio è che a causa di tutte le 
+simulazioni che genera con l'ambiente è computazionalmente costoso. Di fatto quindi questo tipo di approccio non necessità di un dataset per l'addestramento.
+Invece per quanto riguarda l'\textbf{l'offline rl} mira a creare delle policy efficaci su dati collezionati precedentemente, senza nessuna interazione con l'ambiente. Questo approccio porta con se anche delle sfide importanti: occorre migliorare le policy che si raccolgono dai dati così da stimare anche valori per azioni non presenti nel dataset.
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
