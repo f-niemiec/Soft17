@@ -406,6 +406,24 @@ dove $\mathcal{O}$  un insieme finito di osservazioni e $\mathcal{Z}$ la funzion
 Il problema del Blackjack è stato modellato come un MDP. Lo stato dell’ambiente è definito esclusivamente dalle informazioni osservabili dal giocatore al momento della decisione, ovvero: la somma della propria mano, la presenza di una mano soft, e la carta scoperta del dealer. Sebbene il gioco del Blackjack, nella sua formulazione completa, sia più propriamente descrivibile come un Processo Decisionale Parzialmente Osservabile (POMDP) a causa della dipendenza dall’ordine delle carte nel mazzo, abbiamo assunto una formulazione \textit{puramente} markoviana rispetto allo stato informativo del giocatore, ignorando volontariamente informazioni non osservabili. 
 Tale approssimazioni consente quindi di affrontare il problema come un MDP episodico con stati e azioni discrete, con ricompensa associata all’esito finale della mano.
 Abbiamo trovato riscontro con tale affermazione\cite{mdpBJ}, ciò ci ha moralmente dato un via libera per il procedere con questo approccio.
+\subsection{Scelta del Reinforcement Learning}
+Una volta classificato il problema, abbiamo deciso di adottare un approccio di Reinforcement Learning, che viene naturale siccome trattiamo il tutto come un MDP.
+Difatto definiamo il Reinforcement Learning come un paradigma di apprendimento automatico in cui un agente impara a prendere decisioni sequenziali interagendo con un ambiente, al fine di massimizzare una misura cumulativa di ricompensa nel lungo periodo.
+Più precisamente, l’agente e l’ambiente interagiscono attraverso una sequenza di istanti temporali discreti
+\( t = 0, 1, 2, 3, \ldots \).
+Per ogni istante \( t \), l’agente riceve una rappresentazione dello stato dell’ambiente,
+\( S_t \in \mathcal{S} \), dove \( \mathcal{S} \) è l’insieme di tutti gli stati possibili.
+Sulla base di tale informazione, l’agente seleziona un’azione
+\( A_t \in \mathcal{A}(S_t) \), dove \( \mathcal{A}(S_t) \) rappresenta l’insieme delle azioni disponibili
+nello stato \( S_t \).
+All'istante successivo, come conseguenza dell’azione intrapresa, l’agente riceve una ricompensa numerica
+\( R_{t+1} \in \mathcal{R} \subset \mathcal{R} \) e si ritrova in un nuovo stato \( S_{t+1} \).
+\begin{center}
+      \includegraphics[scale=0.6, center]{agent.png}
+  \end{center}\cite{stanfordRL}
+Il problema adesso è quindi quello di far apprendere una policy che massimizzi il ritorno atteso nel lungo periodo. 
+
+
 \subsection{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
