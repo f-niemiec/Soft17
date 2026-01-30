@@ -1,1 +1,1 @@
-# Soft17  - A ML model for BlackJack
+# Soft17  - An AI Agent for BlackJack
