@@ -728,6 +728,62 @@ introducono meccanismi di penalizzazione per azioni non sufficientemente
 supportate dal dataset, riducendo l'over-ottimismo nelle stime della
 funzione Q \cite{tarasov2025offlineicrl}. L'integrazione di tali tecniche
 è lasciata come possibile estensione futura del presente lavoro.
+
+\subsection{Confronto tra le implementazioni e Scelta Finale}
+
+\subsubsection{Analisi Comparativa delle Prestazioni}
+
+Il confronto sistematico tra le due pipeline rivela differenze significative in termini di prestazioni, efficienza computazionale e robustezza. Dal punto di vista delle prestazioni pure, l'implementazione online si 
+dimostra superiore con un \textit{win rate} di 40.29\% contro il 38.14\% dell'approccio offline, 
+corrispondente a un vantaggio di 2.15 punti percentuali. Sebbene questa differenza possa apparire modesta in termini assoluti, 
+nel contesto del Blackjack rappresenta un divario non trascurabile: considerando che la strategia di base ottimale raggiunge 
+approssimativamente un \textit{win rate} del 42\% nelle condizioni regolamentari standard, l'approccio online si avvicina maggiormente 
+a questo benchmark teorico.
+
+L'analisi della distribuzione degli esiti rivela ulteriori differenze qualitative. 
+L'implementazione online presenta un \textit{draw rate} di 8.67\%, significativamente superiore al 5.20\% dell'approccio offline. 
+Questa discrepanza suggerisce che la politica appresa online adotta un comportamento più conservativo in situazioni ambigue, 
+optando per lo \textit{stand} quando la probabilità di vittoria è comparabile a quella di pareggio. 
+Al contrario, la politica offline, influenzata dalla strategia euristica del dataset che richiede carta fino a 17, 
+tende ad assumere maggiori rischi, risultando in un numero inferiore di pareggi ma anche in un \textit{loss rate} 
+più elevato (56.66\% contro 51.04\%).
+
+Dal punto di vista della stabilità e convergenza, l'implementazione online beneficia del meccanismo di esplorazione 
+$\varepsilon$-greedy, che garantisce la visita continua di diverse regioni dello spazio degli stati anche in fasi avanzate 
+dell'addestramento. Questo comportamento favorisce una convergenza più robusta e uniforme della Q-table, riducendo il rischio di 
+sovrastime o sottostime locali. La pipeline offline, invece, è vincolata alla distribuzione statistica del dataset e non può 
+correggere errori di stima in regioni scarsamente rappresentate, potendo manifestare instabilità nelle predizioni per stati visitati 
+raramente durante la generazione dei dati.
+
+\subsubsection{Efficienza Computazionale e Scalabilità}
+
+L'efficienza computazionale rappresenta uno dei principali vantaggi
+dell'ap\-proccio offline. In assenza di interazione diretta con l'ambiente
+durante la fase di addestramento, l'algoritmo opera esclusivamente su un
+dataset statico di transizioni, evitando il costo computazionale associato
+alla simulazione dell'ambiente, alla gestione della dinamica di gioco e al
+calcolo iterativo delle ricompense. Di conseguenza, il training offline
+risulta generalmente più rapido rispetto all'approccio online, consentendo
+un utilizzo più efficiente delle risorse di calcolo.
+
+Nel contesto specifico del presente progetto, il beneficio computazionale
+complessivo risulta tuttavia limitato. Il dataset offline è stato infatti
+generato tramite simulazione, e il costo associato alla fase di raccolta dei
+dati è comparabile a quello richiesto dall’addestramento online. Pertanto,
+se si considera l’intero ciclo che comprende sia la generazione delle
+esperienze sia la fase di apprendimento, il vantaggio dell’approccio offline
+risulta marginale nel caso in esame.
+
+La situazione cambia in modo sostanziale quando il dataset è già disponibile
+o può essere riutilizzato per più cicli di sviluppo e sperimentazione. In
+questi scenari, il costo di raccolta dei dati viene ammortizzato su
+molteplici sessioni di addestramento, rendendo l'approccio offline
+particolarmente vantaggioso. Questo aspetto assume un ruolo cruciale in
+domini in cui la simulazione o l'interazione con l'ambiente è costosa,
+limitata o rischiosa, e dove la possibilità di riutilizzare dati storici
+consente di esplorare diverse configurazioni algoritmiche in modo efficiente
+e scalabile.
+
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
