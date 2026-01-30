@@ -500,8 +500,17 @@ direttamente il comportamento esplorativo dell’agente,risultando in strategie 
 Occorre infine definire come un'ultima distinzione, fondamentale per comprendere le nostre implementazioni, quella tra \textit{online} ed \textit{offline} reinforcement learning.
 Per quanto riguarda \textbf{l'online RL} prevede di simulare interazioni con l'ambiente per apprendere delle policy ottimali. Utilizza di volta in volta l'esperienza immediatamente appresa nelle successive interazioni con l'ambiente ed ha il vantaggio di potersi adattare ai cambiamenti data la continua interazione con esso. Il grande problema di questo approccio è che a causa di tutte le simulazioni che genera con l'ambiente è computazionalmente costoso. Di fatto quindi questo tipo di approccio non necessità di un dataset per l'addestramento.
 A differenza del precedente l'\textbf{l'offline RL} mira a creare delle policy efficaci su dati collezionati precedentemente, senza nessuna interazione con l'ambiente. Questo approccio porta con se anche delle sfide importanti: occorre migliorare le policy che si raccolgono dai dati così da stimare anche valori per azioni non presenti nel dataset.
-\subsection{Implementazione con Q-Learning}
 
+\subsection{Implementazione con Q-Learning}
+Occorre approfondire gli elementi che caratterizzano il Q-Learning per poterlo comprendere appieno ed implementarlo. Tra gli elementi più importanti c'è proprio la \textbf{Q table}
+Quest'ultima è una tabella che contiene i reward per ogni azione di ogni stato ed è possibile farne il lookup. In particolare ha una riga per ogni stato e una colonna per ogni azione. Inizialmente ogni valore di reward della tabella è inizializzato a zero ma ad ogni esplorazione il valore in questione cambia basandosi sull'equazione già precedentemente discussa. Altri elementi fondamentali nel Q-learning sono i seguenti iperparametri caratterizzanti:
+\begin{itemize}
+    \item $\alpha$: rate di apprendimento che varia da 0 a 1. Occorre ottimizzare questo parametro per fare in modo che i valori di reward di ogni iterazione della Q table siano conoscenza utile al progredire dell'agente.
+    %stesso parametro di catene di markov ma ha accezione diversa, da aggiustare, quanto è lungimirante un agente 
+    \item $\gamma$: termine che regola come comportarsi nel corso della ricerca della soluzione. Più vicino si arriva alla soluzione e maggiore sarà la preferenza verso dei reward a breve termine.
+    \item $\epsilon$: termine che regola l'esplorazione facendola diminuire nel tempo di modo che la policy appresa migliori.
+\end{itemize}
+Tutti e tre i parametri quindi col tempo diminuiscono.
 \subsection{Implementazione 1 – Q-Learning Online}
 La prima implementazione adotta un approccio di Q-learning online, nel quale l'agente apprende interagendo direttamente con un ambiente simulato di Blackjack. 
 \subsubsection{Architettura e Implementazione}
@@ -539,6 +548,9 @@ L'analisi della curva di apprendimento, ottenuta mediante media mobile su finest
     \caption{Risultati Implementazione 1 – Online Q-Learning}
     \label{fig:pipeline3-offline}
 \end{figure}
+
+
+
 
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
