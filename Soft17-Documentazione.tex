@@ -527,6 +527,18 @@ dove $s_t$ è lo stato al tempo $t$, $a_t$ è l'azione intrapresa, $r_{t+1}$ è 
 
 La struttura delle ricompense è definita come segue: $+1$ per vittoria, $0$ per pareggio, $-1$ per sconfitta. Questo schema di ricompense sparse, concentrate esclusivamente alla fine dell'episodio, rende il problema particolarmente adatto al Q-learning episodico, nel quale l'agente impara a valutare le conseguenze a lungo termine delle proprie azioni iniziali attraverso il meccanismo di propagazione del valore tramite il fattore di sconto $\gamma$.
 
+\subsubsection{Risultati Sperimentali}
+
+Al termine del training su un milione di episodi, la Q-table risultante contiene valori appresi per 280 coppie stato-azione distinte incontrate durante l'interazione con l'ambiente. I risultati finali evidenziano un \textit{win rate} pari a 0.4029 (40.29\%), un \textit{loss rate} di 0.5104 (51.04\%) e un \textit{draw rate} di 0.0867 (8.67\%).
+
+L'analisi della curva di apprendimento, ottenuta mediante media mobile su finestre di 10.000 episodi, mostra una convergenza progressiva della ricompensa media verso valori asintoticamente stabili. Il \textit{win rate} cumulativo si stabilizza intorno a valori che si avvicinano alla soglia di riferimento della strategia di base ottimale del Blackjack, documentata nella letteratura \cite{optimalStrategy}essere approssimativamente 0.42 nelle condizioni regolamentari standard. Questo comportamento conferma che l'agente è in grado di migliorare significativamente le proprie prestazioni rispetto a una strategia puramente casuale, apprendendo una politica che riflette principi decisionali fondamentali del Blackjack, quali la necessità di richiedere carta quando la somma è bassa e di mantenersi quando la somma è prossima a 21.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1.00\textwidth]{3a.png}
+    \caption{Risultati Implementazione 1 – Online Q-Learning}
+    \label{fig:pipeline3-offline}
+\end{figure}
 
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
