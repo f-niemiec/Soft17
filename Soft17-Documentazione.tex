@@ -668,6 +668,37 @@ esperienze raccolte dinamicamente. L'assenza di esplorazione attiva
 implica che l'agente apprende esclusivamente dagli stati e dalle azioni
 presenti nel dataset, senza possibilità di visitare regioni dello spazio
 degli stati non rappresentate nei dati.
+
+\subsubsection{Valutazione e Risultati Sperimentali}
+
+Per valutare le prestazioni della politica appresa offline, è stato
+implementato un ambiente di test identico a quello utilizzato nella
+pipeline online. L'agente viene valutato su un milione di episodi,
+seguendo una politica greedy derivata dalla Q-table appresa, ovvero
+selezionando in ogni stato l'azione con valore Q massimo.
+
+I risultati sperimentali mostrano un \textit{win rate} pari a 0.3814,
+un \textit{loss rate} di 0.5666 e un \textit{draw rate} di 0.0520.
+Rispetto alla pipeline online, si osserva una riduzione del
+\textit{win rate} di circa 2.15 punti percentuali, accompagnata da un
+aumento del \textit{loss rate}. Questa differenza, sebbene contenuta,
+indica che l'apprendimento offline produce una politica leggermente meno
+performante rispetto all'approccio online.
+
+L'analisi delle cause di tale discrepanza evidenzia due fattori
+principali. In primo luogo, il dataset offline è stato generato mediante
+una politica comportamentale subottimale, introducendo un bias nella
+distribuzione delle transizioni rispetto a quelle che sarebbero state
+osservate seguendo una politica ottimale. Questo fenomeno, noto come
+\textit{distributional shift} \cite{levine2020offline}, rappresenta una delle principali sfide
+nell'offline reinforcement learning.
+
+In secondo luogo, l'assenza di esplorazione attiva durante
+l'addestramento offline impedisce all'agente di correggere errori di
+stima della funzione Q in regioni dello spazio degli stati scarsamente
+rappresentate nel dataset. Nel Q-learning online, la strategia
+$\varepsilon$-greedy consente invece di rivisitare periodicamente anche
+stati rari, migliorando progressivamente la qualità delle stime.
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
