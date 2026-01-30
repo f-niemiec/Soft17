@@ -699,6 +699,35 @@ stima della funzione Q in regioni dello spazio degli stati scarsamente
 rappresentate nel dataset. Nel Q-learning online, la strategia
 $\varepsilon$-greedy consente invece di rivisitare periodicamente anche
 stati rari, migliorando progressivamente la qualità delle stime.
+
+\subsubsection{Vantaggi dell'Approccio Offline}
+
+Nonostante le prestazioni leggermente inferiori, l'approccio offline
+presenta vantaggi significativi in termini di efficienza computazionale,
+riproducibilità e riutilizzo dei dati. In particolare, l'addestramento
+offline richiede meno di un secondo, risultando circa due ordini di
+grandezza più rapido rispetto alla pipeline online.
+
+Tali osservazioni sono coerenti con risultati recenti che mostrano come
+l'ottimizzazione diretta di obiettivi di reinforcement learning in
+contesti offline possa comunque produrre politiche competitive, a
+condizione di disporre di dataset sufficientemente informativi
+\cite{tarasov2025offlineicrl}.
+
+\subsubsection{Limitazioni dell'Approccio Offline}
+
+Le limitazioni principali dell'approccio offline sono strettamente
+connesse alla qualità e alla copertura del dataset. Il bias introdotto
+dalla politica comportamentale e l'assenza di esplorazione rendono
+l'algoritmo vulnerabile a errori di estrapolazione, fenomeno noto come
+\textit{off-policy evaluation problem}.
+
+La letteratura recente propone estensioni del Q-learning offline, come
+\textit{Conservative Q-Learning} e \textit{Implicit Q-Learning}, che
+introducono meccanismi di penalizzazione per azioni non sufficientemente
+supportate dal dataset, riducendo l'over-ottimismo nelle stime della
+funzione Q \cite{tarasov2025offlineicrl}. L'integrazione di tali tecniche
+è lasciata come possibile estensione futura del presente lavoro.
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
