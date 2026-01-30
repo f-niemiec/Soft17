@@ -565,6 +565,31 @@ Un'altra limitazione riguarda la stocasticità intrinseca del processo di appren
 
 Infine, la dipendenza dalla qualità dell'esplorazione rappresenta un aspetto critico: una strategia $\varepsilon$-greedy con un valore di $\varepsilon$ troppo basso potrebbe impedire all'agente di scoprire regioni promettenti dello spazio degli stati, mentre un valore troppo alto rallenterebbe la convergenza. Nel contesto implementato, il valore $\varepsilon = 0.1$ rappresenta un compromesso ragionevole, ma la scelta ottimale di questo iperparametro richiederebbe un processo di tuning più approfondito.
 
+\subsection{Pipeline 2 – Q-Learning Offline}
+La seconda pipeline adotta un approccio di Q-learning offline, nel quale
+l'agente apprende esclusivamente da un dataset di esperienze pre-raccolte,
+senza interazione diretta con l'ambiente durante la fase di training.
+\subsubsection{Architettura e Motivazione}
+Questa metodologia si inserisce nel paradigma più ampio dell’offline
+reinforcement learning, noto anche come batch reinforcement learning,
+che ha ricevuto crescente attenzione nella comunità scientifica per la
+sua applicabilità a domini in cui l’interazione online con l’ambiente
+risulta costosa, rischiosa o impraticabile \cite{levine2021offline}.
+
+Nel contesto del presente progetto, l'approccio offline è stato introdotto
+con l'obiettivo di investigare se un agente possa apprendere una politica
+competitiva a partire da un dataset statico di transizioni, riducendo
+potenzialmente i costi computazionali associati alla simulazione ripetuta
+di un milione di episodi. Inoltre, l'apprendimento offline permette di
+studiare l'impatto della qualità e della distribuzione dei dati sulla
+convergenza dell'algoritmo e sulle prestazioni finali della politica appresa.
+
+Recenti lavori in letteratura hanno evidenziato come l'ottimizzazione
+diretta di obiettivi di reinforcement learning, anche in contesti offline,
+possa mitigare parzialmente i limiti degli approcci puramente supervisionati,
+rafforzando l'importanza dell'allineamento tra funzione obiettivo e
+massimizzazione della ricompensa \cite{tarasov2025offlineicrl}.
+
 
 
 \section{Glossario}
