@@ -679,7 +679,7 @@ selezionando in ogni stato l'azione con valore Q massimo.
 
 I risultati sperimentali mostrano un \textit{win rate} pari a 0.3814,
 un \textit{loss rate} di 0.5666 e un \textit{draw rate} di 0.0520.
-Rispetto alla pipeline online, si osserva una riduzione del
+Rispetto alla versione online, si osserva una riduzione del
 \textit{win rate} di circa 2.15 punti percentuali, accompagnata da un
 aumento del \textit{loss rate}. Questa differenza, sebbene contenuta,
 indica che l'apprendimento offline produce una politica leggermente meno
@@ -706,7 +706,7 @@ Nonostante le prestazioni leggermente inferiori, l'approccio offline
 presenta vantaggi significativi in termini di efficienza computazionale,
 riproducibilità e riutilizzo dei dati. In particolare, l'addestramento
 offline richiede meno di un secondo, risultando circa due ordini di
-grandezza più rapido rispetto alla pipeline online.
+grandezza più rapido rispetto alla versione online.
 
 Tali osservazioni sono coerenti con risultati recenti che mostrano come
 l'ottimizzazione diretta di obiettivi di reinforcement learning in
@@ -728,6 +728,118 @@ introducono meccanismi di penalizzazione per azioni non sufficientemente
 supportate dal dataset, riducendo l'over-ottimismo nelle stime della
 funzione Q \cite{tarasov2025offlineicrl}. L'integrazione di tali tecniche
 è lasciata come possibile estensione futura del presente lavoro.
+
+\subsection{Confronto tra le implementazioni e Scelta Finale}
+
+\subsubsection{Analisi Comparativa delle Prestazioni}
+
+Il confronto sistematico tra le due implementazioni rivela differenze significative in termini di prestazioni, efficienza computazionale e robustezza. Dal punto di vista delle prestazioni pure, l'implementazione online si 
+dimostra superiore con un \textit{win rate} di 40.29\% contro il 38.14\% dell'approccio offline, 
+corrispondente a un vantaggio di 2.15 punti percentuali. Sebbene questa differenza possa apparire modesta in termini assoluti, 
+nel contesto del Blackjack rappresenta un divario non trascurabile: considerando che la strategia di base ottimale raggiunge 
+approssimativamente un \textit{win rate} del 42\% nelle condizioni regolamentari standard, l'approccio online si avvicina maggiormente 
+a questo benchmark teorico.
+
+L'analisi della distribuzione degli esiti rivela ulteriori differenze qualitative. 
+L'implementazione online presenta un \textit{draw rate} di 8.67\%, significativamente superiore al 5.20\% dell'approccio offline. 
+Questa discrepanza suggerisce che la politica appresa online adotta un comportamento più conservativo in situazioni ambigue, 
+optando per lo \textit{stand} quando la probabilità di vittoria è comparabile a quella di pareggio. 
+Al contrario, la politica offline, influenzata dalla strategia euristica del dataset che richiede carta fino a 17, 
+tende ad assumere maggiori rischi, risultando in un numero inferiore di pareggi ma anche in un \textit{loss rate} 
+più elevato (56.66\% contro 51.04\%).
+
+Dal punto di vista della stabilità e convergenza, l'implementazione online beneficia del meccanismo di esplorazione 
+$\varepsilon$-greedy, che garantisce la visita continua di diverse regioni dello spazio degli stati anche in fasi avanzate 
+dell'addestramento. Questo comportamento favorisce una convergenza più robusta e uniforme della Q-table, riducendo il rischio di 
+sovrastime o sottostime locali. L'approccio offline, invece, è vincolata alla distribuzione statistica del dataset e non può 
+correggere errori di stima in regioni scarsamente rappresentate, potendo manifestare instabilità nelle predizioni per stati visitati 
+raramente durante la generazione dei dati.
+
+\subsubsection{Efficienza Computazionale e Scalabilità}
+
+L'efficienza computazionale rappresenta uno dei principali vantaggi
+dell'ap\-proccio offline. In assenza di interazione diretta con l'ambiente
+durante la fase di addestramento, l'algoritmo opera esclusivamente su un
+dataset statico di transizioni, evitando il costo computazionale associato
+alla simulazione dell'ambiente, alla gestione della dinamica di gioco e al
+calcolo iterativo delle ricompense. Di conseguenza, il training offline
+risulta generalmente più rapido rispetto all'approccio online, consentendo
+un utilizzo più efficiente delle risorse di calcolo.
+
+Nel contesto specifico del presente progetto, il beneficio computazionale
+complessivo risulta tuttavia limitato. Il dataset offline è stato infatti
+generato tramite simulazione, e il costo associato alla fase di raccolta dei
+dati è comparabile a quello richiesto dall’addestramento online. Pertanto,
+se si considera l’intero ciclo che comprende sia la generazione delle
+esperienze sia la fase di apprendimento, il vantaggio dell’approccio offline
+risulta marginale nel caso in esame.
+
+La situazione cambia in modo sostanziale quando il dataset è già disponibile
+o può essere riutilizzato per più cicli di sviluppo e sperimentazione. In
+questi scenari, il costo di raccolta dei dati viene ammortizzato su
+molteplici sessioni di addestramento, rendendo l'approccio offline
+particolarmente vantaggioso. Questo aspetto assume un ruolo cruciale in
+domini in cui la simulazione o l'interazione con l'ambiente è costosa,
+limitata o rischiosa, e dove la possibilità di riutilizzare dati storici
+consente di esplorare diverse configurazioni algoritmiche in modo efficiente
+e scalabile.
+
+\subsubsection{Trade-off Fondamentali}
+
+I risultati sperimentali evidenziano un trade-off fondamentale tra prestazioni e efficienza. L'implementazione online raggiunge prestazioni superiori al costo di tempi di training più lunghi e di una maggiore variabilità stocastica tra esecuzioni diverse. 
+L'approccio offline offre training rapidi e risultati deterministici, ma soffre di prestazioni ridotte a causa del bias introdotto dalla politica di generazione del dataset.
+
+Un secondo trade-off riguarda la flessibilità rispetto alla dipendenza dai dati. 
+L'approccio online è completamente autonomo e non richiede dati pre-raccolti, 
+adattandosi dinamicamente all'ambiente attraverso l'esplorazione. Tuttavia, questa flessibilità ha un costo in termini di sample complexity:
+l'agente deve interagire ripetutamente con l'ambiente per accumulare esperienza sufficiente. L'approccio offline, al contrario, 
+dipende criticamente dalla qualità del dataset disponibile, ma può estrarre politiche competitive da un numero relativamente limitato 
+di transizioni se i dati sono ben distribuiti e rappresentativi.
+
+Un terzo trade-off concerne la robustezza rispetto a errori di stima. L'approccio online beneficia del meccanismo di correzione continua
+fornito dall'esplorazione, che permette all'agente di rivedere le proprie stime anche in stati visitati raramente. L'implementazione offline, 
+invece, può accumulare errori di extrapolazione in regioni dello spazio degli stati scarsamente rappresentate nel dataset, 
+senza possibilità di correzione attraverso nuove esperienze.
+
+\subsubsection{Scelta Finale e Motivazioni}
+
+Alla luce dell'analisi comparativa condotta, la scelta finale ricade sull'approccio di Q-learning online 
+per il deployment del sistema finale. Questa decisione è motivata da tre considerazioni principali che riflettono i 
+requisiti specifici del progetto e gli obiettivi di apprendimento prefissati.
+
+In primo luogo, le prestazioni superiori della l'approccio online rappresentano il criterio decisionale primario. 
+Nel contesto del Blackjack, dove l'obiettivo è massimizzare il \textit{win rate} a lungo termine, il vantaggio di 2.15 punti 
+percentuali dell'approccio online si traduce in un beneficio economico concreto nel caso di applicazione del sistema in scenari 
+realistici. Sebbene la differenza possa sembrare modesta, nel lungo periodo di migliaia o milioni di mani giocate, questo divario 
+si amplifica significativamente.
+
+In secondo luogo, l'autonomia e la flessibilità dell'approccio online si allineano meglio con gli obiettivi didattici 
+del progetto nel contesto del corso di Fondamenti di Intelligenza Artificiale. L'implementazione del Q-learning online permette 
+di comprendere in modo più completo i meccanismi di esplorazione, convergenza e bilanciamento tra exploitation ed exploration che 
+costituiscono i pilastri fondamentali del reinforcement learning. L'approccio offline, sebbene interessante da un punto di vista 
+di ricerca avanzata, introduce complessità aggiuntive legate alla qualità dei dati e al distributional shift che esulano dagli 
+obiettivi formativi basilari del corso.
+
+In terzo luogo, la maggiore robustezza e affidabilità della versione online la rendono più adatta per un sistema che potrebbe 
+essere esteso o modificato in futuri sviluppi. La capacità dell'agente online di adattarsi dinamicamente a variazioni delle regole 
+di gioco o a diversi livelli di difficoltà rappresenta un vantaggio strategico rispetto all'approccio offline, che richiederebbe 
+la rigenerazione del dataset ad ogni modifica dell'ambiente.
+
+È tuttavia importante sottolineare che l'approccio offline ha dimostrato potenzialità significative e 
+rappresenta una direzione promettente per futuri sviluppi del progetto. In particolare, l'implementazione di tecniche 
+avanzate di offline reinforcement learning quali Conservative Q-Learning o Behavior Cloning potrebbe permettere di superare 
+le limitazioni osservate e raggiungere prestazioni comparabili o superiori a quelle dell'approccio online. Inoltre, l'utilizzo 
+di dataset generati mediante strategie di esplorazione più sofisticate, quali la strategia di base ottimale del Blackjack, 
+potrebbe ridurre significativamente il gap prestazionale osservato.
+
+In conclusione, la scelta dell'approccio online riflette 
+una valutazione ponderata dei trade-off tra prestazioni, efficienza, robustezza e allineamento con 
+gli obiettivi formativi del progetto. Questa decisione non sminuisce il valore dell'approccio offline, 
+che ha fornito insights importanti sulla dipendenza delle prestazioni dalla qualità dei dati e ha permesso 
+di esplorare una metodologia complementare di apprendimento per rinforzo. L'esperienza acquisita attraverso 
+l'implementazione di entrambe le implementazioni costituisce un contributo significativo alla comprensione dei principi 
+fondamentali del reinforcement learning e delle sue applicazioni a problemi decisionali sequenziali come il Blackjack.
+
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
