@@ -549,6 +549,21 @@ L'analisi della curva di apprendimento, ottenuta mediante media mobile su finest
     \label{fig:pipeline3-offline}
 \end{figure}
 
+\subsubsection{Vantaggi dell'Approccio Online}
+
+L'approccio di Q-learning online presenta diversi vantaggi intrinseci nel contesto del Blackjack. In primo luogo, l'agente apprende in modo completamente autonomo senza necessità di dati pre-raccolti, adattandosi dinamicamente alle caratteristiche dell'ambiente attraverso l'interazione diretta. Questa modalità di apprendimento risulta particolarmente efficace in contesti dove la raccolta di dati offline sarebbe costosa o impraticabile, permettendo all'agente di esplorare liberamente lo spazio delle politiche possibili.
+
+In secondo luogo, la natura episodica del Q-learning online consente all'agente di bilanciare autonomamente esplorazione e sfruttamento attraverso il parametro $\varepsilon$, garantendo che vengano visitate anche regioni dello spazio degli stati meno frequenti ma potenzialmente rilevanti per l'apprendimento di una politica ottimale. Il meccanismo di ricreazione del mazzo quando le carte si esauriscono, sebbene costituisca una semplificazione rispetto alle regole reali, assicura che l'agente non incontri mai situazioni di stallo e possa completare ogni episodio con una transizione terminale ben definita.
+
+Inoltre, l'approccio online permette un apprendimento incrementale e continuo: l'agente migliora progressivamente la propria politica ad ogni episodio, con aggiornamenti immediati della Q-table basati sull'esperienza più recente. Questa caratteristica risulta vantaggiosa in scenari dove l'ambiente può presentare variazioni nel tempo o dove è necessario adattarsi rapidamente a nuove condizioni di gioco.
+
+\subsubsection{Limitazioni dell'Approccio Online}
+
+Nonostante i vantaggi evidenziati, l'approccio online presenta alcune limitazioni significative. La principale criticità riguarda l'efficienza campionaria: per raggiungere una convergenza soddisfacente, l'agente necessita di un numero elevato di interazioni con l'ambiente, come dimostrato dai un milione di episodi richiesti per stabilizzare il \textit{win rate}. Questo comporta un costo computazionale non trascurabile, sebbene nel caso specifico del Blackjack simulato tale costo risulti ancora gestibile grazie alla semplicità delle operazioni di simulazione.
+
+Un'altra limitazione riguarda la stocasticità intrinseca del processo di apprendimento: esecuzioni diverse dello stesso algoritmo possono produrre politiche con prestazioni leggermente differenti a causa della casualità nell'inizia lizzazione, nell'esplorazione e nell'ordine di visita degli stati. Questa variabilità, sebbene contenuta grazie all'elevato numero di episodi, introduce un elemento di incertezza nella valutazione delle prestazioni finali.
+
+Infine, la dipendenza dalla qualità dell'esplorazione rappresenta un aspetto critico: una strategia $\varepsilon$-greedy con un valore di $\varepsilon$ troppo basso potrebbe impedire all'agente di scoprire regioni promettenti dello spazio degli stati, mentre un valore troppo alto rallenterebbe la convergenza. Nel contesto implementato, il valore $\varepsilon = 0.1$ rappresenta un compromesso ragionevole, ma la scelta ottimale di questo iperparametro richiederebbe un processo di tuning più approfondito.
 
 
 
