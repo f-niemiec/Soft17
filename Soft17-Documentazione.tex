@@ -514,6 +514,19 @@ Lo stato dell'ambiente è rappresentato dalla tripla $(s_{\text{player}}, s_{\te
 
 L'agente implementa l'algoritmo Q-learning con i seguenti iperparametri: $\varepsilon = 0.1$ per la politica $\varepsilon$-greedy, $\alpha = 0.1$ come tasso di apprendimento, e $\gamma = 0.9$ quale fattore di sconto. La funzione di valore azione-stato $Q(s,a)$ è rappresentata mediante una tabella implementata come dizionario Python con inizializzazione ottimistica a zero, che associa a ogni coppia stato-azione un vettore di due valori corrispondenti alle azioni disponibili: \textit{stand} (codificata come 0) e \textit{hit} (codificata come 1). Tale rappresentazione tabulare è appropriata per il Blackjack, dato il numero limitato di stati osservabili. 
 
+\subsubsection{Processo di Apprendimento}
+
+Il processo di training si articola su un totale di un milione di episodi. Ad ogni episodio, l'ambiente viene reinizializzato mediante chiamata al metodo \texttt{reset()}, che ricrea il mazzo di carte e distribuisce la mano iniziale. L'agente seleziona le azioni secondo una strategia $\varepsilon$-greedy durante la fase di training: con probabilità $\varepsilon$ sceglie un'azione casuale per favorire l'esplorazione dello spazio degli stati, mentre con probabilità $1-\varepsilon$ seleziona l'azione con valore Q massimo per lo stato corrente, sfruttando la conoscenza acquisita.
+
+L'aggiornamento della funzione Q segue la regola standard del Q-learning off-policy:
+\begin{equation}
+Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \left[r_{t+1} + \gamma \max_{a'} Q(s_{t+1}, a') - Q(s_t, a_t)\right]
+\end{equation}
+
+dove $s_t$ è lo stato al tempo $t$, $a_t$ è l'azione intrapresa, $r_{t+1}$ è la ricompensa ricevuta, e $s_{t+1}$ rappresenta lo stato successivo. L'operatore $\max$ calcola il valore massimo tra le azioni disponibili nello stato futuro, rendendo l'algoritmo off-policy: l'agente aggiorna le stime assumendo che in futuro seguirà la politica ottimale, indipendentemente dall'azione effettivamente scelta durante l'esplorazione. Questa caratteristica permette all'agente di apprendere una politica più aggressiva e potenzialmente ottimale, anche quando il comportamento esplorativo introduce azioni subottimali.
+
+La struttura delle ricompense è definita come segue: $+1$ per vittoria, $0$ per pareggio, $-1$ per sconfitta. Questo schema di ricompense sparse, concentrate esclusivamente alla fine dell'episodio, rende il problema particolarmente adatto al Q-learning episodico, nel quale l'agente impara a valutare le conseguenze a lungo termine delle proprie azioni iniziali attraverso il meccanismo di propagazione del valore tramite il fattore di sconto $\gamma$.
+
 
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
