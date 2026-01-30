@@ -642,6 +642,32 @@ di raccolta dati. La documentazione tecnica fornisce tuttavia una
 descrizione completa delle modifiche apportate, permettendo la
 riproducibilità del processo di generazione del dataset.
 
+\subsubsection{Algoritmo di Apprendimento Offline}
+
+L'algoritmo di Q-learning offline implementato nella seconda pipeline
+differisce dall'approccio online principalmente per l'assenza di
+interazione con l'ambiente durante il training. L'agente, rappresentato
+dalla classe 
+\texttt{Offline\allowbreak QLearning\allowbreak Agent}
+, è inizializzato con una
+Q-table vuota e iperparametri identici a quelli utilizzati nella pipeline
+online: $\alpha = 0.1$ e $\gamma = 0.9$.
+
+Il processo di addestramento consiste in un singolo passaggio sequenziale
+attraverso il dataset di transizioni. Per ogni tupla $(s_t, a_t, r_t,
+s_{t+1})$, l'agente aggiorna la propria stima della funzione Q secondo la
+regola:
+\begin{equation}
+Q(s_t, a_t) \leftarrow Q(s_t, a_t) +
+\alpha \left[r_t + \gamma \max_{a'} Q(s_{t+1}, a') - Q(s_t, a_t)\right]
+\end{equation}
+
+Questa regola di aggiornamento è formalmente identica a quella utilizzata
+nel Q-learning online, ma opera su dati statici piuttosto che su
+esperienze raccolte dinamicamente. L'assenza di esplorazione attiva
+implica che l'agente apprende esclusivamente dagli stati e dalle azioni
+presenti nel dataset, senza possibilità di visitare regioni dello spazio
+degli stati non rappresentate nei dati.
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
