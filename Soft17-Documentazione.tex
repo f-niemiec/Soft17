@@ -590,7 +590,57 @@ possa mitigare parzialmente i limiti degli approcci puramente supervisionati,
 rafforzando l'importanza dell'allineamento tra funzione obiettivo e
 massimizzazione della ricompensa \cite{tarasov2025offlineicrl}.
 
+\subsubsection{Generazione e Preprocessing del Dataset}
 
+Il dataset utilizzato per l'addestramento offline è stato generato mediante
+una versione modificata del simulatore di Blackjack precedentemente usato. Tale
+simulatore implementa le regole standard del Blackjack con otto mazzi di
+carte, penetrazione di 6.5 mazzi, e seguendo la strategia di base ottimale
+per la selezione delle azioni del giocatore.
+
+La modifica fondamentale apportata al codice di generazione riguarda la
+strategia decisionale adottata dal giocatore simulato. Mentre il codice
+originale implementava la strategia di base completa del Blackjack,
+includendo azioni complesse quali \textit{double}, \textit{split} e
+\textit{surrender}, la versione modificata è stata semplificata per
+generare esclusivamente transizioni relative alle azioni \textit{hit} e
+\textit{stand}. Questa scelta è motivata da due considerazioni principali.
+
+In primo luogo, la limitazione dello spazio delle azioni a due sole opzioni
+rende il problema di apprendimento più trattabile e facilita il confronto
+diretto con la pipeline online, che considera anch'essa solo le azioni
+\textit{hit} e \textit{stand}. La strategia implementata nel generatore
+modificato è una politica euristica semplificata: il giocatore richiede
+carta (\textit{hit}) quando la somma della propria mano è strettamente
+inferiore a 17, e si mantiene (\textit{stand}) altrimenti. Questa regola,
+sebbene subottimale rispetto alla strategia di base, produce un dataset di
+transizioni sufficientemente variegate per l'apprendimento offline.
+
+In secondo luogo, la semplificazione della strategia di generazione dei
+dati riflette una situazione realistica nell'offline reinforcement
+learning, dove il dataset disponibile è spesso raccolto mediante una
+politica comportamentale che non coincide necessariamente con la politica
+ottimale. L'algoritmo di Q-learning offline deve quindi essere in grado di
+estrarre una politica migliorata a partire da dati generati da una
+strategia imperfetta, dimostrando capacità di generalizzazione e
+robustezza rispetto alla distribuzione dei dati.
+
+Il dataset finale contiene un milione di transizioni, ciascuna
+rappresentata dalla tupla $(s_t, a_t, r_t, s_{t+1})$, dove
+$s_t = (s_{\text{player}}, s_{\text{dealer}}, a_{\text{usable}})$ è lo
+stato al tempo $t$, $a_t \in \{0,1\}$ è l'azione intrapresa,
+$r_t \in \{-1,0,1\}$ è la ricompensa osservata, e $s_{t+1}$ è lo stato
+successivo. Le ricompense sono state discretizzate in modo tale che le
+vittorie corrispondano a $r = 1$, le sconfitte a $r = -1$ e i pareggi a
+$r = 0$. Questa struttura rende il dataset direttamente utilizzabile per
+l'addestramento mediante Q-learning offline.
+
+È importante sottolineare che il codice modificato per la generazione del
+dataset non è incluso nel repository GitHub del progetto, in quanto
+costituisce uno strumento ausiliario utilizzato esclusivamente per la fase
+di raccolta dati. La documentazione tecnica fornisce tuttavia una
+descrizione completa delle modifiche apportate, permettendo la
+riproducibilità del processo di generazione del dataset.
 
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
