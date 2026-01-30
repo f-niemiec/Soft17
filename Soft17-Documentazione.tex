@@ -498,9 +498,23 @@ direttamente il comportamento esplorativo dell’agente,risultando in strategie 
 
 \section{Applicazione del Reinforcement Learning}
 Occorre infine definire come un'ultima distinzione, fondamentale per comprendere le nostre implementazioni, quella tra \textit{online} ed \textit{offline} reinforcement learning.
-Per quanto riguarda \textbf{l'online RL} prevede di simulare interazioni con l'ambiente per apprendere delle policy ottimali. Utilizza di volta in volta l'esperienza immediatamente appresa nelle successive interazioni con l'ambiente ed ha il vantaggio di potersi adattare ai cambiamenti data la continua interazione con esso. Il grande problema di questo approccio è che a causa di tutte le 
-simulazioni che genera con l'ambiente è computazionalmente costoso. Di fatto quindi questo tipo di approccio non necessità di un dataset per l'addestramento.
-Invece per quanto riguarda l'\textbf{l'offline rl} mira a creare delle policy efficaci su dati collezionati precedentemente, senza nessuna interazione con l'ambiente. Questo approccio porta con se anche delle sfide importanti: occorre migliorare le policy che si raccolgono dai dati così da stimare anche valori per azioni non presenti nel dataset.
+Per quanto riguarda \textbf{l'online RL} prevede di simulare interazioni con l'ambiente per apprendere delle policy ottimali. Utilizza di volta in volta l'esperienza immediatamente appresa nelle successive interazioni con l'ambiente ed ha il vantaggio di potersi adattare ai cambiamenti data la continua interazione con esso. Il grande problema di questo approccio è che a causa di tutte le simulazioni che genera con l'ambiente è computazionalmente costoso. Di fatto quindi questo tipo di approccio non necessità di un dataset per l'addestramento.
+A differenza del precedente l'\textbf{l'offline RL} mira a creare delle policy efficaci su dati collezionati precedentemente, senza nessuna interazione con l'ambiente. Questo approccio porta con se anche delle sfide importanti: occorre migliorare le policy che si raccolgono dai dati così da stimare anche valori per azioni non presenti nel dataset.
+\subsection{Implementazione con Q-Learning}
+
+\subsection{Implementazione 1 – Q-Learning Online}
+La prima implementazione adotta un approccio di Q-learning online, nel quale l'agente apprende interagendo direttamente con un ambiente simulato di Blackjack. 
+\subsubsection{Architettura e Implementazione}
+
+L'architettura si compone di due componenti fondamentali: un ambiente di gioco implementato nella classe \texttt{BlackjackEnv} e un agente Q-learning descritto dalla classe \texttt{QLearningAgent}.
+
+L'ambiente simula le dinamiche del gioco utilizzando sei mazzi di carte francesi standard, mescolati casualmente a ogni reset episodico. La gestione del mazzo include un meccanismo di ricreazione automatica quando le carte disponibili si esauriscono durante una mano, garantendo che l'agente possa sempre completare la propria sequenza decisionale senza interruzioni dovute a vincoli di disponibilità. Tale scelta implementativa, sebbene semplifichi la logica di esecuzione, introduce una sottile differenza rispetto alle regole convenzionali del Blackjack nei casinò reali, dove il rimescolamento avviene secondo una penetrazione predefinita del mazzo.
+
+Lo stato dell'ambiente è rappresentato dalla tripla $(s_{\text{player}}, s_{\text{dealer}}, a_{\text{usable}})$, dove $s_{\text{player}}$ indica la somma delle carte del giocatore, $s_{\text{dealer}}$ rappresenta il valore della carta scoperta del dealer, e $a_{\text{usable}}$ è un indicatore booleano della presenza di un asso utilizzabile come 11 senza causare sballamento. Questa rappresentazione dello stato è conforme alla formulazione classica del problema del Blackjack come Markov Decision Process episodico, nel quale lo stato cattura tutta l'informazione rilevante per la decisione ottimale del giocatore.
+
+L'agente implementa l'algoritmo Q-learning con i seguenti iperparametri: $\varepsilon = 0.1$ per la politica $\varepsilon$-greedy, $\alpha = 0.1$ come tasso di apprendimento, e $\gamma = 0.9$ quale fattore di sconto. La funzione di valore azione-stato $Q(s,a)$ è rappresentata mediante una tabella implementata come dizionario Python con inizializzazione ottimistica a zero, che associa a ogni coppia stato-azione un vettore di due valori corrispondenti alle azioni disponibili: \textit{stand} (codificata come 0) e \textit{hit} (codificata come 1). Tale rappresentazione tabulare è appropriata per il Blackjack, dato il numero limitato di stati osservabili. 
+
+
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
