@@ -11,6 +11,7 @@
 \usepackage[table,dvipsnames]{xcolor} % Per colorare le righe
 \usepackage[export]{adjustbox}
 \usepackage{hyperref}
+\usepackage{booktabs}
 
 \title{Soft17 -- An Intelligent Agent for Blackjack}
 \author{Abbatiello Simone, Nappi Vincenzo, Niemiec Francesco}
@@ -805,7 +806,7 @@ di transizioni se i dati sono ben distribuiti e rappresentativi.
 
 Un terzo trade-off concerne la robustezza rispetto a errori di stima. L'approccio online beneficia del meccanismo di correzione continua
 fornito dall'esplorazione, che permette all'agente di rivedere le proprie stime anche in stati visitati raramente. L'implementazione offline, 
-invece, può accumulare errori di extrapolazione in regioni dello spazio degli stati scarsamente rappresentate nel dataset, 
+invece, può accumulare errori di estrapolazione in regioni dello spazio degli stati scarsamente rappresentate nel dataset, 
 senza possibilità di correzione attraverso nuove esperienze.
 
 \subsubsection{Scelta Finale e Motivazioni}
@@ -934,35 +935,56 @@ Questa separazione netta tra addestramento ed evaluation consente di misurare in
 La policy finale viene visualizzata tramite heatmap separate per mani \textit{hard} e \textit{soft}. Per ogni combinazione di somma del giocatore e carta del dealer, viene indicata l’azione ottimale appresa.
 Le mappe risultanti mostrano una forte corrispondenza con la
 \textit{basic strategy} del Blackjack, con addirittura momenti in cui la percentuale di vittorie risulta leggermente maggiore.
+%da inserire immagine
+\subsection{Risultati sperimentali e confronto con Q-Learning online}
+L'implementazione con \textbf{SARSA online} si è dimostrata ancora più efficace dell'implementazione con il Q-Learning online. Al termine del training su cinquecentomila episodi, la Q-table risultante contiene valori appresi per 280 azioni coppie-stato. I risultati finali hanno un \textit{win rate} del 42.67\%, contro il 40.29\% ottenuto con il Q-Learning online ed un miglioramento di più di 4 punti percentuale rispetto al Q-Learning offline.
+Si può osservare un leggero aumento del \textit{draw rate} che raggiunge il 9.43\% rispetto all '8.67\% dell'approccio con Q-Learning online. Infine si ha una significativa riduzione delle sconfitte che raggiungono il 47.90\%, il risultato più basso ottenuto tra tutti gli approcci analizzati. Nonostante il grande traguardo del limite di vittorie teorico raggiunto, anche questa implementazione ha gli stessi compromessi analizzati durante l'implementazione dell'online Q-Learning.
+Nelle seguenti figure è possibile osservare il progredire  del modello fino a raggiungere risultati vicini alla \textit{basic strategy} inizialmente illustrata. Nell'ultima figura è possibile visualizzare graficamente la policy appresa dall'agente durante il training. 
 
-\subsection{Risultati sperimentali}
-L'implementazione con \textbf{SARSA online} si è dimostrato ancora più efficace dell'implementazione con il Q-Learning online. Al termine del training su cinquecentomila episodi, la Q-table risultante contiene valori appresi per 280 azioni coppie-stato. I risultati finali hanno un \textit{win rate} del 42,67\% contro il 40,29\% ottenuto con il Q-Learning online ed un miglioramento di più di 4 punti percentuale rispetto al Q-Learning offline. 
-
-Nelle seguenti figure è possibile osservare il progredire  del modello fino a raggiungere risultati vicini alla \textit{basic strategy} inizialmente illustrata. Nell'ultima figura è possibile visualizzare graficamente la policy appresa dall'agente durante il training.
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=1.00\textwidth]{img/SARSAonlineResult.png}
+    \includegraphics[width=1.00\textwidth]{SARSAonlineResult.png}
     \caption{Risultati Implementazione – Online SARSA}
     \label{fig:SARSAonlineResult}
 \end{figure}
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=1.00\textwidth]{img/SARSArewardDistribution.png}
-    \caption{Risultati Implementazione – Online SARSA}
+    \includegraphics[width=1.00\textwidth]{SARSArewardDistribution.png}
+    \caption{Distribuzione dei reward – Online SARSA}
     \label{fig:SARSAonlineResult2}
 \end{figure}
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=1.00\textwidth]{img/SARSApolicy.png}
+    \includegraphics[width=1.00\textwidth]{SARSApolicy.png}
     \caption{SARSA Policy – Online SARSA}
     \label{fig:SARSAonlineResult2}
 \end{figure}
+%bisogna spostare le figure sopra
 
-\section{Confronto tra le implementazioni SARSA e Q-Learning}
+\section{Confronto finale tra le implementazioni di Reinforcement Learning}
+Qui è possibile osservare una tabella di riepilogo che contiene tutti i risultati ottenuti con gli approcci che prevedevano l'utilizzo di Reinforcement Learning. 
 
+\begin{table}[h]
+    \centering
+    \caption{Confronto delle prestazioni degli agenti RL su Blackjack}
+    \label{tab:rl-comparison}
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Algoritmo} & \textbf{Win Rate (\%)} & \textbf{Loss Rate (\%)} & \textbf{Draw Rate (\%)} \\
+        \midrule
+        Q-Learning (Online)  & 40.29\% & 51.04\% & 8.67\% \\
+        Q-Learning (Offline) & 38.14\% & 55.66\% & 5.20\% \\
+        SARSA (Online)       & 42.67\% & 47.90\% & 9.43\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Considerazioni finali}
+
+%Aggiornare i dati di online 
 
 
 \section{Glossario}
