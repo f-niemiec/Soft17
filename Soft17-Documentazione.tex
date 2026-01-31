@@ -73,10 +73,10 @@ Nel dettaglio questa strategia è stata formalizzata nel 1956 da Roger R. Baldwi
 \subsection{Overview}
 Il linguaggio scelto per raggiungere l'obbiettivo prefissato è python. In particolare abbiamo utilizzato le seguenti librerie: 
 \begin{itemize}
-    \item pandas: permette l'esplorazione a la manipolazione di dati in modo semplice e flessibile;
-    \item numpy: ottimizza la gestione di ampi dati multidimensionali come array e matrici in modo efficiente e fornisce una serie di funzioni matematiche;
-    \item seaborn e matplotlib: permettono la visualizzazione di dati tramite schemi o grafici informativi. Sono state principalmente utilizzata per mostrare i risultati dei training degli algoritmi implementati.
-    \item scikit-learn: fornisce tool semplici ed efficienti che permettono la realizzazione di algoritmi di machine learning. Permette inoltre di valutare il modello con il calcolo delle metriche integrato. 
+    \item \textbf{pandas}: permette l'esplorazione a la manipolazione di dati in modo semplice e flessibile;
+    \item \textbf{numpy}: ottimizza la gestione di ampi dati multidimensionali come array e matrici in modo efficiente e fornisce una serie di funzioni matematiche;
+    \item \textbf{seaborn e matplotlib}: permettono la visualizzazione di dati tramite schemi o grafici informativi. Sono state principalmente utilizzata per mostrare i risultati dei training degli algoritmi implementati.
+    \item \textbf{scikit-learn}: fornisce tool semplici ed efficienti che permettono la realizzazione di algoritmi di machine learning. Permette inoltre di valutare il modello con il calcolo delle metriche integrato. 
 \end{itemize}
 
 \section{Descrizione dell’agente}
@@ -90,7 +90,7 @@ L’obiettivo del progetto è lo sviluppo di un \textbf{agente intelligente} in 
     \begin{itemize}
         \item \textbf{Hit}: richiedere una carta aggiuntiva;
         \item \textbf{Stand}: mantenere la mano attuale;
-        \item \textbf{Double}: raddoppiare la puntata iniziale e ricevere una sola carta; //Da togliere 
+        \item \textbf{Double}: raddoppiare la puntata iniziale e ricevere una sola carta; 
         \item \textbf{Split}: dividere la mano in due mani distinte in presenza di due carte uguali.
     \end{itemize}
     \item prendere decisioni esclusivamente sulla base della propria mano e della carta scoperta del dealer, senza conoscere le carte rimanenti nel mazzo;
@@ -230,10 +230,12 @@ Come prima cosa quindi abbiamo importato il file del dataset (in formato .csv) e
     \end{itemize}
 Successivamente abbiamo individuato \textit{WIN} come colonna utile per la nostra classificazione, di fatto abbiamo analizzato quali fossero i valori che potesse assumere e li abbiamo raggruppati in tre categorie, ovvero minori di zero, uguali a zero e maggiori di zero.
 Fatto ciò abbiamo visualizzato il numero di istanze per ciascuna categoria:
-- 421940 istanze con win maggiore di zero.
-- 493992 istanze con win minore di zero.
-- 84068 istanze con win uguale a zero.
-A primo impatto il dataset presentava uno sbilanciamento verso le "sconfitte", tuttavia abbiamo scelto di non considerarlo alla luce di due considerazioni: la prima è che è inerente nella natura del gioco (favorevole al banco) che siano presenti molte più sconfitte che vittorie, e la seconda è che andando a considerare semplicemente i casi "favorevoli" ovvero quelli dove la win è maggiore o uguale a zero, il dataset sarebbe apparso come bilanciato.
+\begin{itemize}
+    \item 421940 istanze con win \textbf{maggiore di zero.}
+    \item 493992 istanze con win \textbf{minore di zero.}
+    \item 84068 istanze con win \textbf{uguale a zero.}
+\end{itemize}
+A primo impatto il dataset presentava uno sbilanciamento verso le "sconfitte", tuttavia abbiamo scelto di non reputarlo così influente alla luce di due considerazioni: la prima è che è insito alla natura del gioco (favorevole al banco) che siano presenti molte più sconfitte che vittorie, e la seconda è che andando a considerare semplicemente i casi "favorevoli" ovvero quelli dove la win è maggiore o uguale a zero, il dataset sarebbe apparso come bilanciato.
 Successivamente abbiamo verificato quanti valori nulli fossero presenti nelle colonne, i risultati hanno mostrato che nessuna colonna presentava valori nulli. Ciò non era assolutamente inaspettato data la natura "sintetica" dei dati.
 \subsection{Data Cleaning}
 Siccome tutte le colonne del dataset non presentano dati mancanti, questa fase non comprende all'atto pratico nessun cambiamento.
@@ -285,7 +287,7 @@ Al termine della fase di elaborazione, il dataset finale risulta composto dalle 
 \end{itemize}
 La variabile target è \textbf{win}, che indica l’esito della decisione presa dal giocatore, assumendo i valori di vittoria e sconfitta.
 \subsection{Modeling}
-Prima di parlare degli algoritmi utilizzati occorre fare delle premesse. Per scegliere i migliori parametri adatti agli algoritmi e il problema che stiamo affrontando abbiamo deciso di utilizzare una \textbf{griglia di ricerca} per identificare gli iperparametri. È una classe contenuta nella libreria scikit-learn che ci permette di testare più combinazioni di parametri automaticamente evitando di eseguire a mano i training.
+Prima di parlare degli algoritmi utilizzati occorre fare delle premesse. Per scegliere i migliori parametri adatti agli algoritmi e il problema che stiamo affrontando abbiamo deciso di utilizzare una \textbf{griglia di ricerca} per identificare gli iperparametri. È una classe contenuta nella libreria scikit-learn che ci permette di testare più combinazioni di parametri automaticamente evitando di rieseguire manualmente i training.
 La prima operazione effettuata è lo splitting del dataset per distinguere i dati di test e i dati per il training. Nello specifico l'80\% dei dati sarà utilizzato per il training e il 20\% per il testing. Avviene successivamente un ulteriore split dei dati di training distinguendo tra training e validazione, nello specifico il 78.5\%  per il training e il restante per la validazione. È stato inoltre fissato un seme randomico per rendere i test ripetibili. % Da aggiustare%
 Infine stratify permette di suddividere il dataset in modo che ogni sottoinsieme mantenga la stessa identica proporzione di classi del dataset originale.
 Per la prima versione di questa pipeline (Pipeline 1A) l'algoritmo utilizzato è un albero decisionale di classificazione (DecisionTreeClassifier) specificando i seguenti parametri: 
@@ -295,15 +297,19 @@ Per la prima versione di questa pipeline (Pipeline 1A) l'algoritmo utilizzato è
     \item \textbf{ min\_samples\_split:} che determina numero minimo di campioni prima di effettuare un'ulteriore ramificazione. I valori sono: [2,5]
     \item \textbf{ min\_samples\_leaf:} che determina il numero minimo di campioni che devono essere presenti nelle foglie. I valori sono: [1,2]
 \end{itemize}
-\subsection{Evaluation}
-I migliori parametri scelti dalla griglia sono: max\_depth = 10, 'min\_samples\_leaf'= 1, 'min\_samples\_split'= 2 .
+\subsection{Valutazioni finali}
+I migliori parametri scelti dalla griglia sono: max\_depth = 10, min\_samples\_leaf= 1, min\_samples\_split= 2.
+
 Le metriche invece ci hanno fornito i seguenti risultati: 
-  F1-Score Test: 0.6562
-  Accuracy:  0.6844
-  Precision:  0.7268
-  Recall:  0.5982
+\begin{itemize}
+    \item F1-Score Test: 0.6627
+    \item Accuracy:  0.6871
+    \item Precision:  0.7291
+    \item Recall:  0.6073
+\end{itemize}
+  L'algoritmo ha portato a dei risultati ragionevoli che bilanciano le prestazioni ma forniscono anche predizioni discretamente accurate sul finale della partita, nonostante la sua natura stocastica.
   \begin{center}
-      \includegraphics[scale=0.8, center]{MatriceDiConfusionePipeline1.png}
+      \includegraphics[scale=1.0, center]{ConfusionMatrixPipeline1A.png}
   \end{center}
 \section{Seconda pipeline}
 Per la seconda versione della pipeline (Pipeline 1B) è stato adottato un
@@ -517,8 +523,7 @@ Occorre approfondire gli elementi che caratterizzano il Q-Learning per poterlo c
 Quest'ultima è una tabella che contiene i reward per ogni azione di ogni stato ed è possibile farne il lookup. In particolare ha una riga per ogni stato e una colonna per ogni azione. Inizialmente ogni valore di reward della tabella è inizializzato a zero ma ad ogni esplorazione il valore in questione cambia basandosi sull'equazione già precedentemente discussa. Altri elementi fondamentali nel Q-learning sono i seguenti iperparametri caratterizzanti:
 \begin{itemize}
     \item $\alpha$: rate di apprendimento che varia da 0 a 1. Occorre ottimizzare questo parametro per fare in modo che i valori di reward di ogni iterazione della Q-table siano conoscenza utile al progredire dell'agente.
-    %stesso parametro di catene di markov ma ha accezione diversa, da aggiustare, quanto è lungimirante un agente 
-    \item $\gamma$: termine che regola come comportarsi nel corso della ricerca della soluzione. Fa in modo che più vicino si arriva alla soluzione, maggiore sarà la preferenza verso dei reward a breve termine.
+    \item $\gamma$: termine che regola come comportarsi nel corso della ricerca della soluzione. Fa in modo che più vicino si arriva alla soluzione, maggiore sarà la preferenza verso dei reward a breve termine. Definisce quanto è lungimirante un agente ed anche questo varia tra 0 e 1.
     \item $\epsilon$: termine che regola l'esplorazione causandone una diminuzione nel tempo di modo che la policy appresa migliori sfuttando le conoscenze acquisite nel tempo.
 \end{itemize}
 \subsection{Primo approccio - Q-Learning Online}
@@ -935,11 +940,18 @@ Questa separazione netta tra addestramento ed evaluation consente di misurare in
 La policy finale viene visualizzata tramite heatmap separate per mani \textit{hard} e \textit{soft}. Per ogni combinazione di somma del giocatore e carta del dealer, viene indicata l’azione ottimale appresa.
 Le mappe risultanti mostrano una forte corrispondenza con la
 \textit{basic strategy} del Blackjack, con addirittura momenti in cui la percentuale di vittorie risulta leggermente maggiore.
-%da inserire immagine
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1.00\textwidth]{SARSApolicy.png}
+    \caption{SARSA Policy – Online SARSA}
+    \label{fig:SARSAonlineResult2}
+\end{figure}
+
 \subsection{Risultati sperimentali e confronto con Q-Learning online}
 L'implementazione con \textbf{SARSA online} si è dimostrata ancora più efficace dell'implementazione con il Q-Learning online. Al termine del training su cinquecentomila episodi, la Q-table risultante contiene valori appresi per 280 azioni coppie-stato. I risultati finali hanno un \textit{win rate} del 42.67\%, contro il 40.29\% ottenuto con il Q-Learning online ed un miglioramento di più di 4 punti percentuale rispetto al Q-Learning offline.
 Si può osservare un leggero aumento del \textit{draw rate} che raggiunge il 9.43\% rispetto all '8.67\% dell'approccio con Q-Learning online. Infine si ha una significativa riduzione delle sconfitte che raggiungono il 47.90\%, il risultato più basso ottenuto tra tutti gli approcci analizzati. Nonostante il grande traguardo del limite di vittorie teorico raggiunto, anche questa implementazione ha gli stessi compromessi analizzati durante l'implementazione dell'online Q-Learning.
-Nelle seguenti figure è possibile osservare il progredire  del modello fino a raggiungere risultati vicini alla \textit{basic strategy} inizialmente illustrata. Nell'ultima figura è possibile visualizzare graficamente la policy appresa dall'agente durante il training. 
+Nelle seguenti figure è possibile osservare il progredire  del modello fino a raggiungere risultati vicini alla \textit{basic strategy} inizialmente illustrata.
 
 
 \begin{figure}[!ht]
@@ -956,16 +968,10 @@ Nelle seguenti figure è possibile osservare il progredire  del modello fino a r
     \label{fig:SARSAonlineResult2}
 \end{figure}
 
-\begin{figure}[!ht]
-    \centering
-    \includegraphics[width=1.00\textwidth]{SARSApolicy.png}
-    \caption{SARSA Policy – Online SARSA}
-    \label{fig:SARSAonlineResult2}
-\end{figure}
 %bisogna spostare le figure sopra
 
 \section{Confronto finale tra le implementazioni di Reinforcement Learning}
-Qui è possibile osservare una tabella di riepilogo che contiene tutti i risultati ottenuti con gli approcci che prevedevano l'utilizzo di Reinforcement Learning. 
+Qui è possibile osservare una tabella di riepilogo che contiene tutti i risultati ottenuti con gli approcci che prevedevano l'utilizzo del Reinforcement Learning. 
 
 \begin{table}[h]
     \centering
@@ -982,9 +988,10 @@ Qui è possibile osservare una tabella di riepilogo che contiene tutti i risulta
     \end{tabular}
 \end{table}
 
+
 \section{Considerazioni finali}
 
-%Aggiornare i dati di online 
+
 
 
 \section{Glossario}
