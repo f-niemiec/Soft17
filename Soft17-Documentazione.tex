@@ -867,8 +867,19 @@ dove $\text{player\_sum}$ indica la somma della mano del giocatore, $\text{is\_s
 Questa rappresentazione consente di mantenere lo spazio degli stati
 contenuto e discreto.
 
-
-
+\subsection{Agente SARSA}
+L’agente viene inizializzato con i seguenti iperparametri:
+\begin{itemize}
+    \item $\alpha$ (\textit{learning rate}), che controlla la velocità di aggiornamento dei valori Q;
+    \item $\gamma$ (\textit{discount factor}), che determina l’importanza delle ricompense future;
+    \item $\epsilon$, parametro iniziale della strategia di esplorazione $\epsilon$-greedy;
+    \item $\epsilon_{\text{decay}}$, fattore di decadimento esponenziale di $\epsilon$;
+    \item $\epsilon_{\text{min}}$, valore minimo consentito per l’esplorazione.
+\end{itemize}
+La funzione di valore d’azione $Q(s,a)$ è memorizzata in una
+Q-table implementata come dizionario annidato,inizializzata implicitamente a zero per tutte le coppie stato–azione non ancora visitate. Vengono mantenuti inoltre dati sugli esiti degli episodi, includendo ricompense, vittorie, sconfitte e pareggi.
+La politica di esplorazione è basata su una strategia $\epsilon$-greedy: con probabilità $\epsilon$ viene scelta un’azione casuale, mentre con probabilità $1 - \epsilon$ viene selezionata l’azione con valore $Q$ massimo.
+Il parametro $\epsilon$ decresce progressivamente seguendo l'epsilon_decay nel corso dell’addestramento, favorendo inizialmente l’esplorazione e successivamente lo sfruttamento delle conoscenze acquisite.
 
 
 \section{Glossario}
