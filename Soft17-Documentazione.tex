@@ -518,7 +518,7 @@ Quest'ultima è una tabella che contiene i reward per ogni azione di ogni stato 
     \item $\alpha$: rate di apprendimento che varia da 0 a 1. Occorre ottimizzare questo parametro per fare in modo che i valori di reward di ogni iterazione della Q-table siano conoscenza utile al progredire dell'agente.
     %stesso parametro di catene di markov ma ha accezione diversa, da aggiustare, quanto è lungimirante un agente 
     \item $\gamma$: termine che regola come comportarsi nel corso della ricerca della soluzione. Fa in modo che più vicino si arriva alla soluzione, maggiore sarà la preferenza verso dei reward a breve termine.
-    \item $\epsilon$: termine che regola l'esplorazione portandola a diminuire nel tempo di modo che la policy appresa migliori.
+    \item $\epsilon$: termine che regola l'esplorazione causandone una diminuzione nel tempo di modo che la policy appresa migliori sfuttando le conoscenze acquisite nel tempo.
 \end{itemize}
 \subsection{Primo approccio - Q-Learning Online}
 La prima implementazione adotta un approccio di Q-learning online, nel quale l'agente apprende interagendo direttamente con un ambiente simulato di Blackjack. 
@@ -934,6 +934,36 @@ Questa separazione netta tra addestramento ed evaluation consente di misurare in
 La policy finale viene visualizzata tramite heatmap separate per mani \textit{hard} e \textit{soft}. Per ogni combinazione di somma del giocatore e carta del dealer, viene indicata l’azione ottimale appresa.
 Le mappe risultanti mostrano una forte corrispondenza con la
 \textit{basic strategy} del Blackjack, con addirittura momenti in cui la percentuale di vittorie risulta leggermente maggiore.
+
+\subsection{Risultati sperimentali}
+L'implementazione con \textbf{SARSA online} si è dimostrato ancora più efficace dell'implementazione con il Q-Learning online. Al termine del training su cinquecentomila episodi, la Q-table risultante contiene valori appresi per 280 azioni coppie-stato. I risultati finali hanno un \textit{win rate} del 42,67\% contro il 40,29\% ottenuto con il Q-Learning online ed un miglioramento di più di 4 punti percentuale rispetto al Q-Learning offline. 
+
+Nelle seguenti figure è possibile osservare il progredire  del modello fino a raggiungere risultati vicini alla \textit{basic strategy} inizialmente illustrata. Nell'ultima figura è possibile visualizzare graficamente la policy appresa dall'agente durante il training.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1.00\textwidth]{img/SARSAonlineResult.png}
+    \caption{Risultati Implementazione – Online SARSA}
+    \label{fig:SARSAonlineResult}
+\end{figure}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1.00\textwidth]{img/SARSArewardDistribution.png}
+    \caption{Risultati Implementazione – Online SARSA}
+    \label{fig:SARSAonlineResult2}
+\end{figure}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1.00\textwidth]{img/SARSApolicy.png}
+    \caption{SARSA Policy – Online SARSA}
+    \label{fig:SARSAonlineResult2}
+\end{figure}
+
+\section{Confronto tra le implementazioni SARSA e Q-Learning}
+
+
 
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
