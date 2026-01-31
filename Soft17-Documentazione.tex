@@ -878,10 +878,24 @@ L’agente viene inizializzato con i seguenti iperparametri:
 \end{itemize}
 La funzione di valore d’azione $Q(s,a)$ è memorizzata in una
 Q-table implementata come dizionario annidato,inizializzata implicitamente a zero per tutte le coppie stato–azione non ancora visitate. Vengono mantenuti inoltre dati sugli esiti degli episodi, includendo ricompense, vittorie, sconfitte e pareggi.
-La politica di esplorazione è basata su una strategia $\epsilon$-greedy: con probabilità $\epsilon$ viene scelta un’azione casuale, mentre con probabilità $1 - \epsilon$ viene selezionata l’azione con valore $Q$ massimo.
-Il parametro $\epsilon$ decresce progressivamente seguendo l'epsilon_decay nel corso dell’addestramento, favorendo inizialmente l’esplorazione e successivamente lo sfruttamento delle conoscenze acquisite.
-
-
+La politica di esplorazione è basata su una strategia epsilon-greedy: con probabilità $\epsilon$ viene scelta un’azione casuale, mentre con probabilità $1 - \epsilon$ viene selezionata l’azione con valore $Q$ massimo.
+Il parametro $\epsilon$ decresce progressivamente seguendo l'epsilon\_decay nel corso dell’addestramento, favorendo inizialmente l’esplorazione e successivamente lo sfruttamento delle conoscenze acquisite.
+Nei casi in cui uno stato non sia presente nella Q-table o non possieda azioni precedentemente valutate, l’agente seleziona un’azione casuale, garantendo robustezza anche nelle fasi iniziali dell’apprendimento.
+È inoltre introdotta una regola deterministica che forza l’azione \textit{STAND} quando la somma della mano del giocatore è maggiore o uguale a 21, evitando transizioni non valide e riducendo il rumore nell’aggiornamento
+dei valori Q.
+\subsubsection{Aggiornamento SARSA}
+Per ogni transizione osservata $(s_t, a_t, r_t, s_{t+1}, a_{t+1})$, il valore viene aggiornato secondo la regola:
+\[
+Q(s_t, a_t) \leftarrow Q(s_t, a_t) +
+\alpha \left[ r_t + \gamma Q(s_{t+1}, a_{t+1}) - Q(s_t, a_t) \right]
+\]
+Questa formulazione differisce dal Q-learning classico in quanto utilizza l’azione effettivamente selezionata dalla politica corrente nello stato successivo, anziché l’azione greedy.  
+Ciò rende l’algoritmo sensibile alla strategia di esplorazione adottata e garantisce coerenza tra policy di comportamento e policy di valutazione.
+Nel caso di stati terminali, l’aggiornamento viene effettuato utilizzando esclusivamente la ricompensa osservata:
+\[
+Q(s_t, a_t) \leftarrow Q(s_t, a_t) +
+\alpha \left[ r_t - Q(s_t, a_t) \right]
+\]
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
