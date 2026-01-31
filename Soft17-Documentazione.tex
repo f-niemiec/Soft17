@@ -896,6 +896,27 @@ Nel caso di stati terminali, l’aggiornamento viene effettuato utilizzando escl
 Q(s_t, a_t) \leftarrow Q(s_t, a_t) +
 \alpha \left[ r_t - Q(s_t, a_t) \right]
 \]
+Al termine di ogni episodio, il parametro $\epsilon$ viene aggiornato
+secondo una legge di decadimento esponenziale:
+\[
+\epsilon \leftarrow \max(\epsilon_{\text{min}}, \epsilon \cdot \epsilon_{\text{decay}})
+\]
+Questo meccanismo consente all’agente di esplorare ampiamente lo spazio stato–azione nelle fasi iniziali, per poi convergere progressivamente verso una politica quasi deterministica.
+\subsubsection{Procedura di Addestramento}
+L’addestramento avviene su un numero prefissato di episodi.
+Tale numero è stato posto a 500000, poichè tramite varie prove empiriche abbiamo verificato che non ci fosse nessun sostanziale aumento delle prestazioni andando oltre tale soglia.
+Per ciascun episodio, l’agente:
+\begin{enumerate}
+    \item inizializza l’ambiente e seleziona un’azione iniziale;
+    \item interagisce con l’ambiente fino al raggiungimento di uno stato terminale;
+    \item aggiorna la Q-table ad ogni transizione secondo la regola SARSA;
+    \item registra la ricompensa totale dell’episodio;
+    \item aggiorna il parametro di esplorazione $\epsilon$.
+\end{enumerate}
+Il numero massimo di passi per episodio è limitato, prevenendo cicli infiniti e garantendo stabilità computazionale.
+
+
+
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
 \setlength{\arrayrulewidth}{0.5pt}
