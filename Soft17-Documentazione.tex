@@ -521,7 +521,7 @@ Quest'ultima è una tabella che contiene i reward per ogni azione di ogni stato 
     \item $\epsilon$: termine che regola l'esplorazione facendola diminuire nel tempo di modo che la policy appresa migliori.
 \end{itemize}
 Tutti e tre i parametri quindi col tempo diminuiscono.
-\subsection{Implementazione 1 – Q-Learning Online}
+\subsection{Primo approccio - Q-Learning Online}
 La prima implementazione adotta un approccio di Q-learning online, nel quale l'agente apprende interagendo direttamente con un ambiente simulato di Blackjack. 
 \subsubsection{Architettura e Implementazione}
 
@@ -555,7 +555,7 @@ L'analisi della curva di apprendimento, ottenuta mediante media mobile su finest
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=1.00\textwidth]{3a.png}
-    \caption{Risultati Implementazione 1 – Online Q-Learning}
+    \caption{Risultati Implementazione– Online Q-Learning}
     \label{fig:pipeline3-offline}
 \end{figure}
 
@@ -575,8 +575,8 @@ Un'altra limitazione riguarda la stocasticità intrinseca del processo di appren
 
 Infine, la dipendenza dalla qualità dell'esplorazione rappresenta un aspetto critico: una strategia $\varepsilon$-greedy con un valore di $\varepsilon$ troppo basso potrebbe impedire all'agente di scoprire regioni promettenti dello spazio degli stati, mentre un valore troppo alto rallenterebbe la convergenza. Nel contesto implementato, il valore $\varepsilon = 0.1$ rappresenta un compromesso ragionevole, ma la scelta ottimale di questo iperparametro richiederebbe un processo di tuning più approfondito.
 
-\subsection{Pipeline 2 – Q-Learning Offline}
-La seconda pipeline adotta un approccio di Q-learning offline, nel quale
+\subsection{Secondo approccio – Q-Learning Offline}
+Il secondo approccio adotta un Q-learning offline, nel quale
 l'agente apprende esclusivamente da un dataset di esperienze pre-raccolte,
 senza interazione diretta con l'ambiente durante la fase di training.
 \subsubsection{Architettura e Motivazione}
@@ -618,7 +618,7 @@ generare esclusivamente transizioni relative alle azioni \textit{hit} e
 
 In primo luogo, la limitazione dello spazio delle azioni a due sole opzioni
 rende il problema di apprendimento più trattabile e facilita il confronto
-diretto con la pipeline online, che considera anch'essa solo le azioni
+diretto con l'approccio online, che considera anch'essa solo le azioni
 \textit{hit} e \textit{stand}. La strategia implementata nel generatore
 modificato è una politica euristica semplificata: il giocatore richiede
 carta (\textit{hit}) quando la somma della propria mano è strettamente
@@ -654,14 +654,13 @@ riproducibilità del processo di generazione del dataset.
 
 \subsubsection{Algoritmo di Apprendimento Offline}
 
-L'algoritmo di Q-learning offline implementato nella seconda pipeline
+L'algoritmo di Q-learning offline implementato nel secondo approccio
 differisce dall'approccio online principalmente per l'assenza di
 interazione con l'ambiente durante il training. L'agente, rappresentato
 dalla classe 
 \texttt{Offline\allowbreak QLearning\allowbreak Agent}
 , è inizializzato con una
-Q-table vuota e iperparametri identici a quelli utilizzati nella pipeline
-online: $\alpha = 0.1$ e $\gamma = 0.9$.
+Q-table vuota e iperparametri identici a quelli utilizzati nell'approccio online: $\alpha = 0.1$ e $\gamma = 0.9$.
 
 Il processo di addestramento consiste in un singolo passaggio sequenziale
 attraverso il dataset di transizioni. Per ogni tupla $(s_t, a_t, r_t,
@@ -682,8 +681,7 @@ degli stati non rappresentate nei dati.
 \subsubsection{Valutazione e Risultati Sperimentali}
 
 Per valutare le prestazioni della politica appresa offline, è stato
-implementato un ambiente di test identico a quello utilizzato nella
-pipeline online. L'agente viene valutato su un milione di episodi,
+implementato un ambiente di test identico a quello utilizzato nell'approccio online. L'agente viene valutato su un milione di episodi,
 seguendo una politica greedy derivata dalla Q-table appresa, ovvero
 selezionando in ogni stato l'azione con valore Q massimo.
 
@@ -813,7 +811,7 @@ senza possibilità di correzione attraverso nuove esperienze.
 
 \subsubsection{Scelta Finale e Motivazioni}
 
-Alla luce dell'analisi comparativa condotta, la scelta finale ricade sull'approccio di Q-learning online 
+Alla luce dell'analisi comparativa condotta, la scelta finale ricade sul Q-learning online 
 per il deployment del sistema finale. Questa decisione è motivata da tre considerazioni principali che riflettono i 
 requisiti specifici del progetto e gli obiettivi di apprendimento prefissati.
 
@@ -849,6 +847,29 @@ che ha fornito insights importanti sulla dipendenza delle prestazioni dalla qual
 di esplorare una metodologia complementare di apprendimento per rinforzo. L'esperienza acquisita attraverso 
 l'implementazione di entrambe le implementazioni costituisce un contributo significativo alla comprensione dei principi 
 fondamentali del reinforcement learning e delle sue applicazioni a problemi decisionali sequenziali come il Blackjack.
+
+\subsection{Implementazione SARSA}
+Dopo aver ottenuto risultati tutto sommato significativi con un approccio off-policy, è arrivato il momento di provare SARSA, algoritmo simbolo della metodologia on-policy.
+Dall'esperienza maturata con il Q-Learning, abbiamo deciso di implementare solo l'approccio \textit{online.}
+\subsubsection{Ambiente di simulazione}
+L’ambiente di simulazione implementa una variante del gioco del Blackjack modellata come un processo decisionale di Markov (come precedentemente giustificato).
+Lo stato dell’ambiente è definito dalla mano del giocatore, dalla mano del dealer e dalla carta scoperta del dealer.
+Il gioco utilizza un mazzo composto da otto deck standard. Il mazzo viene rimescolato automaticamente quando il numero di carte residue scende sotto una soglia prefissata, al fine di garantire stabilità statistica e ridurre possibili bias legati al conteggio delle carte.
+Il valore delle mani viene calcolato gestendo dinamicamente la presenza degli assi, distinguendo tra mani \textit{soft} e \textit{hard}. Il dealer segue le regole standard del Blackjack, pescando fino a raggiungere almeno 17 e colpendo sul \textit{soft 17}.
+Analogamente ai precedenti approcci si è scelto di permettere all'agente di scegliere solo tra due azioni, ovvero \textit{Hit} e \textit{Stand}.
+La funzione di ricompensa è stata calibrata empiricamente, partendo da una scelta iniziale di far valere maggiormente vittorie (+5) e non andare a punire altrettanto duramente le sconfitte (-3), si è passato poi ad un approccio tipicamente neutro (+1 vittoria, -1 sconfitta, 0 pareggio) poichè i risultati ottenuti erano migliori. 
+\subsection{Rappresentazione dello stato}
+Per l’apprendimento, lo stato viene rappresentato in forma compatta come:
+\[
+s = (\text{player\_sum}, \text{is\_soft}, \text{dealer\_showing})
+\]
+dove $\text{player\_sum}$ indica la somma della mano del giocatore, $\text{is\_soft}$ segnala la presenza di un asso utilizzabile come valore 11, e $\text{dealer\_showing}$ rappresenta la carta scoperta del dealer.
+Questa rappresentazione consente di mantenere lo spazio degli stati
+contenuto e discreto.
+
+
+
+
 
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
