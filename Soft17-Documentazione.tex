@@ -858,7 +858,7 @@ Il gioco utilizza un mazzo composto da otto deck standard. Il mazzo viene rimesc
 Il valore delle mani viene calcolato gestendo dinamicamente la presenza degli assi, distinguendo tra mani \textit{soft} e \textit{hard}. Il dealer segue le regole standard del Blackjack, pescando fino a raggiungere almeno 17 e colpendo sul \textit{soft 17}.
 Analogamente ai precedenti approcci si è scelto di permettere all'agente di scegliere solo tra due azioni, ovvero \textit{Hit} e \textit{Stand}.
 La funzione di ricompensa è stata calibrata empiricamente, partendo da una scelta iniziale di far valere maggiormente vittorie (+5) e non andare a punire altrettanto duramente le sconfitte (-3), si è passato poi ad un approccio tipicamente neutro (+1 vittoria, -1 sconfitta, 0 pareggio) poichè i risultati ottenuti erano migliori. 
-\subsection{Rappresentazione dello stato}
+\subsubsection{Rappresentazione dello stato}
 Per l’apprendimento, lo stato viene rappresentato in forma compatta come:
 \[
 s = (\text{player\_sum}, \text{is\_soft}, \text{dealer\_showing})
@@ -866,23 +866,21 @@ s = (\text{player\_sum}, \text{is\_soft}, \text{dealer\_showing})
 dove $\text{player\_sum}$ indica la somma della mano del giocatore, $\text{is\_soft}$ segnala la presenza di un asso utilizzabile come valore 11, e $\text{dealer\_showing}$ rappresenta la carta scoperta del dealer.
 Questa rappresentazione consente di mantenere lo spazio degli stati
 contenuto e discreto.
-
-\subsection{Agente SARSA}
+\subsubsection{Agente SARSA}
 L’agente viene inizializzato con i seguenti iperparametri:
 \begin{itemize}
-    \item $\alpha$ (\textit{learning rate}), che controlla la velocità di aggiornamento dei valori Q;
-    \item $\gamma$ (\textit{discount factor}), che determina l’importanza delle ricompense future;
-    \item $\epsilon$, parametro iniziale della strategia di esplorazione $\epsilon$-greedy;
-    \item $\epsilon_{\text{decay}}$, fattore di decadimento esponenziale di $\epsilon$;
-    \item $\epsilon_{\text{min}}$, valore minimo consentito per l’esplorazione.
+    \item $\alpha$ (\textit{learning rate}), che controlla la velocità di aggiornamento dei valori Q,  $\alpha = 0.01$;
+    \item $\gamma$ (\textit{discount factor}), che determina l’importanza delle ricompense future, il valore scelto è 0.95;
+    \item $\epsilon$, parametro iniziale della strategia di esplorazione $\epsilon$-greedy, il valore scelto è 1.0;
+    \item $\epsilon_{\text{decay}}$, fattore di decadimento esponenziale di $\epsilon$, valore scelto 0.9999;
+    \item $\epsilon_{\text{min}}$, valore minimo consentito per l’esplorazione, valore scelto 0.01.
 \end{itemize}
 La funzione di valore d’azione $Q(s,a)$ è memorizzata in una
 Q-table implementata come dizionario annidato,inizializzata implicitamente a zero per tutte le coppie stato–azione non ancora visitate. Vengono mantenuti inoltre dati sugli esiti degli episodi, includendo ricompense, vittorie, sconfitte e pareggi.
 La politica di esplorazione è basata su una strategia epsilon-greedy: con probabilità $\epsilon$ viene scelta un’azione casuale, mentre con probabilità $1 - \epsilon$ viene selezionata l’azione con valore $Q$ massimo.
 Il parametro $\epsilon$ decresce progressivamente seguendo l'epsilon\_decay nel corso dell’addestramento, favorendo inizialmente l’esplorazione e successivamente lo sfruttamento delle conoscenze acquisite.
 Nei casi in cui uno stato non sia presente nella Q-table o non possieda azioni precedentemente valutate, l’agente seleziona un’azione casuale, garantendo robustezza anche nelle fasi iniziali dell’apprendimento.
-È inoltre introdotta una regola deterministica che forza l’azione \textit{STAND} quando la somma della mano del giocatore è maggiore o uguale a 21, evitando transizioni non valide e riducendo il rumore nell’aggiornamento
-dei valori Q.
+È inoltre introdotta una regola deterministica che forza l’azione \textit{STAND} quando la somma della mano del giocatore è maggiore o uguale a 21, evitando transizioni non valide e riducendo il rumore nell’aggiornamento dei valori Q.
 \subsubsection{Aggiornamento SARSA}
 Per ogni transizione osservata $(s_t, a_t, r_t, s_{t+1}, a_{t+1})$, il valore viene aggiornato secondo la regola:
 \[
@@ -896,8 +894,7 @@ Nel caso di stati terminali, l’aggiornamento viene effettuato utilizzando escl
 Q(s_t, a_t) \leftarrow Q(s_t, a_t) +
 \alpha \left[ r_t - Q(s_t, a_t) \right]
 \]
-Al termine di ogni episodio, il parametro $\epsilon$ viene aggiornato
-secondo una legge di decadimento esponenziale:
+Al termine di ogni episodio, il parametro $\epsilon$ viene aggiornato secondo una legge di decadimento esponenziale:
 \[
 \epsilon \leftarrow \max(\epsilon_{\text{min}}, \epsilon \cdot \epsilon_{\text{decay}})
 \]
@@ -914,8 +911,25 @@ Per ciascun episodio, l’agente:
     \item aggiorna il parametro di esplorazione $\epsilon$.
 \end{enumerate}
 Il numero massimo di passi per episodio è limitato, prevenendo cicli infiniti e garantendo stabilità computazionale.
-
-
+\subsubsection{Valutazione della Policy}
+La fase di valutazione viene condotta disabilitando l’esplorazione ($\epsilon = 0$) su:
+\[
+N_{\text{eval}} = 500{,}000
+\]
+episodi indipendenti.  
+L’agente segue una politica puramente greedy, consentendo di stimare le prestazioni effettive della policy appresa.
+Le metriche di valutazione includono:
+\begin{itemize}
+    \item win rate;
+    \item loss rate;
+    \item draw rate;
+    \item ricompensa media per episodio.
+\end{itemize}
+Questa separazione netta tra addestramento ed evaluation consente di misurare in modo affidabile la qualità della policy risultante. 
+\subsection{Analisi della policy}
+La policy finale viene visualizzata tramite heatmap separate per mani \textit{hard} e \textit{soft}. Per ogni combinazione di somma del giocatore e carta del dealer, viene indicata l’azione ottimale appresa.
+Le mappe risultanti mostrano una forte corrispondenza con la
+\textit{basic strategy} del Blackjack, con addirittura momenti in cui la percentuale di vittorie risulta leggermente maggiore.
 
 \section{Glossario}
 \renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
