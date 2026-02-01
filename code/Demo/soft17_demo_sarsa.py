@@ -6,8 +6,13 @@ Nappi Vincenzo
 Niemiec Francesco
 """
 
+import tkinter as tk
+from tkinter import scrolledtext, messagebox
+from PIL import Image, ImageTk
 import random
+import threading
 from collections import defaultdict
+import time
 
 # Percorsi
 UPLOAD_PATH = "pics"
@@ -366,3 +371,160 @@ class BlackjackGUI:
         if 'lock' in self.bg_images:
             self.canvas_image.create_image(325, 140,
                                            image=self.bg_images['lock'], anchor=tk.CENTER)
+
+    def new_hand(self):
+        if not self.card_images:
+            messagebox.showwarning("Attenzione", "Caricamento immagini in corso...")
+            return
+
+        self.show_lock = False
+        self.game_active = True
+        self.dealer_revealed = False
+        self.state = self.env.reset()
+        self.btn_stand.config(state=tk.NORMAL)
+        self.btn_hit.config(state=tk.NORMAL)
+        self.btn_start.config(state=tk.DISABLED)
+        self.log_to_console("\n" + "=" * 50)
+        self.log_to_console("NUOVA MANO INIZIATA")
+        self.log_to_console("=" * 50)
+        self.draw_table()
+        reasoning = self.agent.get_reasoning(self.state, self.env)
+        self.log_to_console("\n" + reasoning)
+
+    def player_stand(self):
+        if not self.game_active:
+            return
+        self.log_to_console("\n>>> GIOCATORE: STAND <<<")
+        self.dealer_revealed = True
+        self.draw_table()
+        self.root.update()
+        time.sleep(0.5)
+        self.state, reward, done, info = self.env.step(self.state, 0)
+        self.draw_table()
+        self.root.update()
+        time.sleep(0.5)
+        self.log_game_result(reward, info)
+        self.end_game(reward)
+
+    def player_hit(self):
+        if not self.game_active:
+            return
+        self.log_to_console("\n>>> GIOCATORE: HIT <<<")
+        # Pesca carta
+        self.state, reward, done, info = self.env.step(self.state, 1)
+        self.draw_table()
+        if done:
+            # Giocatore sballato
+            value, _ = self.env.get_hand_value(self.state['player_hand'])
+            self.log_to_console(f"\nSBALLATO! Valore: {value}")
+            self.dealer_revealed = True
+            self.draw_table()
+            self.log_game_result(reward, info)
+            self.end_game(reward)
+        else:
+            reasoning = self.agent.get_reasoning(self.state, self.env)
+            self.log_to_console("\n" + reasoning)
+
+    def log_game_result(self, reward, info):
+        pv, _ = self.env.get_hand_value(self.state['player_hand'])
+        dv, _ = self.env.get_hand_value(self.state['dealer_hand'])
+        self.log_to_console("\nRISULTATO:")
+        self.log_to_console(f"Dealer: {dv}")
+        self.log_to_console(f"Giocatore: {pv}")
+        if reward > 0:
+            self.log_to_console("VITTORIA!")
+        elif reward < 0:
+            self.log_to_console("SCONFITTA")
+        else:
+            self.log_to_console("PAREGGIO")
+
+    def end_game(self, reward):
+        self.game_active = False
+        self.dealer_revealed = True
+        self.btn_stand.config(state=tk.DISABLED)
+        self.btn_hit.config(state=tk.DISABLED)
+        self.btn_start.config(state=tk.NORMAL)
+        # RISULTATO
+        self.root.after(0, lambda: self.show_result(reward))
+
+    def show_result(self, reward):
+        key = 'win' if reward > 0 else ('lose' if reward < 0 else 'draw')
+        if key in self.bg_images:
+            self.canvas_image.delete("all")
+            self.canvas_image.create_image(325, 140,
+                                           image=self.bg_images[key], anchor=tk.CENTER)
+
+    def draw_table(self):
+        if self.show_lock:
+            self.show_lock_screen()
+            return
+
+        # CANVAS TAVOLO
+        self.canvas_image.delete("all")
+        if hasattr(self, 'table_bg'):
+            self.canvas_image.create_image(325, 140,
+                                           image=self.table_bg, anchor=tk.CENTER)
+
+        # CANVAS CARTE
+        self.canvas_cards.delete("all")
+
+        # Larghezza canvas carte
+        cards_width = 650
+        cards_height = 250
+
+        # AREA DEALER
+        dealer_y = 60
+
+        dealer_hand = self.state['dealer_hand']
+        total_dealer_width = len(dealer_hand) * 80
+        dealer_start_x = (cards_width - total_dealer_width) / 2
+
+        for i, card in enumerate(dealer_hand):
+            x = dealer_start_x + i * 80 + 35
+            if i == 1 and not self.dealer_revealed:
+                self.canvas_cards.create_image(x, dealer_y, image=self.card_back, anchor=tk.CENTER)
+            else:
+                img = self.card_images.get(card, self.card_back)
+                self.canvas_cards.create_image(x, dealer_y, image=img, anchor=tk.CENTER)
+
+        dealer_label_x = dealer_start_x + total_dealer_width + 60
+        self.canvas_cards.create_text(dealer_label_x, dealer_y, text="DEALER",
+                                      font=('Arial', 14, 'bold'), fill='white', anchor=tk.W)
+
+        if self.dealer_revealed:
+            dv, soft = self.env.get_hand_value(self.state['dealer_hand'])
+            value_text = f"{dv}{' (soft)' if soft else ''}"
+            self.canvas_cards.create_text(dealer_label_x, dealer_y + 25, text=value_text,
+                                          font=('Arial', 12, 'bold'), fill='yellow', anchor=tk.W)
+
+        # AREA PLAYER
+        player_y = 175
+
+        player_hand = self.state['player_hand']
+        total_player_width = len(player_hand) * 80
+        player_start_x = (cards_width - total_player_width) / 2
+
+        for i, card in enumerate(player_hand):
+            x = player_start_x + i * 80 + 35
+            img = self.card_images.get(card, self.card_back)
+            self.canvas_cards.create_image(x, player_y, image=img, anchor=tk.CENTER)
+
+        player_label_x = player_start_x + total_player_width + 60
+        self.canvas_cards.create_text(player_label_x, player_y, text="GIOCATORE",
+                                      font=('Arial', 14, 'bold'), fill='white', anchor=tk.W)
+
+        pv, soft = self.env.get_hand_value(self.state['player_hand'])
+        value_text = f"{pv}{' (soft)' if soft else ''}"
+        text_color = 'red' if pv > 21 else 'yellow'
+        self.canvas_cards.create_text(player_label_x, player_y + 25, text=value_text,
+                                      font=('Arial', 12, 'bold'), fill=text_color, anchor=tk.W)
+
+
+def main():
+    root = tk.Tk()
+    game = BlackjackGUI(root)
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()
