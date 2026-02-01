@@ -958,6 +958,18 @@ ottimale. La demo implementata ha lo scopo di rendere osservabile in tempo
 reale il processo decisionale dell’agente una volta completata la fase di
 addestramento.
 
+\subsubsection{Ambiente di simulazione}
+L’ambiente di simulazione utilizzato per il Q-Learning coincide con quello
+descritto nella sezione dedicata a SARSA. Tale scelta consente un confronto
+diretto tra approcci \textit{on-policy} e \textit{off-policy}, eliminando
+possibili fattori di confondimento dovuti a differenze ambientali.
+
+L’ambiente è modellato come un processo decisionale di Markov e
+implementa una variante del gioco del Blackjack con spazio delle azioni
+limitato alle decisioni \textit{Hit} e \textit{Stand}. La funzione di
+ricompensa adotta uno schema neutro, assegnando $+1$ in caso di vittoria,
+$-1$ in caso di sconfitta e $0$ in caso di pareggio.
+
 \subsection{Risultati sperimentali e confronto con Q-Learning online}
 L'implementazione con \textbf{SARSA online} si è dimostrata ancora più efficace dell'implementazione con il Q-Learning online. Al termine del training su cinquecentomila episodi, la Q-table risultante contiene valori appresi per 280 azioni coppie-stato. I risultati finali hanno un \textit{win rate} del 42.67\%, contro il 40.29\% ottenuto con il Q-Learning online ed un miglioramento di più di 4 punti percentuale rispetto al Q-Learning offline.
 Si può osservare un leggero aumento del \textit{draw rate} che raggiunge il 9.43\% rispetto all '8.67\% dell'approccio con Q-Learning online. Infine si ha una significativa riduzione delle sconfitte che raggiungono il 47.90\%, il risultato più basso ottenuto tra tutti gli approcci analizzati. Nonostante il grande traguardo del limite di vittorie teorico raggiunto, anche questa implementazione ha gli stessi compromessi analizzati durante l'implementazione dell'online Q-Learning.
