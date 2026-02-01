@@ -12,8 +12,11 @@
 \usepackage[export]{adjustbox}
 \usepackage{hyperref}
 \usepackage{booktabs}
+\usepackage[all]{nowidow}
 
-\title{Soft17 -- An Intelligent Agent for Blackjack}
+
+
+\title{Soft17 -- An AI Agent for Blackjack}
 \author{Abbatiello Simone, Nappi Vincenzo, Niemiec Francesco}
 \date{January 2026}
 
@@ -32,11 +35,10 @@ Abbiamo deciso di cogliere l’occasione offerta dallo sviluppo del progetto fin
 Guidati dalla curiosità e dalla relativa semplicità delle regole, abbiamo quindi scelto il gioco del \textbf{Blackjack}. Da questa scelta nasce l’idea di sviluppare un modello che sia in grado di stimare l’esito atteso di una mano di Blackjack sulla base delle informazioni disponibili e delle strategie tipiche.
 
 
-
 \section{Nozioni basilari di Blackjack}
 \subsection{Overview}
 Il Blackjack è un gioco di carte dalla forte semplicità, non a caso è tra i più diffusi nei casinò di tutto il mondo.
-Nella sua versione comune il prevede l'uso di un numero di mazzi standard di 52 carte francesi che va da 1 a 8, e coinvolge solo due tipologie di figure: il "banco" (anche detto "dealer") ed i giocatori. L’obiettivo del singolo giocatore è ottenere una mano il cui valore totale sia pari o quanto più possibile vicino a 21, senza superare tale soglia, e che risulti superiore a quello del banco. Il banco gioca secondo le stesse regole e di conseguenza perde nel momento in cui totalizza un valore minore del giocatore o quando esso sfora la soglia del ventuno. Le carte numeriche mantengono il loro normale valore, le figure valgono ciascuna 10 punti, mentre l’asso può assumere valore 1 o 11 a seconda della scelta del giocatore. 
+Nella sua versione comune il gioco prevede l'uso di un numero di mazzi standard di 52 carte francesi che va da 1 a 8, e coinvolge solo due tipologie di figure: il "banco" (anche detto "dealer") ed i giocatori. L’obiettivo del singolo giocatore è ottenere una mano il cui valore totale sia pari o quanto più possibile vicino a 21, senza superare tale soglia, e che risulti superiore a quello del banco. Il banco gioca secondo le stesse regole e di conseguenza perde nel momento in cui totalizza un valore minore del giocatore o quando esso sfora la soglia del ventuno. Le carte numeriche mantengono il loro normale valore, le figure valgono ciascuna 10 punti, mentre l’asso può assumere valore 1 o 11 a seconda della scelta del giocatore. 
 Il gioco prende il nome dalla combinazione delle carte asso e jack nero, ma nella sua terminologia viene chiamata blackjack qualunque combinazione di un asso con una figura. Ogni partecipante compete esclusivamente contro il banco, non contro gli altri giocatori al tavolo, e può compiere una serie di scelte (come chiedere carta, stare, raddoppiare o dividere) che incidono direttamente sull’esito della mano. Ciò nonostante nella sua variante a più giocatori nel momento in cui il dealer sfora, tutti i giocatori che non sforano vincono, avendo ognuno di fatto un'influenza, anche se implicita su ciascuna partita.
 La situazione iniziale di ogni partita è costituita dal dealer con due carte: una scoperta ed una coperta, ed il giocatore sulla base delle due carte che riceve deve stabilire se pescare ancora (\textbf{HIT}) o rimanere con solo quelle due carte (\textbf{STAND}).
 Vi sono anche ulteriori possibilità, lo \textbf{SPLIT} può verificarsi quando vengono pescate come prime due carte dal giocatore due carte dallo stesso valore, in tal caso è possibile considerarle come due "prime carte" e giocare due mani contemporaneamente.
@@ -46,37 +48,31 @@ Un elemento distintivo del blackjack rispetto ad altri giochi da casinò è la p
 Proprio quest'ultimo aspetto matematico ha portato moltissima attenzione dalla comunità scientifica sul gioco,
 aprendo le porte prima ad analisi statistiche e poi a nuovi orizzonti come algoritmi genetici e modelli di Machine Learning.
 \subsection{Vantaggio del banco}
-Chiamiamo vantaggio del banco la misura quantitativa dello svantaggio strutturale a cui è sottoposto il giocatore di blackjack nel lungo periodo. Esso esprime la perdita media attesa per unità di puntata ed è un indicatore fondamentale per l’analisi matematica ed economica del gioco, in quanto sintetizza l’effetto congiunto delle regole, delle probabilità e dell’ordine delle decisioni.
-
-A differenza di altri giochi da casinò, il vantaggio del banco nel blackjack non è fisso, ma dipende in modo significativo dalla configurazione regolamentare del tavolo e dal comportamento del giocatore.
+Chiamiamo vantaggio del banco la misura quantitativa dello svantaggio strutturale a cui è sottoposto il giocatore di blackjack nel lungo periodo. Esso esprime la perdita media attesa per unità di puntata ed è un indicatore fondamentale per l’analisi matematica ed economica del gioco, in quanto sintetizza l’effetto congiunto delle regole, delle probabilità e dell’ordine delle decisioni. \newline A differenza di altri giochi da casinò, il vantaggio del banco nel blackjack non è fisso, ma dipende in modo significativo dalla configurazione regolamentare del tavolo e dal comportamento del giocatore.
 L’origine del vantaggio del banco è riconducibile a una serie di asimmetrie strutturali.
-La più rilevante è l’ordine di gioco: il giocatore è obbligato ad agire per primo e perde immediatamente la puntata nel caso in cui superi 21, indipendentemente dal risultato finale del banco. Questa regola, apparentemente neutrale, introduce un vantaggio matematico stabile a favore del casinò. A ciò si aggiungono le regole fisse del banco, che ne limitano la discrezionalità ma risultano, nel complesso, statisticamente ottimali.
-
-Ulteriori contributi al vantaggio del banco derivano dalla struttura dei pagamenti. Il pagamento del blackjack naturale è un elemento cruciale: una remunerazione pari a 3:2 riduce significativamente il margine del casinò, mentre formule meno favorevoli al giocatore, come il pagamento 6:5, possono incrementare il vantaggio del banco. 
-Anche il numero di mazzi utilizzati e le restrizioni sulle opzioni di gioco (raddoppio, divisione, resa) incidono in modo misurabile sul margine complessivo.
-
-Dal punto di vista teorico, il vantaggio del banco nel blackjack è di particolare interesse perché non è imposto esclusivamente dal caso, ma emerge dall’interazione tra regole istituzionali e decisioni individuali. Esso rappresenta quindi un esempio di come un sistema apparentemente equo possa generare, attraverso vincoli asimmetrici, un esito statisticamente sfavorevole a una delle parti.
-
-Attraverso l'attuazione di alcuni comportamenti è possibile ridurre questo svantaggio, primo di tutti è l'applicazione della strategia di base.
+La più rilevante è l’ordine di gioco: il giocatore è obbligato ad agire per primo e perde immediatamente la puntata nel caso in cui superi 21, indipendentemente dal risultato finale del banco. Questa regola, apparentemente neutrale, introduce un vantaggio matematico stabile a favore del casinò. A ciò si aggiungono le regole fisse del banco, che ne limitano la discrezionalità ma risultano, nel complesso, statisticamente ottimali. \newline Ulteriori contributi al vantaggio del banco derivano dalla struttura dei pagamenti. \newline Il pagamento del blackjack naturale è un elemento cruciale: una remunerazione pari a 3:2 riduce significativamente il margine del casinò, mentre formule meno favorevoli al giocatore, come il pagamento 6:5, possono incrementare il vantaggio del banco. 
+Anche il numero di mazzi utilizzati e le restrizioni sulle opzioni di gioco (raddoppio, divisione, resa) incidono in modo misurabile sul margine complessivo. \newline Dal punto di vista teorico, il vantaggio del banco nel blackjack è di particolare interesse perché non è imposto esclusivamente dal caso, ma emerge dall’interazione tra regole istituzionali e decisioni individuali. Esso rappresenta quindi un esempio di come un sistema apparentemente equo possa generare, attraverso vincoli asimmetrici, un esito statisticamente sfavorevole a una delle parti. \newline Attraverso l'attuazione di alcuni comportamenti è possibile ridurre questo svantaggio, primo di tutti è l'applicazione della strategia di base.
 
 \subsection{Strategia di base}
 Parliamo di strategia di base come dell’insieme di decisioni ottimali che il giocatore dovrebbe adottare in ogni possibile configurazione della propria mano e della carta scoperta del banco, assumendo condizioni di gioco standard e l’assenza di informazioni supplementari sull’ordine delle carte. Essa costituisce il riferimento teorico fondamentale per l’analisi razionale del gioco e per la valutazione del vantaggio statistico del banco.
-Per ciascuna combinazione di mano del giocatore e carta visibile del banco, viene determinata l’azione che massimizza il valore atteso della giocata.
-È importante effettuare una distinzione tra \textbf{hard-hand}, in cui l’asso ha valore fisso pari a 1, e \textbf{soft-hand}, in cui l’asso può assumere valore 11 senza rischio immediato di sballo.
+Per ciascuna combinazione di mano del giocatore e carta visibile del banco, viene determinata l’azione che massimizza il valore atteso della giocata. È importante effettuare una distinzione tra \textbf{hard-hand}, in cui l’asso ha valore fisso pari a 1, e \textbf{soft-hand}, in cui l’asso può assumere valore 11 senza rischio immediato di sballo.
 L’adozione coerente della strategia di base consente di ridurre il margine di vantaggio del banco a valori minimi, che in condizioni regolamentari favorevoli possono scendere a meno del'uno percento. 
 È tuttavia importante sottolineare che la strategia di base non elimina il rischio né garantisce vincite nel breve periodo: essa opera esclusivamente sul piano statistico, ottimizzando le decisioni nel lungo termine.
 Nel dettaglio questa strategia è stata formalizzata nel 1956 da Roger R. Baldwin, nell'articolo "The Optimal Strategy in Blackjack". Di seguito riportiamo le tabelle relative alla strategia di base del Blackjack.
 
----PLACEHOLDER---
+\begin{center}
+      \includegraphics[scale=0.38, center]{img/BaseStrategy.png}
+  \end{center}
 
 \section{Tecnologie utilizzate}
 \subsection{Overview}
-Il linguaggio scelto per raggiungere l'obbiettivo prefissato è python. In particolare abbiamo utilizzato le seguenti librerie: 
+Abbiamo deciso di sfruttare l'ambiente condiviso online \textbf{colab} e di conseguenza il linguaggio scelto per raggiungere l'obiettivo prefissato è \textbf{python}. In particolare abbiamo utilizzato le seguenti librerie: 
 \begin{itemize}
     \item \textbf{pandas}: permette l'esplorazione a la manipolazione di dati in modo semplice e flessibile;
-    \item \textbf{numpy}: ottimizza la gestione di ampi dati multidimensionali come array e matrici in modo efficiente e fornisce una serie di funzioni matematiche;
+    \item \textbf{numpy}: ottimizza la gestione di ampi dati multidimensionali come array e matrici in modo efficiente e fornisce una serie di funzioni matematiche per la loro gestione;
     \item \textbf{seaborn e matplotlib}: permettono la visualizzazione di dati tramite schemi o grafici informativi. Sono state principalmente utilizzata per mostrare i risultati dei training degli algoritmi implementati.
     \item \textbf{scikit-learn}: fornisce tool semplici ed efficienti che permettono la realizzazione di algoritmi di machine learning. Permette inoltre di valutare il modello con il calcolo delle metriche integrato. 
+    \item \textbf{tkinker}: permette di sviluppare interfacce grafiche per i programmi python implementati.
 \end{itemize}
 
 \section{Descrizione dell’agente}
@@ -90,8 +86,6 @@ L’obiettivo del progetto è lo sviluppo di un \textbf{agente intelligente} in 
     \begin{itemize}
         \item \textbf{Hit}: richiedere una carta aggiuntiva;
         \item \textbf{Stand}: mantenere la mano attuale;
-        \item \textbf{Double}: raddoppiare la puntata iniziale e ricevere una sola carta; 
-        \item \textbf{Split}: dividere la mano in due mani distinte in presenza di due carte uguali.
     \end{itemize}
     \item prendere decisioni esclusivamente sulla base della propria mano e della carta scoperta del dealer, senza conoscere le carte rimanenti nel mazzo;
     \item migliorare le proprie prestazioni nel tempo, apprendendo dai dati osservati.
@@ -102,7 +96,7 @@ L’obiettivo del progetto è lo sviluppo di un \textbf{agente intelligente} in 
 L’ambiente in cui opera l’agente viene descritto attraverso la specifica \textbf{PEAS} (Performance, Environment, Actuators, Sensors).
 
 \begin{description}
-    \item[Performance:] la misura di prestazione dell’agente è legata alla sua capacità di massimizzare il risultato economico nel gioco. In particolare vengono considerate nelle prime due pipeline l'accuratezza e robustezza nella previsione dell’esito della mano (vittoria o non sconfitta) a partire dallo stato informativo disponibile al momento della decisione, valutate tramite metriche di classificazione supervisionata (F1-score come metrica principale, affiancata da precision e recall). Nell'ultima pipeline invece andiamo a considerare la percentuale di vittorie dell'agente.
+    \item[Performance:] la misura di prestazione dell’agente è legata alla sua capacità di massimizzare il risultato economico nel gioco. In particolare vengono considerate nelle prime due pipeline l'accuratezza e robustezza nella previsione dell’esito della mano (vittoria o non sconfitta) a partire dallo stato informativo disponibile al momento della decisione, valutate tramite metriche di classificazione supervisionata (F1-score come metrica principale, affiancata da precision e recall). Per quanto riguarda il reinforcement learning invece andiamo a considerare la percentuale di vittorie dell'agente.
     
     \item[Environment:] l’ambiente è rappresentato da un tavolo di Blackjack comprendente:
     \begin{itemize}
@@ -116,12 +110,12 @@ L’ambiente in cui opera l’agente viene descritto attraverso la specifica \te
         \item \textbf{Parzialmente osservabile}: l’agente conosce solo la propria mano e la carta scoperta del dealer;
         \item \textbf{Stocastico}: l’ordine delle carte nel mazzo è pseudocasuale;
         \item \textbf{Sequenziale}: ogni azione influenza l’esito finale della mano;
-        \item \textbf{Statico}: l’ambiente non cambia mentre l’agente sta deliberando;
+        \item \textbf{Statico}: l’ambiente non cambia mentre l’agente sta delrando;
         \item \textbf{Discreto}: il numero di stati e azioni è finito;
         \item \textbf{A singolo agente}: il dealer segue una strategia prefissata e non è considerato un agente decisionale.
     \end{itemize}
 
-    \item[Actuators:] gli attuatori dell’agente corrispondono alle azioni disponibili: Hit, Stand, Double e Split.
+    \item[Actuators:] gli attuatori dell’agente corrispondono alle azioni disponibili: Hit, Stand.
 
     \item[Sensors:] l’agente percepisce:
     \begin{itemize}
@@ -132,7 +126,7 @@ L’ambiente in cui opera l’agente viene descritto attraverso la specifica \te
     \end{itemize}
 \end{description}
 
-\subsection{Scelta della strategia}
+\subsection{Scelta della prima strategia}
 
 Un primo approccio al problema avrebbe potuto basarsi sulla teoria dei giochi e sull’utilizzo di algoritmi genetici. Tuttavia, tale soluzione presenta diverse criticità:
 
@@ -141,7 +135,6 @@ Un primo approccio al problema avrebbe potuto basarsi sulla teoria dei giochi e 
     \item[Complessità dello spazio di ricerca:] l’elevato numero di stati e azioni comporta uno spazio di ricerca estremamente ampio, con conseguenti tempi di elaborazione proibitivi.
     \item[Inaccuratezza della fitness:] la natura stocastica dell’ambiente rende la funzione di fitness fortemente influenzata dalla casualità.
 \end{description}
-
 Alla luce di queste considerazioni, abbiamo deciso di affrontare il problema tramite tecniche di \textbf{apprendimento supervisionato}. In questo contesto, l’agente apprende una funzione che associa a ogni stato osservabile del gioco un’etichetta nota, rappresentata dall’esito della mano, utilizzando un dataset di mani simulate.
 
 \section{Metodologia e Raccolta dati}
@@ -159,9 +152,7 @@ In particolare, il CRISP-DM prevede le seguenti fasi principali:
     \item \textbf{Evaluation}: valutazione delle prestazioni del modello rispetto agli obiettivi prefissati;
     \item \textbf{Deployment}: integrazione del modello all’interno di un sistema utilizzabile.
 \end{itemize}
-
 Nel contesto del presente lavoro, le fasi di \emph{Business Understanding} e \emph{Data Understanding} sono state affrontate attraverso la definizione degli obiettivi dell’agente intelligente e l’analisi preliminare dei dati generati dal simulatore di Blackjack. Le successive operazioni di data cleaning e feature engineering rientrano nella fase di \emph{Data Preparation}, il cui obiettivo è rendere i dati idonei all’addestramento di modelli di apprendimento supervisionato.
-
 In conclusione, il modello CRISP-DM è stato utilizzato come \textbf{riferimento metodologico} per strutturare il progetto, senza l’obiettivo di coprirne esplicitamente tutte le fasi, ma adottandone i principi per guidare le scelte progettuali effettuate.
 
 \subsection{Scelta del dataset}
@@ -172,13 +163,12 @@ Per la scelta del dataset sono state considerate due possibili strategie:
     
     \item Utilizzare dataset già disponibili online (\url{https://www.kaggle.com/datasets/mojocolors/900000-hands-of-blackjack-results}) e (\url{https://www.kaggle.com/datasets/dennisho/blackjack-hands/data}).
 \end{enumerate}
-
-La prima opzione come pro avrebbe garantito un grande controllo sui dati, ma un errore minimo nel simulatore avrebbe o una nostra scelta sbagliata e/o inesperta nella categorizzazione dei dati avrebbe avuto un impatto troppo impatto sul modello.
-La seconda opzione seppur all'apparenza più facile, avrebbe potuto celare delle insidie, come una difficile comprensione dei dataset oppure "fastidi" dovuti alla loro enorme dimensione. 
-Avendo valutato per bene ambo le alternativi ci siamo trovati inizialmente di fronte ad un bivio, successivamente abbiamo optato per una soluzione "ibrida".
-Il più corposo tra i principali due dataset trovati contava cinquanta milioni di mani di blackjack simulate, un numero talmente elevato che il training del modello con le risorse a nostra disposizione sarebbe risultato infito. Esso però riportava anche una repository \textbf{GitHub} con il programma usato per simulare queste mani.
+La prima opzione come pro avrebbe garantito un grande controllo sui dati, ma un errore minimo nel simulatore o una nostra scelta sbagliata e/o inesperta nella categorizzazione dei dati avrebbe avuto un impatto troppo alto sul modello.
+La seconda opzione, seppur all'apparenza più facile, avrebbe potuto celare delle insidie, come una difficile comprensione dei dataset oppure "fastidi" dovuti alla loro enorme dimensione. 
+Avendo valutato per bene ambo le alternativi ci siamo trovati inizialmente di fronte ad un bivio, optando poi per una soluzione "ibrida".
+Il più corposo tra i principali due dataset trovati contava cinquanta milioni di mani di blackjack simulate, un numero talmente elevato che il training del modello con le risorse a nostra disposizione sarebbe risultato infinito. Esso però riportava anche una repository \textbf{GitHub} con il programma usato per simulare queste mani.
 Abbiamo quindi preso questo programma e generato un dataset con circa cinquecentomila mani giocate, una quantità tale da poter effettuare un buon training in tempi tutto sommato contenuti.
-È importante notare come la scelta di mantenere inalterato l'algoritmo nasce da due ragioni: la prima mantenere inalterati gli ottimi risultati relativi all'usabilità del dataset, la seconda (nonchè forse la più importante) è quella di voler andare ad operare direttamente sui dati anzichè sulla loro generazione.
+È importante notare come la scelta di mantenere inalterato l'algoritmo nasce da due ragioni: innanzitutto per mantenere inalterati gli ottimi risultati relativi all'usabilità del dataset, la seconda (nonchè forse la più importante) è quella di voler andare ad operare direttamente sui dati anzichè sulla loro generazione.
 
 \subsection{Regole seguite}
 Per generare il dataset si è quindi scelto di utilizzare le stesse regole indicate dal dataset (\url{https://www.kaggle.com/datasets/dennisho/blackjack-hands/data}).
@@ -211,9 +201,9 @@ Bisogna notare anche quanto segue:
 \subsection{Esplorazione}
 Il dataset generato necessità di varie operazioni di pulizia dei dati ed in generale di data engineering per renderlo consono ai nostri scopi.
 C'è necessità di \textbf{Feature scaling}, \textbf{Feature construction}, \textbf{Feature extraction}. 
-Iniziamo però da una fase iniziale di esplorazione dei dati, la quale serve per comprendere su quali aree andare ad agire.
-Data la natura condivisa di questa fase abbiamo deciso di usare \textit{Colab}(quindi i comandi che andremo a specificare successivamente faranno riferimento alla sua sintassi).
-Come prima cosa quindi abbiamo importato il file del dataset (in formato .csv) e abbiamo visualizzato le sue colonne. In particolare il dataset iniziale era composto da queste colonne: 
+Iniziamo però da una fase iniziale di esplorazione dei dati, la quale serve per comprendere su quali aree agire.
+Data la natura condivisa di questa fase abbiamo deciso di usare \textit{Colab} (quindi i comandi che andremo a specificare successivamente faranno riferimento alla sua sintassi).
+Come prima cosa quindi abbiamo importato il file del dataset (in formato .csv) per visionare le caratteristiche. In particolare il dataset iniziale era composto da: 
 \begin{itemize}
     \item \textbf{shoe\_id}: Identificativo del mazzo utilizzato per la mano.
     \item \textbf{cards\_remaining}: Numero di carte rimanenti nel mazzo all'inizio della mano.
@@ -228,15 +218,14 @@ Come prima cosa quindi abbiamo importato il file del dataset (in formato .csv) e
     \item \textbf{true\_count}: Conteggio all'inizio della mano.
     \item \textbf{win}: Risultato della mano per il giocatore.
     \end{itemize}
-Successivamente abbiamo individuato \textit{WIN} come colonna utile per la nostra classificazione, di fatto abbiamo analizzato quali fossero i valori che potesse assumere e li abbiamo raggruppati in tre categorie, ovvero minori di zero, uguali a zero e maggiori di zero.
+Successivamente abbiamo individuato \textit{WIN} come colonna utile per la nostra classificazione. Di fatto abbiamo analizzato quali fossero i valori che potesse assumere e li abbiamo raggruppati in tre categorie, ovvero minori di zero, uguali a zero e maggiori di zero.
 Fatto ciò abbiamo visualizzato il numero di istanze per ciascuna categoria:
 \begin{itemize}
     \item 421940 istanze con win \textbf{maggiore di zero.}
     \item 493992 istanze con win \textbf{minore di zero.}
     \item 84068 istanze con win \textbf{uguale a zero.}
 \end{itemize}
-A primo impatto il dataset presentava uno sbilanciamento verso le "sconfitte", tuttavia abbiamo scelto di non reputarlo così influente alla luce di due considerazioni: la prima è che è insito alla natura del gioco (favorevole al banco) che siano presenti molte più sconfitte che vittorie, e la seconda è che andando a considerare semplicemente i casi "favorevoli" ovvero quelli dove la win è maggiore o uguale a zero, il dataset sarebbe apparso come bilanciato.
-Successivamente abbiamo verificato quanti valori nulli fossero presenti nelle colonne, i risultati hanno mostrato che nessuna colonna presentava valori nulli. Ciò non era assolutamente inaspettato data la natura "sintetica" dei dati.
+A primo impatto il dataset presentava uno sbilanciamento verso le "sconfitte", tuttavia abbiamo scelto di non reputarlo così influente alla luce di due considerazioni: la prima è che è insito alla natura del gioco (favorevole al banco) che siano presenti molte più sconfitte che vittorie, e la seconda è che andando a considerare semplicemente i casi "favorevoli" ovvero quelli dove la win è maggiore o uguale a zero, il dataset sarebbe apparso come bilanciato. Successivamente abbiamo verificato quanti valori nulli fossero presenti nelle colonne, i risultati hanno mostrato che nessuna colonna presentava valori nulli. Ciò non era assolutamente inaspettato data la natura "sintetica" dei dati.
 \subsection{Data Cleaning}
 Siccome tutte le colonne del dataset non presentano dati mancanti, questa fase non comprende all'atto pratico nessun cambiamento.
 \subsection{Feature Scaling}
@@ -252,7 +241,7 @@ Per fare ciò abbiamo valutato diverse opzioni:
     \item[Normalizzazione min-max:] il problema di questo tipo di normalizzazione era che a noi interessava mantenere anche lo zero a fini statistici ma applicandola ciò non sarebbe possibile (se invece avessimo considerato lo 0 come parte della vittoria allora sarebbe stata perfetta)
     \item [Normalizzazione Z-score:] qui non avremmo avuto pieno controllo ma la trasformazione sarebbe stata attuata sulla densità media.
     \end{description}
-Abbiamo quindi optato per una strategia di "Discretizzazione con soglie"(\textbf{da aggiungere nel glossario}) che ci permette di fare esattamente ciò che
+Abbiamo quindi optato per una strategia di discretizzazione con soglie che ci permette di fare esattamente ciò che
 ci serve.
 \subsection{Feature Engineering}
 Nonostante il lavoro effettuato nella fase precedente, il dataset risultava fortemente inadeguato ai nostri scopi, quindi in questa fase tramite tecniche di Feature Selection e Feature Construction abbiamo cercato di plasmarlo al meglio per i nostri scopi.
@@ -273,9 +262,9 @@ Detto ciò abbiamo eliminato anche run\_count, true\_count e cards\_remaining pe
 Una volta conclusa la fase di \emph{Feature Selection}, è stato necessario modificare alcune colonne del dataset al fine di renderle utilizzabili dal modello.
 La prima trasformazione riguarda la variabile \textbf{initial\_hand}, che è rappresentata come una lista di carte. Questa rappresentazione risulta poco adatta all’utilizzo diretto da parte del modello; per questo motivo si è deciso di scomporla in tre differenti variabili:
 \begin{itemize}
-    \item \textbf{player\_sum}: la somma dei valori di tutte le carte presenti nella mano del giocatore
-    \item \textbf{player\_is\_soft}: variabile binaria che indica se la mano è \emph{soft}, ovvero se contiene un asso valutabile come 11
-    \item \textbf{player\_pair}: variabile binaria che indica se la mano è composta da due carte dello stesso valore e quindi se è possibile effettuare lo \emph{split}.
+    \item \textbf{player\_sum}: la somma dei valori di tutte le carte presenti nella mano del giocatore;
+    \item \textbf{player\_is\_soft}: variabile binaria che indica se la mano è \emph{soft}, ovvero se contiene un asso valutabile come 11;
+    \item \textbf{player\_pair}: vaCriabile binaria che indica se la mano è composta da due carte dello stesso valore e quindi se è possibile effettuare lo \emph{split}.
 \end{itemize}
 \subsection{Colonne finali del Dataset}
 Al termine della fase di elaborazione, il dataset finale risulta composto dalle seguenti variabili:
@@ -287,9 +276,9 @@ Al termine della fase di elaborazione, il dataset finale risulta composto dalle 
 \end{itemize}
 La variabile target è \textbf{win}, che indica l’esito della decisione presa dal giocatore, assumendo i valori di vittoria e sconfitta.
 \subsection{Modeling}
-Prima di parlare degli algoritmi utilizzati occorre fare delle premesse. Per scegliere i migliori parametri adatti agli algoritmi e il problema che stiamo affrontando abbiamo deciso di utilizzare una \textbf{griglia di ricerca} per identificare gli iperparametri. È una classe contenuta nella libreria scikit-learn che ci permette di testare più combinazioni di parametri automaticamente evitando di rieseguire manualmente i training.
-La prima operazione effettuata è lo splitting del dataset per distinguere i dati di test e i dati per il training. Nello specifico l'80\% dei dati sarà utilizzato per il training e il 20\% per il testing. Avviene successivamente un ulteriore split dei dati di training distinguendo tra training e validazione, nello specifico il 78.5\%  per il training e il restante per la validazione. È stato inoltre fissato un seme randomico per rendere i test ripetibili. % Da aggiustare%
-Infine stratify permette di suddividere il dataset in modo che ogni sottoinsieme mantenga la stessa identica proporzione di classi del dataset originale.
+Prima di parlare degli algoritmi utilizzati occorre fare delle premesse. Per scegliere i migliori parametri adatti agli algoritmi e il problema che stiamo affrontando abbiamo deciso di utilizzare una \textbf{griglia di ricerca} per comprendere i valori adatti agli iperparametri. È una classe contenuta nella libreria scikit-learn che ci permette di testare più combinazioni di parametri automaticamente evitando di rieseguire manualmente i training.
+La prima operazione effettuata è lo splitting del dataset per distinguere i dati di test e i dati per il training. Nello specifico l'80\% dei dati sarà utilizzato per il training e il 20\% per il testing. Avviene successivamente un ulteriore split dei dati di training distinguendo tra training vero e proprio e validazione, nello specifico il 78.5\%  per il training e il restante per la validazione. È stato inoltre fissato un seme randomico per rendere i test ripetibili.
+Infine \textit{stratify} permette di suddividere il dataset in modo che ogni sottoinsieme mantenga la stessa identica proporzione di classi del dataset originale.
 Per la prima versione di questa pipeline (Pipeline 1A) l'algoritmo utilizzato è un albero decisionale di classificazione (DecisionTreeClassifier) specificando i seguenti parametri: 
 
 \begin{itemize}
@@ -298,9 +287,7 @@ Per la prima versione di questa pipeline (Pipeline 1A) l'algoritmo utilizzato è
     \item \textbf{ min\_samples\_leaf:} che determina il numero minimo di campioni che devono essere presenti nelle foglie. I valori sono: [1,2]
 \end{itemize}
 \subsection{Valutazioni finali}
-I migliori parametri scelti dalla griglia sono: max\_depth = 10, min\_samples\_leaf= 1, min\_samples\_split= 2.
-
-Le metriche invece ci hanno fornito i seguenti risultati: 
+I migliori parametri scelti dalla griglia sono: max\_depth = 10, min\_samples\_leaf= 1, min\_samples\_split= 2.\newline Le metriche invece ci hanno fornito i seguenti risultati: 
 \begin{itemize}
     \item F1-Score Test: 0.6627
     \item Accuracy:  0.6871
@@ -309,19 +296,16 @@ Le metriche invece ci hanno fornito i seguenti risultati:
 \end{itemize}
   L'algoritmo ha portato a dei risultati ragionevoli che bilanciano le prestazioni ma forniscono anche predizioni discretamente accurate sul finale della partita, nonostante la sua natura stocastica.
   \begin{center}
-      \includegraphics[scale=1.0, center]{ConfusionMatrixPipeline1A.png}
+      \includegraphics[scale=1.0, center]{img/ConfusionMatrixPipeline1A.png}
   \end{center}
 \section{Seconda pipeline}
 Per la seconda versione della pipeline (Pipeline 1B) è stato adottato un
 approccio basato su \textbf{ensemble di alberi decisionali, ovvero Random Forest}
 (\textit{RandomForestClassifier}), mantenendo invariate tutte le fasi di
 preprocessing, feature engineering e suddivisione del dataset rispetto alla
-pipeline 1A, al fine di garantire un confronto equo tra i modelli.
-
-Analogamente a quanto fatto per la pipeline 1A, anche in questo caso è stato
+pipeline 1A, al fine di garantire un confronto equo tra i modelli. \newline Analogamente a quanto fatto per la pipeline 1A, anche in questo caso è stato
 utilizzata una \textbf{griglia di ricerca} per la selezione degli iperparametri, operando
 sulla medesima formulazione del problema come task di classificazione binaria.
-
 In particolare:
 \begin{itemize}
     \item vengono utilizzate le stesse feature;
@@ -349,7 +333,7 @@ significativo nel contesto analizzato. Di conseguenza, la pipeline 1B viene
 considerata principalmente come termine di confronto, mentre la pipeline 1A
 rappresenta una soluzione più efficiente e interpretabile.
 \begin{center}
-      \includegraphics[scale=0.8, center]{secondpipeline.png}
+      \includegraphics[scale=0.75, center]{img/ConfusionMatrixPipeline1B.png}
 \end{center}
 
 \section{Reinforcement Learning}
@@ -357,9 +341,9 @@ rappresenta una soluzione più efficiente e interpretabile.
 Sebbene i precedenti approcci si siano dimostrati efficienti
 nell'affrontare il problema in esame, hanno anche evidenziato delle problematiche:
 \begin{itemize}
-    \item il Blackjack è un processo decisionale sequenziale, in cui ogni azione influenza gli stati futuri della partita, tuttavia ciò non viene riflesso con questi approcci;
+    \item il Blackjack è un \textbf{processo decisionale sequenziale}, in cui ogni azione influenza gli stati futuri della partita, tuttavia ciò non viene riflesso con questi approcci;
     \item l'assenza di feedback intermedio;
-    \item l’azione ritenuta migliore viene dedotta indirettamente a partire dalle predizioni del modello;
+    \item l’azione ritenuta migliore viene dedotta indirettamente a partire dalle predizioni del finale delle partite del modello:
     ciò risulta essere meno adatto a problemi in cui l’obiettivo principale è l’ottimizzazione di una sequenza di decisioni.
 \end{itemize}
 Inoltre i risultati ottenuti evidenziano che il modello riesce a individuare circa il 60\% dei veri casi positivi. Questo evidenzia una percentuale di falsi negativi fin troppo alta.
@@ -368,8 +352,7 @@ un insieme di feature forse troppo ridotto, portano il nostro modello a non svol
 Rendendoci conto che per la costruzione di un modello che fosse in grado di giocare a Blackjack in maniera efficiente non bastava affrontare il problema come un problema di apprendimento supervisionato, abbiamo deciso di cambiare il nostro approccio.
 \subsection{Introduzione al ruolo di Markov}
 Parallelamente al corso di \textit{Fondamenti di Intelligenza Artificilae}, uno degli esami che abbiamo seguito era quello di \textit{Musimatica}. All'interno di tale corso è stato introdotto il concetto di "Catena di Markov"\cite{dispensaMusimatica}, come un modello matematico per descrivere sistemi che hanno un'evoluzione casuale guidata da distribuzioni di probabilità. Tale modello possiede due componenti: uno insieme di stati e le probabilità di transizione da uno stato all'altro.
-Abbiamo quindi identificato un facile parallelismo col blackjack, ma con nozioni veramente basilari non sarebbe stato possibile andare avanti.
-Abbiamo quindi condotto delle ricerche basilari, necessarie per capire se stessimo ancora sbagliando strada. 
+Abbiamo quindi identificato un facile parallelismo col blackjack, ma con nozioni veramente basilari non sarebbe stato possibile andare avanti. Abbiamo quindi condotto delle ricerche basilari, necessarie per capire se stessimo ancora sbagliando strada. 
 Per comprenderne i risultati è quindi necessario dare una serie di definizioni.
 \subsubsection{Processo di Markov}
 Definiamo un \textbf{Processo di Markov} come un processo che non ha memoria degli stati precedenti, e di conseguenza lo stato futuro è dettato esclusivamente dallo stato attuale.
@@ -385,7 +368,7 @@ P(S_{t+1} \mid S_1, S_2, \ldots, S_t)=P(S_{t+1} \mid S_t).       \cite{markovSta
 \subsubsection{Markov Reward Process}
 Un \textbf{Processo di Ricompensa di Markov} 
 è una catena di Markov con valori di ricompensa (reward).
-Un Processo di Ricompensa di Markov è definito come la quadrupla:
+\newline Un Processo di Ricompensa di Markov è definito come la quadrupla:
 \[
 (\mathcal{S}, \mathbf{P}, \mathcal{R}, \gamma),
 \]
@@ -419,11 +402,11 @@ Definiamo in particolare un \textbf{MDP Parzialmente Osservabile} (POMDP) un pro
 dove $\mathcal{O}$  un insieme finito di osservazioni e $\mathcal{Z}$ la funzione di osservazione.
 
 \subsection{Markov ed il Blackjack}
-Il problema del Blackjack è stato modellato come un MDP. Lo stato dell’ambiente è definito esclusivamente dalle informazioni osservabili dal giocatore al momento della decisione, ovvero: la somma della propria mano, la presenza di una mano soft, e la carta scoperta del dealer. Sebbene il gioco del Blackjack, nella sua formulazione completa, sia più propriamente descrivibile come un Processo Decisionale Parzialmente Osservabile (POMDP) a causa della dipendenza dall’ordine delle carte nel mazzo, abbiamo assunto una formulazione \textit{puramente} markoviana rispetto allo stato informativo del giocatore, ignorando volontariamente informazioni non osservabili. 
+Il problema del Blackjack è stato modellato come un  \textbf{MDP}.\newline Lo stato dell’ambiente è definito esclusivamente dalle informazioni osservabili dal giocatore al momento della decisione, ovvero: la somma della propria mano, la presenza di una mano soft, e la carta scoperta del dealer. Sebbene il gioco del Blackjack, nella sua formulazione completa, sia più propriamente descrivibile come un Processo Decisionale Parzialmente Osservabile (POMDP) a causa della dipendenza dall’ordine delle carte nel mazzo, abbiamo assunto una formulazione \textit{puramente} markoviana rispetto allo stato informativo del giocatore, ignorando volontariamente informazioni non osservabili. 
 Tale approssimazioni consente quindi di affrontare il problema come un MDP episodico con stati e azioni discrete, con ricompensa associata all’esito finale della mano.
 Abbiamo trovato riscontro con tale affermazione\cite{mdpBJ}, ciò ci ha moralmente dato un via libera per il procedere con questo approccio.
 \subsection{Scelta del Reinforcement Learning}
-Una volta classificato il problema, abbiamo deciso di adottare un approccio di Reinforcement Learning, che viene naturale siccome trattiamo il tutto come un MDP.
+Una volta classificato il problema, abbiamo deciso di adottare un approccio di \textbf{Reinforcement Learning}, che viene naturale siccome trattiamo il tutto come un MDP.
 Difatto definiamo il Reinforcement Learning come un paradigma di apprendimento automatico in cui un agente impara a prendere decisioni sequenziali interagendo con un ambiente, al fine di massimizzare una misura cumulativa di ricompensa nel lungo periodo.
 Più precisamente, l’agente e l’ambiente interagiscono attraverso una sequenza di istanti temporali discreti
 \( t = 0, 1, 2, 3, \ldots \).
@@ -435,7 +418,7 @@ nello stato \( S_t \).
 All'istante successivo, come conseguenza dell’azione intrapresa, l’agente riceve una ricompensa numerica
 \( R_{t+1} \in \mathcal{R} \subset \mathcal{R} \) e si ritrova in un nuovo stato \( S_{t+1} \).
 \begin{center}
-      \includegraphics[scale=0.6, center]{agent.png}
+      \includegraphics[scale=0.6, center]{img/agent.png}
   \end{center}\cite{stanfordRL}
 Il problema adesso è quindi quello di far apprendere una policy che massimizzi il ritorno atteso nel lungo periodo. 
 \subsection{On-policy vs Off-policy}
@@ -491,8 +474,7 @@ Questa caratteristica consente all’algoritmo di convergere verso una policy ot
 L'algoritmo \textbf{SARSA} (State-Action-Reward-State-Action) è un altro algoritmo di Reinforcement Learning
 \textit{on-policy}, introdotto per apprendere una policy direttamente a partire dal comportamento effettivamente adottato dall’agente durante l’interazione con l’ambiente.
 \section{Origine e contesto}
-SARSA fa la sua prima apparizione nel paper "On-Line Q-Learning Using Connectionist System"\cite{SARSA}, sotto il nome di "Modified Connectionist Q-Learning".
-L'algoritmo ha due idee cardine dietro al suo funzionamento:
+SARSA fa la sua prima apparizione nel paper "On-Line Q-Learning Using Connectionist System"\cite{SARSA}, sotto il nome di "Modified Connectionist Q-Learning". L'algoritmo ha due idee cardine dietro al suo funzionamento:
 \begin{description}
     \item[Temporal Difference Learning:] l'agente impara da una differenza temporale tra due stime successive, non dal risultato finale completo, permettendo di aggiornare la stima del valore corrente durante il training.
     \item[Exploration-Exploitation tradeoff:] trovare un buon compromesso tra \textit{esplorazione} (quando l’agente compie azioni che lo portano in nuovi stati e situazioni mai sperimentate prima)  ed \textit{exploitation} (quando l’agente sfrutta le esperienze passate per ottenere prestazioni migliori nell’ambiente in cui si trova attualmente).
@@ -559,7 +541,7 @@ L'analisi della curva di apprendimento, ottenuta mediante media mobile su finest
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=1.00\textwidth]{3a.png}
+    \includegraphics[width=1.00\textwidth]{img/3a.png}
     \caption{Risultati Implementazione– Online Q-Learning}
     \label{fig:pipeline3-offline}
 \end{figure}
@@ -943,7 +925,7 @@ Le mappe risultanti mostrano una forte corrispondenza con la
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=1.00\textwidth]{SARSApolicy.png}
+    \includegraphics[width=1.00\textwidth]{img/SARSApolicy.png}
     \caption{SARSA Policy – Online SARSA}
     \label{fig:SARSAonlineResult2}
 \end{figure}
@@ -951,19 +933,19 @@ Le mappe risultanti mostrano una forte corrispondenza con la
 \subsection{Risultati sperimentali e confronto con Q-Learning online}
 L'implementazione con \textbf{SARSA online} si è dimostrata ancora più efficace dell'implementazione con il Q-Learning online. Al termine del training su cinquecentomila episodi, la Q-table risultante contiene valori appresi per 280 azioni coppie-stato. I risultati finali hanno un \textit{win rate} del 42.67\%, contro il 40.29\% ottenuto con il Q-Learning online ed un miglioramento di più di 4 punti percentuale rispetto al Q-Learning offline.
 Si può osservare un leggero aumento del \textit{draw rate} che raggiunge il 9.43\% rispetto all '8.67\% dell'approccio con Q-Learning online. Infine si ha una significativa riduzione delle sconfitte che raggiungono il 47.90\%, il risultato più basso ottenuto tra tutti gli approcci analizzati. Nonostante il grande traguardo del limite di vittorie teorico raggiunto, anche questa implementazione ha gli stessi compromessi analizzati durante l'implementazione dell'online Q-Learning.
-Nelle seguenti figure è possibile osservare il progredire  del modello fino a raggiungere risultati vicini alla \textit{basic strategy} inizialmente illustrata.
+Nelle seguenti figure è possibile osservare il progredire del modello fino a raggiungere risultati vicini alla \textit{basic strategy} inizialmente illustrata.
 
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=1.00\textwidth]{SARSAonlineResult.png}
+    \includegraphics[width=1.00\textwidth]{img/SARSAonlineResult.png}
     \caption{Risultati Implementazione – Online SARSA}
     \label{fig:SARSAonlineResult}
 \end{figure}
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=1.00\textwidth]{SARSArewardDistribution.png}
+    \includegraphics[width=1.00\textwidth]{img/SARSArewardDistribution.png}
     \caption{Distribuzione dei reward – Online SARSA}
     \label{fig:SARSAonlineResult2}
 \end{figure}
@@ -990,27 +972,14 @@ Qui è possibile osservare una tabella di riepilogo che contiene tutti i risulta
 
 
 \section{Considerazioni finali}
+Dopo tutte le analisi e le considerazioni effettuate, la decisione di implementare un prototipo del nostro agente non poteva che ricadere sui due modelli più performanti e che sono riusciti a raggiungere (o quasi) la base strategy per massimizzare il win rate. Abbiamo quindi implementato un 
 
 
 
-
-\section{Glossario}
-\renewcommand{\arraystretch}{1.5} % Aumenta lo spazio verticale tra le righe
+\renewcommand{\arraystretch}{1.5} 
 \setlength{\arrayrulewidth}{0.5pt}
 
 \noindent
-\begin{tabularx}{\textwidth}{>{\bfseries}l X} % Prima colonna in grassetto, seconda estesa
-    \rowcolor{Gray!20} % Colore dell'intestazione
-    Termine & Definizione \\ \toprule
-    
-    Data binning & Tecnica di data preprocessing utilizzata per diminuire l'errore osservabile.I dati originali sono ridotti a un piccolo range di intervalli decisi tramite varie metodologie. \\ 
-    \midrule
-    
-    Data leakage & Problema di un modello di ML: il modello è capace di lavorare accuratamente solo in fase di addestramento e non in fase di rilascio. \\ 
-    \midrule
- 
-    \bottomrule
-\end{tabularx}
 
 \bibliographystyle{unsrt}
 \bibliography{bibliography.bib}
