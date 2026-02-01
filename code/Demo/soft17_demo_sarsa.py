@@ -294,3 +294,75 @@ class BlackjackGUI:
             self.show_lock_screen()
         except Exception as e:
             self.log_to_console(f"Errore caricamento immagini: {e}")
+
+    def create_ui(self):
+        main_frame = tk.Frame(self.root, bg='#1a472a')
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        game_frame = tk.Frame(main_frame, bg='#1a472a', width=650)
+        game_frame.pack(side=tk.LEFT, fill=tk.BOTH, padx=(0, 10))
+        game_frame.pack_propagate(False)
+        image_frame = tk.Frame(game_frame, bg='#1a472a', height=280)
+        image_frame.pack(fill=tk.X, pady=(0, 5))
+        image_frame.pack_propagate(False)
+
+        self.canvas_image = tk.Canvas(image_frame, bg='#0d5c2d', highlightthickness=0)
+        self.canvas_image.pack(fill=tk.BOTH, expand=True)
+
+        #CARTE
+        cards_frame = tk.Frame(game_frame, bg='#0d5c2d', height=250)
+        cards_frame.pack(fill=tk.X, pady=(5, 5))
+        cards_frame.pack_propagate(False)
+
+        self.canvas_cards = tk.Canvas(cards_frame, bg='#0d5c2d', highlightthickness=2,
+                                      highlightbackground='#8B4513')
+        self.canvas_cards.pack(fill=tk.BOTH, expand=True)
+
+        #BOTTONI
+        control_frame = tk.Frame(game_frame, bg='#1a472a', height=80)
+        control_frame.pack(fill=tk.X, pady=(5, 0))
+        control_frame.pack_propagate(False)
+
+        btn_style = {'font': ('Arial', 14, 'bold'), 'width': 12, 'height': 2}
+
+        self.btn_start = tk.Button(control_frame, text="NUOVA MANO",
+                                   command=self.new_hand, bg='#4CAF50', fg='white', **btn_style)
+        self.btn_start.pack(side=tk.LEFT, padx=8, pady=10)
+
+        self.btn_hit = tk.Button(control_frame, text="HIT",
+                                 command=self.player_hit, bg='#2196F3', fg='white',
+                                 state=tk.DISABLED, **btn_style)
+        self.btn_hit.pack(side=tk.LEFT, padx=8, pady=10)
+
+        self.btn_stand = tk.Button(control_frame, text="STAND",
+                                   command=self.player_stand, bg='#FF9800', fg='white',
+                                   state=tk.DISABLED, **btn_style)
+        self.btn_stand.pack(side=tk.LEFT, padx=8, pady=10)
+
+        #SARSA
+        console_frame = tk.Frame(main_frame, bg='#1a472a', width=400)
+        console_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
+        console_title = tk.Label(console_frame, text="Soft17 - SARSA",
+                                 font=('Courier', 12, 'bold'), bg='#1a472a', fg='#FFD700')
+        console_title.pack(pady=(0, 10))
+
+        self.console = scrolledtext.ScrolledText(console_frame,
+                                                 font=('Courier', 9),
+                                                 bg='#0a0a0a', fg='#00ff00',
+                                                 wrap=tk.WORD)
+        self.console.pack(fill=tk.BOTH, expand=True)
+        self.console.config(state=tk.DISABLED)
+
+    def log_to_console(self, message):
+        self.console.config(state=tk.NORMAL)
+        self.console.insert(tk.END, message + "\n")
+        self.console.see(tk.END)
+        self.console.config(state=tk.DISABLED)
+
+    def show_lock_screen(self):
+        self.canvas_image.delete("all")
+        self.canvas_cards.delete("all")
+        if 'lock' in self.bg_images:
+            self.canvas_image.create_image(325, 140,
+                                           image=self.bg_images['lock'], anchor=tk.CENTER)
