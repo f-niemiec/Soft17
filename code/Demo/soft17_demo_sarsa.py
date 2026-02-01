@@ -224,3 +224,73 @@ class SARSAAgent:
 
             if callback and (episode + 1) % 10000 == 0:
                 callback(episode + 1, num_episodes)
+class BlackjackGUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("SARSA Blackjack - Soft17")
+        self.root.geometry("1100x650")
+        self.root.configure(bg='#1a472a')
+
+        self.env = BlackjackEnv(num_decks=8)
+        self.agent = SARSAAgent(epsilon=0.01)
+        self.state = None
+        self.game_active = False
+        self.dealer_revealed = False
+        self.show_lock = True
+
+        self.card_images = {}
+        self.bg_images = {}
+
+        self.create_ui()
+        self.start_training()
+
+    def start_training(self):
+        """Avvia il training in un thread separato"""
+        self.log_to_console("=== BENVENUTO AL BLACKJACK SARSA ===\n")
+        self.log_to_console("Inizializzazione in corso...")
+        self.log_to_console("Training del modello SARSA...\n")
+
+        def train_callback(episode, total):
+            self.log_to_console(f"Progresso training: {episode}/{total}")
+
+        def do_training():
+            self.agent.train(self.env, num_episodes=500000, callback=train_callback)
+            self.root.after(0, self.training_complete)
+
+        thread = threading.Thread(target=do_training, daemon=True)
+        thread.start()
+
+    def training_complete(self):
+        self.log_to_console("\n✓ Training completato!")
+        self.log_to_console(f"Q-table: {len(self.agent.q_table)} stati")
+        self.log_to_console("\nRegole: Dealer sta su 17 hard, pesca su 17 soft")
+        self.log_to_console("\nPremi 'NUOVA MANO' per iniziare!")
+        self.load_images()
+
+    def load_images(self):
+        try:
+            for i in range(1, 11):
+                img = Image.open(f"{UPLOAD_PATH}/{i}.png")
+                img = img.resize((70, 98), Image.Resampling.LANCZOS)
+                self.card_images[i] = ImageTk.PhotoImage(img)
+
+            img = Image.open(f"{UPLOAD_PATH}/ace.png")
+            img = img.resize((70, 98), Image.Resampling.LANCZOS)
+            self.card_images[11] = ImageTk.PhotoImage(img)
+
+            img = Image.open(f"{UPLOAD_PATH}/card_back.png")
+            img = img.resize((70, 98), Image.Resampling.LANCZOS)
+            self.card_back = ImageTk.PhotoImage(img)
+
+            img = Image.open(f"{UPLOAD_PATH}/still.png")
+            img = img.resize((650, 280), Image.Resampling.LANCZOS)
+            self.table_bg = ImageTk.PhotoImage(img)
+
+            for name in ['lock', 'win', 'lose', 'draw']:
+                img = Image.open(f"{UPLOAD_PATH}/{name}.png")
+                img = img.resize((650, 280), Image.Resampling.LANCZOS)
+                self.bg_images[name] = ImageTk.PhotoImage(img)
+
+            self.show_lock_screen()
+        except Exception as e:
+            self.log_to_console(f"Errore caricamento immagini: {e}")
