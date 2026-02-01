@@ -13,7 +13,7 @@
 \usepackage{hyperref}
 \usepackage{booktabs}
 
-\title{Soft17 -- An Intelligent Agent for Blackjack}
+\title{Soft17 -- An AI Agent for Blackjack}
 \author{Abbatiello Simone, Nappi Vincenzo, Niemiec Francesco}
 \date{January 2026}
 
@@ -32,11 +32,10 @@ Abbiamo deciso di cogliere l’occasione offerta dallo sviluppo del progetto fin
 Guidati dalla curiosità e dalla relativa semplicità delle regole, abbiamo quindi scelto il gioco del \textbf{Blackjack}. Da questa scelta nasce l’idea di sviluppare un modello che sia in grado di stimare l’esito atteso di una mano di Blackjack sulla base delle informazioni disponibili e delle strategie tipiche.
 
 
-
 \section{Nozioni basilari di Blackjack}
 \subsection{Overview}
 Il Blackjack è un gioco di carte dalla forte semplicità, non a caso è tra i più diffusi nei casinò di tutto il mondo.
-Nella sua versione comune il prevede l'uso di un numero di mazzi standard di 52 carte francesi che va da 1 a 8, e coinvolge solo due tipologie di figure: il "banco" (anche detto "dealer") ed i giocatori. L’obiettivo del singolo giocatore è ottenere una mano il cui valore totale sia pari o quanto più possibile vicino a 21, senza superare tale soglia, e che risulti superiore a quello del banco. Il banco gioca secondo le stesse regole e di conseguenza perde nel momento in cui totalizza un valore minore del giocatore o quando esso sfora la soglia del ventuno. Le carte numeriche mantengono il loro normale valore, le figure valgono ciascuna 10 punti, mentre l’asso può assumere valore 1 o 11 a seconda della scelta del giocatore. 
+Nella sua versione comune il gioco prevede l'uso di un numero di mazzi standard di 52 carte francesi che va da 1 a 8, e coinvolge solo due tipologie di figure: il "banco" (anche detto "dealer") ed i giocatori. L’obiettivo del singolo giocatore è ottenere una mano il cui valore totale sia pari o quanto più possibile vicino a 21, senza superare tale soglia, e che risulti superiore a quello del banco. Il banco gioca secondo le stesse regole e di conseguenza perde nel momento in cui totalizza un valore minore del giocatore o quando esso sfora la soglia del ventuno. Le carte numeriche mantengono il loro normale valore, le figure valgono ciascuna 10 punti, mentre l’asso può assumere valore 1 o 11 a seconda della scelta del giocatore. 
 Il gioco prende il nome dalla combinazione delle carte asso e jack nero, ma nella sua terminologia viene chiamata blackjack qualunque combinazione di un asso con una figura. Ogni partecipante compete esclusivamente contro il banco, non contro gli altri giocatori al tavolo, e può compiere una serie di scelte (come chiedere carta, stare, raddoppiare o dividere) che incidono direttamente sull’esito della mano. Ciò nonostante nella sua variante a più giocatori nel momento in cui il dealer sfora, tutti i giocatori che non sforano vincono, avendo ognuno di fatto un'influenza, anche se implicita su ciascuna partita.
 La situazione iniziale di ogni partita è costituita dal dealer con due carte: una scoperta ed una coperta, ed il giocatore sulla base delle due carte che riceve deve stabilire se pescare ancora (\textbf{HIT}) o rimanere con solo quelle due carte (\textbf{STAND}).
 Vi sono anche ulteriori possibilità, lo \textbf{SPLIT} può verificarsi quando vengono pescate come prime due carte dal giocatore due carte dallo stesso valore, in tal caso è possibile considerarle come due "prime carte" e giocare due mani contemporaneamente.
@@ -46,37 +45,31 @@ Un elemento distintivo del blackjack rispetto ad altri giochi da casinò è la p
 Proprio quest'ultimo aspetto matematico ha portato moltissima attenzione dalla comunità scientifica sul gioco,
 aprendo le porte prima ad analisi statistiche e poi a nuovi orizzonti come algoritmi genetici e modelli di Machine Learning.
 \subsection{Vantaggio del banco}
-Chiamiamo vantaggio del banco la misura quantitativa dello svantaggio strutturale a cui è sottoposto il giocatore di blackjack nel lungo periodo. Esso esprime la perdita media attesa per unità di puntata ed è un indicatore fondamentale per l’analisi matematica ed economica del gioco, in quanto sintetizza l’effetto congiunto delle regole, delle probabilità e dell’ordine delle decisioni.
-
-A differenza di altri giochi da casinò, il vantaggio del banco nel blackjack non è fisso, ma dipende in modo significativo dalla configurazione regolamentare del tavolo e dal comportamento del giocatore.
+Chiamiamo vantaggio del banco la misura quantitativa dello svantaggio strutturale a cui è sottoposto il giocatore di blackjack nel lungo periodo. Esso esprime la perdita media attesa per unità di puntata ed è un indicatore fondamentale per l’analisi matematica ed economica del gioco, in quanto sintetizza l’effetto congiunto delle regole, delle probabilità e dell’ordine delle decisioni. \newline A differenza di altri giochi da casinò, il vantaggio del banco nel blackjack non è fisso, ma dipende in modo significativo dalla configurazione regolamentare del tavolo e dal comportamento del giocatore.
 L’origine del vantaggio del banco è riconducibile a una serie di asimmetrie strutturali.
-La più rilevante è l’ordine di gioco: il giocatore è obbligato ad agire per primo e perde immediatamente la puntata nel caso in cui superi 21, indipendentemente dal risultato finale del banco. Questa regola, apparentemente neutrale, introduce un vantaggio matematico stabile a favore del casinò. A ciò si aggiungono le regole fisse del banco, che ne limitano la discrezionalità ma risultano, nel complesso, statisticamente ottimali.
-
-Ulteriori contributi al vantaggio del banco derivano dalla struttura dei pagamenti. Il pagamento del blackjack naturale è un elemento cruciale: una remunerazione pari a 3:2 riduce significativamente il margine del casinò, mentre formule meno favorevoli al giocatore, come il pagamento 6:5, possono incrementare il vantaggio del banco. 
-Anche il numero di mazzi utilizzati e le restrizioni sulle opzioni di gioco (raddoppio, divisione, resa) incidono in modo misurabile sul margine complessivo.
-
-Dal punto di vista teorico, il vantaggio del banco nel blackjack è di particolare interesse perché non è imposto esclusivamente dal caso, ma emerge dall’interazione tra regole istituzionali e decisioni individuali. Esso rappresenta quindi un esempio di come un sistema apparentemente equo possa generare, attraverso vincoli asimmetrici, un esito statisticamente sfavorevole a una delle parti.
-
-Attraverso l'attuazione di alcuni comportamenti è possibile ridurre questo svantaggio, primo di tutti è l'applicazione della strategia di base.
+La più rilevante è l’ordine di gioco: il giocatore è obbligato ad agire per primo e perde immediatamente la puntata nel caso in cui superi 21, indipendentemente dal risultato finale del banco. Questa regola, apparentemente neutrale, introduce un vantaggio matematico stabile a favore del casinò. A ciò si aggiungono le regole fisse del banco, che ne limitano la discrezionalità ma risultano, nel complesso, statisticamente ottimali. \newline Ulteriori contributi al vantaggio del banco derivano dalla struttura dei pagamenti. \newline Il pagamento del blackjack naturale è un elemento cruciale: una remunerazione pari a 3:2 riduce significativamente il margine del casinò, mentre formule meno favorevoli al giocatore, come il pagamento 6:5, possono incrementare il vantaggio del banco. 
+Anche il numero di mazzi utilizzati e le restrizioni sulle opzioni di gioco (raddoppio, divisione, resa) incidono in modo misurabile sul margine complessivo. \newline Dal punto di vista teorico, il vantaggio del banco nel blackjack è di particolare interesse perché non è imposto esclusivamente dal caso, ma emerge dall’interazione tra regole istituzionali e decisioni individuali. Esso rappresenta quindi un esempio di come un sistema apparentemente equo possa generare, attraverso vincoli asimmetrici, un esito statisticamente sfavorevole a una delle parti. \newline Attraverso l'attuazione di alcuni comportamenti è possibile ridurre questo svantaggio, primo di tutti è l'applicazione della strategia di base.
 
 \subsection{Strategia di base}
 Parliamo di strategia di base come dell’insieme di decisioni ottimali che il giocatore dovrebbe adottare in ogni possibile configurazione della propria mano e della carta scoperta del banco, assumendo condizioni di gioco standard e l’assenza di informazioni supplementari sull’ordine delle carte. Essa costituisce il riferimento teorico fondamentale per l’analisi razionale del gioco e per la valutazione del vantaggio statistico del banco.
-Per ciascuna combinazione di mano del giocatore e carta visibile del banco, viene determinata l’azione che massimizza il valore atteso della giocata.
-È importante effettuare una distinzione tra \textbf{hard-hand}, in cui l’asso ha valore fisso pari a 1, e \textbf{soft-hand}, in cui l’asso può assumere valore 11 senza rischio immediato di sballo.
+Per ciascuna combinazione di mano del giocatore e carta visibile del banco, viene determinata l’azione che massimizza il valore atteso della giocata. È importante effettuare una distinzione tra \textbf{hard-hand}, in cui l’asso ha valore fisso pari a 1, e \textbf{soft-hand}, in cui l’asso può assumere valore 11 senza rischio immediato di sballo.
 L’adozione coerente della strategia di base consente di ridurre il margine di vantaggio del banco a valori minimi, che in condizioni regolamentari favorevoli possono scendere a meno del'uno percento. 
 È tuttavia importante sottolineare che la strategia di base non elimina il rischio né garantisce vincite nel breve periodo: essa opera esclusivamente sul piano statistico, ottimizzando le decisioni nel lungo termine.
 Nel dettaglio questa strategia è stata formalizzata nel 1956 da Roger R. Baldwin, nell'articolo "The Optimal Strategy in Blackjack". Di seguito riportiamo le tabelle relative alla strategia di base del Blackjack.
 
----PLACEHOLDER---
+\begin{center}
+      \includegraphics[scale=0.38, center]{img/BaseStrategy.png}
+  \end{center}
 
 \section{Tecnologie utilizzate}
 \subsection{Overview}
-Il linguaggio scelto per raggiungere l'obbiettivo prefissato è python. In particolare abbiamo utilizzato le seguenti librerie: 
+Abbiamo deciso di sfruttare l'ambiente condiviso online \textbf{colab} e di conseguenza il linguaggio scelto per raggiungere l'obiettivo prefissato è \textbf{python}. In particolare abbiamo utilizzato le seguenti librerie: 
 \begin{itemize}
     \item \textbf{pandas}: permette l'esplorazione a la manipolazione di dati in modo semplice e flessibile;
-    \item \textbf{numpy}: ottimizza la gestione di ampi dati multidimensionali come array e matrici in modo efficiente e fornisce una serie di funzioni matematiche;
+    \item \textbf{numpy}: ottimizza la gestione di ampi dati multidimensionali come array e matrici in modo efficiente e fornisce una serie di funzioni matematiche per la loro gestione;
     \item \textbf{seaborn e matplotlib}: permettono la visualizzazione di dati tramite schemi o grafici informativi. Sono state principalmente utilizzata per mostrare i risultati dei training degli algoritmi implementati.
     \item \textbf{scikit-learn}: fornisce tool semplici ed efficienti che permettono la realizzazione di algoritmi di machine learning. Permette inoltre di valutare il modello con il calcolo delle metriche integrato. 
+    \item \textbf{tkinker}: permette di sviluppare interfacce grafiche per i programmi python implementati.
 \end{itemize}
 
 \section{Descrizione dell’agente}
@@ -90,9 +83,8 @@ L’obiettivo del progetto è lo sviluppo di un \textbf{agente intelligente} in 
     \begin{itemize}
         \item \textbf{Hit}: richiedere una carta aggiuntiva;
         \item \textbf{Stand}: mantenere la mano attuale;
-        \item \textbf{Double}: raddoppiare la puntata iniziale e ricevere una sola carta; 
-        \item \textbf{Split}: dividere la mano in due mani distinte in presenza di due carte uguali.
     \end{itemize}
+    \item \textbf{Double e Split} non saranno considerate opzioni tra le azioni attuabili per semplificare il processo decisionale dell'agente.
     \item prendere decisioni esclusivamente sulla base della propria mano e della carta scoperta del dealer, senza conoscere le carte rimanenti nel mazzo;
     \item migliorare le proprie prestazioni nel tempo, apprendendo dai dati osservati.
 \end{itemize}
@@ -102,7 +94,7 @@ L’obiettivo del progetto è lo sviluppo di un \textbf{agente intelligente} in 
 L’ambiente in cui opera l’agente viene descritto attraverso la specifica \textbf{PEAS} (Performance, Environment, Actuators, Sensors).
 
 \begin{description}
-    \item[Performance:] la misura di prestazione dell’agente è legata alla sua capacità di massimizzare il risultato economico nel gioco. In particolare vengono considerate nelle prime due pipeline l'accuratezza e robustezza nella previsione dell’esito della mano (vittoria o non sconfitta) a partire dallo stato informativo disponibile al momento della decisione, valutate tramite metriche di classificazione supervisionata (F1-score come metrica principale, affiancata da precision e recall). Nell'ultima pipeline invece andiamo a considerare la percentuale di vittorie dell'agente.
+    \item[Performance:] la misura di prestazione dell’agente è legata alla sua capacità di massimizzare il risultato economico nel gioco. In particolare vengono considerate nelle prime due pipeline l'accuratezza e robustezza nella previsione dell’esito della mano (vittoria o non sconfitta) a partire dallo stato informativo disponibile al momento della decisione, valutate tramite metriche di classificazione supervisionata (F1-score come metrica principale, affiancata da precision e recall). Per quanto riguarda il reinforcement learning invece andiamo a considerare la percentuale di vittorie dell'agente.
     
     \item[Environment:] l’ambiente è rappresentato da un tavolo di Blackjack comprendente:
     \begin{itemize}
@@ -116,12 +108,12 @@ L’ambiente in cui opera l’agente viene descritto attraverso la specifica \te
         \item \textbf{Parzialmente osservabile}: l’agente conosce solo la propria mano e la carta scoperta del dealer;
         \item \textbf{Stocastico}: l’ordine delle carte nel mazzo è pseudocasuale;
         \item \textbf{Sequenziale}: ogni azione influenza l’esito finale della mano;
-        \item \textbf{Statico}: l’ambiente non cambia mentre l’agente sta deliberando;
+        \item \textbf{Statico}: l’ambiente non cambia mentre l’agente sta delrando;
         \item \textbf{Discreto}: il numero di stati e azioni è finito;
         \item \textbf{A singolo agente}: il dealer segue una strategia prefissata e non è considerato un agente decisionale.
     \end{itemize}
 
-    \item[Actuators:] gli attuatori dell’agente corrispondono alle azioni disponibili: Hit, Stand, Double e Split.
+    \item[Actuators:] gli attuatori dell’agente corrispondono alle azioni disponibili: Hit, Stand.
 
     \item[Sensors:] l’agente percepisce:
     \begin{itemize}
@@ -132,7 +124,7 @@ L’ambiente in cui opera l’agente viene descritto attraverso la specifica \te
     \end{itemize}
 \end{description}
 
-\subsection{Scelta della strategia}
+\subsection{Scelta della prima strategia}
 
 Un primo approccio al problema avrebbe potuto basarsi sulla teoria dei giochi e sull’utilizzo di algoritmi genetici. Tuttavia, tale soluzione presenta diverse criticità:
 
@@ -275,7 +267,7 @@ La prima trasformazione riguarda la variabile \textbf{initial\_hand}, che è rap
 \begin{itemize}
     \item \textbf{player\_sum}: la somma dei valori di tutte le carte presenti nella mano del giocatore
     \item \textbf{player\_is\_soft}: variabile binaria che indica se la mano è \emph{soft}, ovvero se contiene un asso valutabile come 11
-    \item \textbf{player\_pair}: variabile binaria che indica se la mano è composta da due carte dello stesso valore e quindi se è possibile effettuare lo \emph{split}.
+    \item \textbf{player\_pair}: vaCriabile binaria che indica se la mano è composta da due carte dello stesso valore e quindi se è possibile effettuare lo \emph{split}.
 \end{itemize}
 \subsection{Colonne finali del Dataset}
 Al termine della fase di elaborazione, il dataset finale risulta composto dalle seguenti variabili:
@@ -948,10 +940,28 @@ Le mappe risultanti mostrano una forte corrispondenza con la
     \label{fig:SARSAonlineResult2}
 \end{figure}
 
+\subsection{Implementazione Q-Learning Online}
+Il Q-Learning online rappresenta il primo algoritmo \textit{off-policy}
+implementato nell’ambito del progetto. Dopo aver analizzato un approccio
+\textit{on-policy} tramite SARSA, l’obiettivo di questa fase è valutare
+come la separazione tra \textit{behavior policy} e \textit{target policy}
+influenzi il processo di apprendimento e il comportamento finale
+dell’agente.
+
+A differenza di SARSA, che aggiorna i valori di stato–azione utilizzando
+l’azione effettivamente selezionata nello stato successivo, il Q-Learning
+stima i valori assumendo che l’agente adotti sempre un comportamento
+ottimale nel futuro. Questa caratteristica rende l’algoritmo
+particolarmente adatto a scenari online, in cui l’esplorazione è
+necessaria ma non deve influenzare direttamente la stima della policy
+ottimale. La demo implementata ha lo scopo di rendere osservabile in tempo
+reale il processo decisionale dell’agente una volta completata la fase di
+addestramento.
+
 \subsection{Risultati sperimentali e confronto con Q-Learning online}
 L'implementazione con \textbf{SARSA online} si è dimostrata ancora più efficace dell'implementazione con il Q-Learning online. Al termine del training su cinquecentomila episodi, la Q-table risultante contiene valori appresi per 280 azioni coppie-stato. I risultati finali hanno un \textit{win rate} del 42.67\%, contro il 40.29\% ottenuto con il Q-Learning online ed un miglioramento di più di 4 punti percentuale rispetto al Q-Learning offline.
 Si può osservare un leggero aumento del \textit{draw rate} che raggiunge il 9.43\% rispetto all '8.67\% dell'approccio con Q-Learning online. Infine si ha una significativa riduzione delle sconfitte che raggiungono il 47.90\%, il risultato più basso ottenuto tra tutti gli approcci analizzati. Nonostante il grande traguardo del limite di vittorie teorico raggiunto, anche questa implementazione ha gli stessi compromessi analizzati durante l'implementazione dell'online Q-Learning.
-Nelle seguenti figure è possibile osservare il progredire  del modello fino a raggiungere risultati vicini alla \textit{basic strategy} inizialmente illustrata.
+Nelle seguenti figure è possibile osservare il progredire del modello fino a raggiungere risultati vicini alla \textit{basic strategy} inizialmente illustrata.
 
 
 \begin{figure}[!ht]
@@ -990,7 +1000,7 @@ Qui è possibile osservare una tabella di riepilogo che contiene tutti i risulta
 
 
 \section{Considerazioni finali}
-
+Dopo tutte le analisi e le considerazioni effettuate, la decisione di implementare un prototipo del nostro agente non poteva che ricadere sui due modelli più performanti e che sono riusciti a raggiungere (o quasi) la base strategy per massimizzare il win rate. Abbiamo quindi implementato un 
 
 
 
