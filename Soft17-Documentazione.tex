@@ -1007,6 +1007,46 @@ dell’apprendimento. È inoltre introdotta una regola deterministica che
 forza l’azione \textit{Stand} quando la somma della mano del giocatore è
 maggiore o uguale a $21$, evitando transizioni non valide.
 
+\subsubsection{Aggiornamento Q-Learning}
+La principale differenza rispetto a SARSA risiede nella regola di
+aggiornamento dei valori di stato–azione. Per ogni transizione osservata
+$(s_t, a_t, r_t, s_{t+1})$, il valore viene aggiornato secondo la formula:
+\[
+Q(s_t, a_t) \leftarrow Q(s_t, a_t) +
+\alpha \left[ r_t + \gamma \max_{a'} Q(s_{t+1}, a') - Q(s_t, a_t) \right]
+\]
+
+L’operatore $\max_{a'}$ seleziona il valore massimo tra tutte le azioni
+disponibili nello stato successivo, indipendentemente dall’azione che
+verrà effettivamente eseguita. Questo rende l’algoritmo \textit{off-policy}:
+la \textit{target policy} rispetto alla quale vengono stimati i valori è
+sempre la policy greedy ottimale, mentre la \textit{behavior policy}
+utilizzata per interagire con l’ambiente è la policy $\epsilon$-greedy.
+
+Nel caso di stati terminali, l’aggiornamento utilizza esclusivamente la
+ricompensa osservata:
+\[
+Q(s_t, a_t) \leftarrow Q(s_t, a_t) +
+\alpha \left[ r_t - Q(s_t, a_t) \right]
+\]
+
+Al termine di ogni episodio, il parametro $\epsilon$ viene aggiornato
+secondo la medesima legge di decadimento adottata nell’implementazione
+SARSA, garantendo coerenza nelle modalità di esplorazione.
+
+\subsubsection{Procedura di Addestramento}
+La procedura di addestramento ricalca quella adottata per SARSA, mantenendo
+invariati il numero di episodi, i limiti sul numero massimo di passi per
+episodio e la strategia di decadimento del parametro $\epsilon$. Tale
+scelta consente di confrontare in modo diretto i due algoritmi,
+attribuendo eventuali differenze di comportamento esclusivamente alla
+diversa natura \textit{on-policy} e \textit{off-policy}.
+
+L’addestramento viene eseguito su $500{,}000$ episodi e viene condotto in
+un thread separato al fine di preservare la responsività dell’interfaccia
+grafica. Durante il training, l’agente aggiorna la Q-table ad ogni
+transizione osservata secondo la regola del Q-Learning.
+
 \subsection{Risultati sperimentali e confronto con Q-Learning online}
 L'implementazione con \textbf{SARSA online} si è dimostrata ancora più efficace dell'implementazione con il Q-Learning online. Al termine del training su cinquecentomila episodi, la Q-table risultante contiene valori appresi per 280 azioni coppie-stato. I risultati finali hanno un \textit{win rate} del 42.67\%, contro il 40.29\% ottenuto con il Q-Learning online ed un miglioramento di più di 4 punti percentuale rispetto al Q-Learning offline.
 Si può osservare un leggero aumento del \textit{draw rate} che raggiunge il 9.43\% rispetto all '8.67\% dell'approccio con Q-Learning online. Infine si ha una significativa riduzione delle sconfitte che raggiungono il 47.90\%, il risultato più basso ottenuto tra tutti gli approcci analizzati. Nonostante il grande traguardo del limite di vittorie teorico raggiunto, anche questa implementazione ha gli stessi compromessi analizzati durante l'implementazione dell'online Q-Learning.
