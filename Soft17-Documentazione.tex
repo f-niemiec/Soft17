@@ -13,26 +13,65 @@
 \usepackage{hyperref}
 \usepackage{booktabs}
 \usepackage[all]{nowidow}
-
+\usepackage{makeidx}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
 
 
 \title{Soft17 -- An AI Agent for Blackjack}
 \author{Abbatiello Simone, Nappi Vincenzo, Niemiec Francesco}
-\date{January 2026}
+\date{03 Febbraio 2026}
+
+
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\pagestyle{fancy}
+\fancyhead[L]{\includegraphics[height=1.2cm]{informatica.jpg}}
+\fancyhead[R]{
+ \raggedleft 
+ \footnotesize
+ Laurea Triennale in Informatica 
+- Università degli Studi di Salerno
+\\ Corso di Fondamenti di Intelligenza Artificiale - Prof. F. Palomba}
+\setlength{\headheight}{30pt}   
+\setlength{\headsep}{20pt}
+
+\renewcommand{\contentsname}{Indice}
 
 \begin{document}
 
-\maketitle
+\begin{titlepage}
+\centering
+
+\includegraphics[width=8cm]{logo-unisa.png}\\[0.5cm]
+
+{\Large Università degli Studi di Salerno}\\[0.3cm]
+{\large Dipartimento di Informatica}\\[0.3cm]
+{\large Laurea Triennale in Informatica}\\[0.3cm]
+{\large Corso di Fondamenti di Intelligenza Artificiale}\\[0.5cm]
+{\Huge\textbf{Soft17 -- An AI Agent for Blackjack}}\\[0.3cm]
+\makebox[\textwidth]{\centering
+  \includegraphics[width=6cm]{logo-soft17.png}
+}\\
+{\large Abbatiello Simone \\
+0512119659 \\
+Nappi Vincenzo \\
+0512119813\\
+Niemiec Francesco\\
+0512118999}\\[0.2cm]
+{\large Anno accademico 2025/2026}\\[0.5cm]
+\vfill
+\end{titlepage}
+
+\tableofcontents
+
 
 \section{Introduzione}
-
-\subsection{Genesi del progetto}
-
 Durante la seconda parte del corso di \textit{Fondamenti di Intelligenza Artificiale}, in particolare quella dedicata agli argomenti di \textbf{Machine Learning}, è emerso in modo sempre più evidente il forte legame tra le tecniche di apprendimento automatico e il mondo della statistica.  
 
 Abbiamo deciso di cogliere l’occasione offerta dallo sviluppo del progetto finale per approfondire tale correlazione, analizzandola in un contesto applicativo concreto. In seguito a una fase di brainstorming, volta a individuare un dominio che consentisse di unire questi due ambiti, abbiamo preso in considerazione i documenti forniti dal docente, nei quali il tema dei \textit{giochi} emerge come un caso di studio ricorrente.  
 
-Guidati dalla curiosità e dalla relativa semplicità delle regole, abbiamo quindi scelto il gioco del \textbf{Blackjack}. Da questa scelta nasce l’idea di sviluppare un modello che sia in grado di stimare l’esito atteso di una mano di Blackjack sulla base delle informazioni disponibili e delle strategie tipiche.
+Guidati dalla curiosità e dalla relativa semplicità delle regole, abbiamo quindi scelto il gioco del \textbf{Blackjack}. Da questa scelta nasce l’idea di sviluppare un modello che sia in grado di stimare l’esito atteso di una mano di Blackjack sulla base delle informazioni disponibili e sulla base di tutto ciò compiere decisioni sensate e giocare in maniera autonoma.
 
 
 \section{Nozioni basilari di Blackjack}
@@ -51,7 +90,7 @@ aprendo le porte prima ad analisi statistiche e poi a nuovi orizzonti come algor
 Chiamiamo vantaggio del banco la misura quantitativa dello svantaggio strutturale a cui è sottoposto il giocatore di blackjack nel lungo periodo. Esso esprime la perdita media attesa per unità di puntata ed è un indicatore fondamentale per l’analisi matematica ed economica del gioco, in quanto sintetizza l’effetto congiunto delle regole, delle probabilità e dell’ordine delle decisioni. \newline A differenza di altri giochi da casinò, il vantaggio del banco nel blackjack non è fisso, ma dipende in modo significativo dalla configurazione regolamentare del tavolo e dal comportamento del giocatore.
 L’origine del vantaggio del banco è riconducibile a una serie di asimmetrie strutturali.
 La più rilevante è l’ordine di gioco: il giocatore è obbligato ad agire per primo e perde immediatamente la puntata nel caso in cui superi 21, indipendentemente dal risultato finale del banco. Questa regola, apparentemente neutrale, introduce un vantaggio matematico stabile a favore del casinò. A ciò si aggiungono le regole fisse del banco, che ne limitano la discrezionalità ma risultano, nel complesso, statisticamente ottimali. \newline Ulteriori contributi al vantaggio del banco derivano dalla struttura dei pagamenti. \newline Il pagamento del blackjack naturale è un elemento cruciale: una remunerazione pari a 3:2 riduce significativamente il margine del casinò, mentre formule meno favorevoli al giocatore, come il pagamento 6:5, possono incrementare il vantaggio del banco. 
-Anche il numero di mazzi utilizzati e le restrizioni sulle opzioni di gioco (raddoppio, divisione, resa) incidono in modo misurabile sul margine complessivo. \newline Dal punto di vista teorico, il vantaggio del banco nel blackjack è di particolare interesse perché non è imposto esclusivamente dal caso, ma emerge dall’interazione tra regole istituzionali e decisioni individuali. Esso rappresenta quindi un esempio di come un sistema apparentemente equo possa generare, attraverso vincoli asimmetrici, un esito statisticamente sfavorevole a una delle parti. \newline Attraverso l'attuazione di alcuni comportamenti è possibile ridurre questo svantaggio, primo di tutti è l'applicazione della strategia di base.
+Anche il numero di mazzi utilizzati e le restrizioni sulle opzioni di gioco (raddoppio, divisione, resa) incidono in modo misurabile sul margine complessivo.\newline Dal punto di vista teorico, il vantaggio del banco nel blackjack è di particolare interesse perché non è imposto esclusivamente dal caso, ma emerge dall’interazione tra regole istituzionali e decisioni individuali. Esso rappresenta quindi un esempio di come un sistema apparentemente equo possa generare, tramite vincoli asimmetrici, un esito sfavorevole a una delle parti. \newline Attraverso l'attuazione di alcuni comportamenti è possibile ridurre questo svantaggio, primo di tutti è l'applicazione della strategia di base.
 
 \subsection{Strategia di base}
 Parliamo di strategia di base come dell’insieme di decisioni ottimali che il giocatore dovrebbe adottare in ogni possibile configurazione della propria mano e della carta scoperta del banco, assumendo condizioni di gioco standard e l’assenza di informazioni supplementari sull’ordine delle carte. Essa costituisce il riferimento teorico fondamentale per l’analisi razionale del gioco e per la valutazione del vantaggio statistico del banco.
@@ -66,7 +105,7 @@ Nel dettaglio questa strategia è stata formalizzata nel 1956 da Roger R. Baldwi
 
 \section{Tecnologie utilizzate}
 \subsection{Overview}
-Abbiamo deciso di sfruttare l'ambiente condiviso online \textbf{colab} e di conseguenza il linguaggio scelto per raggiungere l'obiettivo prefissato è \textbf{python}. In particolare abbiamo utilizzato le seguenti librerie: 
+Abbiamo deciso di sfruttare l'ambiente condiviso online \textbf{Google Colab} e di conseguenza il linguaggio scelto per raggiungere l'obiettivo prefissato è \textbf{python}. In particolare abbiamo utilizzato le seguenti librerie: 
 \begin{itemize}
     \item \textbf{pandas}: permette l'esplorazione a la manipolazione di dati in modo semplice e flessibile;
     \item \textbf{numpy}: ottimizza la gestione di ampi dati multidimensionali come array e matrici in modo efficiente e fornisce una serie di funzioni matematiche per la loro gestione;
@@ -110,7 +149,7 @@ L’ambiente in cui opera l’agente viene descritto attraverso la specifica \te
         \item \textbf{Parzialmente osservabile}: l’agente conosce solo la propria mano e la carta scoperta del dealer;
         \item \textbf{Stocastico}: l’ordine delle carte nel mazzo è pseudocasuale;
         \item \textbf{Sequenziale}: ogni azione influenza l’esito finale della mano;
-        \item \textbf{Statico}: l’ambiente non cambia mentre l’agente sta delrando;
+        \item \textbf{Statico}: l’ambiente non cambia mentre l’agente sta deliberando;
         \item \textbf{Discreto}: il numero di stati e azioni è finito;
         \item \textbf{A singolo agente}: il dealer segue una strategia prefissata e non è considerato un agente decisionale.
     \end{itemize}
@@ -161,13 +200,13 @@ Per la scelta del dataset sono state considerate due possibili strategie:
 \begin{enumerate}
     \item Generare un dataset sintetico tramite un simulatore di Blackjack, in grado di produrre un numero arbitrario di mani realistiche.
     
-    \item Utilizzare dataset già disponibili online (\url{https://www.kaggle.com/datasets/mojocolors/900000-hands-of-blackjack-results}) e (\url{https://www.kaggle.com/datasets/dennisho/blackjack-hands/data}).
+    \item Utilizzare dataset già disponibili online \footnote{(\url{https://www.kaggle.com/datasets/mojocolors/900000-hands-of-blackjack-results})}\footnote{(\url{https://www.kaggle.com/datasets/dennisho/blackjack-hands/data})}.
 \end{enumerate}
 La prima opzione come pro avrebbe garantito un grande controllo sui dati, ma un errore minimo nel simulatore o una nostra scelta sbagliata e/o inesperta nella categorizzazione dei dati avrebbe avuto un impatto troppo alto sul modello.
 La seconda opzione, seppur all'apparenza più facile, avrebbe potuto celare delle insidie, come una difficile comprensione dei dataset oppure "fastidi" dovuti alla loro enorme dimensione. 
 Avendo valutato per bene ambo le alternativi ci siamo trovati inizialmente di fronte ad un bivio, optando poi per una soluzione "ibrida".
 Il più corposo tra i principali due dataset trovati contava cinquanta milioni di mani di blackjack simulate, un numero talmente elevato che il training del modello con le risorse a nostra disposizione sarebbe risultato infinito. Esso però riportava anche una repository \textbf{GitHub} con il programma usato per simulare queste mani.
-Abbiamo quindi preso questo programma e generato un dataset con circa cinquecentomila mani giocate, una quantità tale da poter effettuare un buon training in tempi tutto sommato contenuti.
+Abbiamo quindi preso questo programma e generato un dataset con circa un milione di mani giocate, una quantità tale da poter effettuare un buon training in tempi tutto sommato contenuti.
 È importante notare come la scelta di mantenere inalterato l'algoritmo nasce da due ragioni: innanzitutto per mantenere inalterati gli ottimi risultati relativi all'usabilità del dataset, la seconda (nonchè forse la più importante) è quella di voler andare ad operare direttamente sui dati anzichè sulla loro generazione.
 
 \subsection{Regole seguite}
@@ -264,7 +303,7 @@ La prima trasformazione riguarda la variabile \textbf{initial\_hand}, che è rap
 \begin{itemize}
     \item \textbf{player\_sum}: la somma dei valori di tutte le carte presenti nella mano del giocatore;
     \item \textbf{player\_is\_soft}: variabile binaria che indica se la mano è \emph{soft}, ovvero se contiene un asso valutabile come 11;
-    \item \textbf{player\_pair}: vaCriabile binaria che indica se la mano è composta da due carte dello stesso valore e quindi se è possibile effettuare lo \emph{split}.
+    \item \textbf{player\_pair}: variabile binaria che indica se la mano è composta da due carte dello stesso valore e quindi se è possibile effettuare lo \emph{split}.
 \end{itemize}
 \subsection{Colonne finali del Dataset}
 Al termine della fase di elaborazione, il dataset finale risulta composto dalle seguenti variabili:
@@ -276,7 +315,7 @@ Al termine della fase di elaborazione, il dataset finale risulta composto dalle 
 \end{itemize}
 La variabile target è \textbf{win}, che indica l’esito della decisione presa dal giocatore, assumendo i valori di vittoria e sconfitta.
 \subsection{Modeling}
-Prima di parlare degli algoritmi utilizzati occorre fare delle premesse. Per scegliere i migliori parametri adatti agli algoritmi e il problema che stiamo affrontando abbiamo deciso di utilizzare una \textbf{griglia di ricerca} per comprendere i valori adatti agli iperparametri. È una classe contenuta nella libreria scikit-learn che ci permette di testare più combinazioni di parametri automaticamente evitando di rieseguire manualmente i training.
+Prima di parlare degli algoritmi utilizzati occorre fare delle premesse. Per scegliere i migliori parametri adatti agli algoritmi e il problema che stiamo affrontando abbiamo deciso di utilizzare una \textbf{griglia di ricerca} per comprendere i valori adatti per i vari iperparametri. In particolare \textbf{GridSearchCV}, una classe contenuta nella libreria scikit-learn che ci permette di testare più combinazioni di parametri automaticamente evitando di rieseguire manualmente i training (e sfrutta cross-validation).
 La prima operazione effettuata è lo splitting del dataset per distinguere i dati di test e i dati per il training. Nello specifico l'80\% dei dati sarà utilizzato per il training e il 20\% per il testing. Avviene successivamente un ulteriore split dei dati di training distinguendo tra training vero e proprio e validazione, nello specifico il 78.5\%  per il training e il restante per la validazione. È stato inoltre fissato un seme randomico per rendere i test ripetibili.
 Infine \textit{stratify} permette di suddividere il dataset in modo che ogni sottoinsieme mantenga la stessa identica proporzione di classi del dataset originale.
 Per la prima versione di questa pipeline (Pipeline 1A) l'algoritmo utilizzato è un albero decisionale di classificazione (DecisionTreeClassifier) specificando i seguenti parametri: 
@@ -335,6 +374,8 @@ rappresenta una soluzione più efficiente e interpretabile.
 \begin{center}
       \includegraphics[scale=0.75, center]{img/ConfusionMatrixPipeline1B.png}
 \end{center}
+
+\newpage
 
 \section{Reinforcement Learning}
 \subsection{Motivazioni dietro al cambio di approccio}
@@ -443,7 +484,7 @@ Abbiamo quindi selezionato due algoritmi:
 \end{description}
 Abbiamo deciso di partire dal primo di questi.
 \section{Q-learning}
-Il \textbf{Q-learning} è un algoritmo di Reinforcement Learning \textit{off-policy}, introdotto da Christopher J. C. Watkins nel 1989 \cite{watkins1989learning}, conl’obiettivo di apprendere una policy ottimale
+Il \textbf{Q-learning} è un algoritmo di Reinforcement Learning \textit{off-policy}, introdotto da Christopher J. C. Watkins nel 1989 \cite{watkins1989learning}, con l’obiettivo di apprendere una policy ottimale
 per un Processo Decisionale di Markov senza richiedere la conoscenza delle dinamiche dell’ambiente.
 \subsection{Definizione formale}
 Il Q-learning si basa sull’apprendimento di una funzione di valore stato-azione \( Q(s,a) \), che rappresenta il ritorno atteso cumulativo ottenibile eseguendo l’azione \( a \) nello stato \( s \) e seguendo successivamente
@@ -493,12 +534,12 @@ r_{t+1} + \gamma Q(s_{t+1},a_{t+1}) - Q(s_t,a_t)
 \right].
 \]
 Essendo un algoritmo \textbf{on-policy}, SARSA apprende una policy che riflette
-direttamente il comportamento esplorativo dell’agente,risultando in strategie più conservative rispetto a quelle apprese tramite Q-learning, ed è per questo che abbiamo deciso di usarlo.
+direttamente il comportamento esplorativo dell’agente, risultando in strategie più conservative rispetto a quelle apprese tramite Q-learning, ed è per questo che abbiamo deciso di usarlo.
 
 \section{Applicazione del Reinforcement Learning}
 Occorre infine definire come un'ultima distinzione, fondamentale per comprendere le nostre implementazioni, la differenza tra \textit{online} ed \textit{offline} reinforcement learning.
-\textbf{L'online RL} prevede di simulare interazioni con l'ambiente per apprendere delle policy ottimali. Utilizza di volta in volta l'esperienza immediatamente appresa nelle successive interazioni con l'ambiente ed ha il vantaggio di potersi adattare ai cambiamenti data la continua interazione con esso. Il grande problema di questo approccio è che a causa di tutte le simulazioni che genera con l'ambiente è computazionalmente costoso. Di fatto quindi questo tipo di approccio non necessità di un dataset per l'addestramento.
-A differenza del precedente \textbf{l'offline RL} mira a creare delle policy efficaci su dati collezionati precedentemente, senza nessuna interazione con l'ambiente. Questo approccio porta con se anche delle sfide importanti: occorre migliorare le policy che si raccolgono dai dati così da stimare valori per azioni non presenti nel dataset.
+\textbf{L'online reinforcement learning} prevede di simulare interazioni con l'ambiente per apprendere delle policy ottimali. Utilizza di volta in volta l'esperienza immediatamente appresa nelle successive interazioni con l'ambiente ed ha il vantaggio di potersi adattare ai cambiamenti date le continue interazioni con esso. Il grande problema di questo approccio è che a causa di tutte le simulazioni che genera con l'ambiente è computazionalmente costoso. Di fatto quindi questo tipo di approccio non necessità di un dataset per l'addestramento.
+A differenza del precedente \textbf{l'offline reinforcement learning} mira a creare delle policy efficaci su dati collezionati precedentemente, senza nessuna interazione con l'ambiente. Questo approccio porta con se anche delle sfide importanti: occorre migliorare le policy che si raccolgono dai dati così da stimare valori per azioni non presenti nel dataset.
 
 \subsection{Implementazione con Q-Learning}
 Occorre approfondire gli elementi che caratterizzano il Q-Learning per poterlo comprendere appieno ed implementarlo. Tra gli elementi più importanti c'è proprio la \textbf{Q-table}
@@ -509,7 +550,7 @@ Quest'ultima è una tabella che contiene i reward per ogni azione di ogni stato 
     \item $\epsilon$: termine che regola l'esplorazione causandone una diminuzione nel tempo di modo che la policy appresa migliori sfuttando le conoscenze acquisite nel tempo.
 \end{itemize}
 \subsection{Primo approccio - Q-Learning Online}
-La prima implementazione adotta un approccio di Q-learning online, nel quale l'agente apprende interagendo direttamente con un ambiente simulato di Blackjack. 
+La prima implementazione adotta un approccio con Q-learning online, nel quale l'agente apprende interagendo direttamente con un ambiente simulato di Blackjack. 
 \subsubsection{Architettura e Implementazione}
 
 L'architettura si compone di due componenti fondamentali: un ambiente di gioco implementato nella classe \texttt{BlackjackEnv} e un agente Q-learning descritto dalla classe \texttt{QLearningAgent}.
@@ -548,40 +589,27 @@ L'analisi della curva di apprendimento, ottenuta mediante media mobile su finest
 
 \subsubsection{Vantaggi dell'Approccio Online}
 
-L'approccio di Q-learning online presenta diversi vantaggi intrinseci nel contesto del Blackjack. In primo luogo, l'agente apprende in modo completamente autonomo senza necessità di dati pre-raccolti, adattandosi dinamicamente alle caratteristiche dell'ambiente attraverso l'interazione diretta. Questa modalità di apprendimento risulta particolarmente efficace in contesti dove la raccolta di dati offline sarebbe costosa o impraticabile, permettendo all'agente di esplorare liberamente lo spazio delle politiche possibili.
-
-In secondo luogo, la natura episodica del Q-learning online consente all'agente di bilanciare autonomamente esplorazione e sfruttamento attraverso il parametro $\varepsilon$, garantendo che vengano visitate anche regioni dello spazio degli stati meno frequenti ma potenzialmente rilevanti per l'apprendimento di una politica ottimale. Il meccanismo di ricreazione del mazzo quando le carte si esauriscono, sebbene costituisca una semplificazione rispetto alle regole reali, assicura che l'agente non incontri mai situazioni di stallo e possa completare ogni episodio con una transizione terminale ben definita.
-
-Inoltre, l'approccio online permette un apprendimento incrementale e continuo: l'agente migliora progressivamente la propria politica ad ogni episodio, con aggiornamenti immediati della Q-table basati sull'esperienza più recente. Questa caratteristica risulta vantaggiosa in scenari dove l'ambiente può presentare variazioni nel tempo o dove è necessario adattarsi rapidamente a nuove condizioni di gioco.
+L'approccio di Q-learning online presenta diversi vantaggi intrinseci nel contesto del Blackjack. In primo luogo, l'agente apprende in modo completamente autonomo senza necessità di dati pre-raccolti, adattandosi dinamicamente alle caratteristiche dell'ambiente attraverso l'interazione diretta. Questa modalità di apprendimento risulta particolarmente efficace in contesti dove la raccolta di dati offline sarebbe costosa o impraticabile, permettendo all'agente di esplorare liberamente lo spazio delle politiche possibili. \newline In secondo luogo, la natura episodica del Q-learning online consente all'agente di \textbf{bilanciare autonomamente esplorazione e sfruttamento} attraverso il parametro $\varepsilon$, garantendo che vengano visitate anche regioni dello spazio degli stati meno frequenti ma potenzialmente rilevanti per l'apprendimento di una politica ottimale. Il meccanismo di ricreazione del mazzo quando le carte si esauriscono, sebbene costituisca una semplificazione rispetto alle regole reali, assicura che l'agente non incontri mai situazioni di stallo e possa completare ogni episodio con una transizione terminale ben definita. \newline Inoltre, l'approccio online permette un \textbf{apprendimento incrementale e continuo}: l'agente migliora progressivamente la propria politica ad ogni episodio, con aggiornamenti immediati della Q-table basati sull'esperienza più recente. Questa caratteristica risulta vantaggiosa in scenari dove l'ambiente può presentare variazioni nel tempo o dove è necessario adattarsi rapidamente a nuove condizioni di gioco.
 
 \subsubsection{Limitazioni dell'Approccio Online}
 
-Nonostante i vantaggi evidenziati, l'approccio online presenta alcune limitazioni significative. La principale criticità riguarda l'efficienza campionaria: per raggiungere una convergenza soddisfacente, l'agente necessita di un numero elevato di interazioni con l'ambiente, come dimostrato dai un milione di episodi richiesti per stabilizzare il \textit{win rate}. Questo comporta un costo computazionale non trascurabile, sebbene nel caso specifico del Blackjack simulato tale costo risulti ancora gestibile grazie alla semplicità delle operazioni di simulazione.
-
-Un'altra limitazione riguarda la stocasticità intrinseca del processo di apprendimento: esecuzioni diverse dello stesso algoritmo possono produrre politiche con prestazioni leggermente differenti a causa della casualità nell'inizia lizzazione, nell'esplorazione e nell'ordine di visita degli stati. Questa variabilità, sebbene contenuta grazie all'elevato numero di episodi, introduce un elemento di incertezza nella valutazione delle prestazioni finali.
-
-Infine, la dipendenza dalla qualità dell'esplorazione rappresenta un aspetto critico: una strategia $\varepsilon$-greedy con un valore di $\varepsilon$ troppo basso potrebbe impedire all'agente di scoprire regioni promettenti dello spazio degli stati, mentre un valore troppo alto rallenterebbe la convergenza. Nel contesto implementato, il valore $\varepsilon = 0.1$ rappresenta un compromesso ragionevole, ma la scelta ottimale di questo iperparametro richiederebbe un processo di tuning più approfondito.
+Nonostante i vantaggi evidenziati, l'approccio online presenta alcune limitazioni significative. La principale criticità riguarda l'efficienza campionaria: per raggiungere una convergenza soddisfacente, l'agente necessita di un numero elevato di interazioni con l'ambiente, come dimostrato dai un milione di episodi richiesti per stabilizzare il \textit{win rate}. Questo comporta un costo computazionale non trascurabile, sebbene nel caso specifico del Blackjack simulato tale costo risulti ancora gestibile grazie alla semplicità delle operazioni di simulazione. \newline Un'altra limitazione riguarda la stocasticità intrinseca del processo di apprendimento: esecuzioni diverse dello stesso algoritmo possono produrre politiche con prestazioni leggermente differenti a causa della casualità nell'inizializzazione, nell'esplorazione e nell'ordine di visita degli stati. Questa variabilità, sebbene contenuta grazie all'elevato numero di episodi, introduce un elemento di incertezza nella valutazione delle prestazioni finali. \newline Infine, la dipendenza dalla qualità dell'esplorazione rappresenta un aspetto critico: una strategia $\varepsilon$-greedy con un valore di $\varepsilon$ troppo basso potrebbe impedire all'agente di scoprire regioni promettenti dello spazio degli stati, mentre un valore troppo alto rallenterebbe la convergenza. Nel contesto implementato, il valore $\varepsilon = 0.1$ rappresenta un compromesso ragionevole, ma la scelta ottimale di questo iperparametro richiederebbe un processo di tuning più approfondito.
 
 \subsection{Secondo approccio – Q-Learning Offline}
-Il secondo approccio adotta un Q-learning offline, nel quale
+Il secondo approccio adotta Q-learning offline, nel quale
 l'agente apprende esclusivamente da un dataset di esperienze pre-raccolte,
-senza interazione diretta con l'ambiente durante la fase di training.
+\textbf{senza interazione diretta} con l'ambiente durante la fase di training.
 \subsubsection{Architettura e Motivazione}
 Questa metodologia si inserisce nel paradigma più ampio dell’offline
 reinforcement learning, noto anche come batch reinforcement learning,
 che ha ricevuto crescente attenzione nella comunità scientifica per la
 sua applicabilità a domini in cui l’interazione online con l’ambiente
-risulta costosa, rischiosa o impraticabile \cite{levine2021offline}.
-
-Nel contesto del presente progetto, l'approccio offline è stato introdotto
-con l'obiettivo di investigare se un agente possa apprendere una politica
+risulta costosa, rischiosa o impraticabile \cite{levine2021offline}. \newline Nel contesto del presente progetto, l'approccio offline è stato introdotto con l'obiettivo di investigare se un agente possa apprendere una politica
 competitiva a partire da un dataset statico di transizioni, riducendo
 potenzialmente i costi computazionali associati alla simulazione ripetuta
 di un milione di episodi. Inoltre, l'apprendimento offline permette di
 studiare l'impatto della qualità e della distribuzione dei dati sulla
-convergenza dell'algoritmo e sulle prestazioni finali della politica appresa.
-
-Recenti lavori in letteratura hanno evidenziato come l'ottimizzazione
+convergenza dell'algoritmo e sulle prestazioni finali della politica appresa.\newline Recenti lavori in letteratura hanno evidenziato come l'ottimizzazione
 diretta di obiettivi di reinforcement learning, anche in contesti offline,
 possa mitigare parzialmente i limiti degli approcci puramente supervisionati,
 rafforzando l'importanza dell'allineamento tra funzione obiettivo e
@@ -593,36 +621,29 @@ Il dataset utilizzato per l'addestramento offline è stato generato mediante
 una versione modificata del simulatore di Blackjack precedentemente usato. Tale
 simulatore implementa le regole standard del Blackjack con otto mazzi di
 carte, penetrazione di 6.5 mazzi, e seguendo la strategia di base ottimale
-per la selezione delle azioni del giocatore.
-
-La modifica fondamentale apportata al codice di generazione riguarda la
+per la selezione delle azioni del giocatore.\newline La modifica fondamentale apportata al codice di generazione riguarda la
 strategia decisionale adottata dal giocatore simulato. Mentre il codice
 originale implementava la strategia di base completa del Blackjack,
 includendo azioni complesse quali \textit{double}, \textit{split} e
 \textit{surrender}, la versione modificata è stata semplificata per
 generare esclusivamente transizioni relative alle azioni \textit{hit} e
 \textit{stand}. Questa scelta è motivata da due considerazioni principali.
-
-In primo luogo, la limitazione dello spazio delle azioni a due sole opzioni
+\newline In primo luogo, la limitazione dello spazio delle azioni a due sole opzioni
 rende il problema di apprendimento più trattabile e facilita il confronto
 diretto con l'approccio online, che considera anch'essa solo le azioni
 \textit{hit} e \textit{stand}. La strategia implementata nel generatore
-modificato è una politica euristica semplificata: il giocatore richiede
+modificato è una politica semplificata: il giocatore richiede
 carta (\textit{hit}) quando la somma della propria mano è strettamente
 inferiore a 17, e si mantiene (\textit{stand}) altrimenti. Questa regola,
 sebbene subottimale rispetto alla strategia di base, produce un dataset di
-transizioni sufficientemente variegate per l'apprendimento offline.
-
-In secondo luogo, la semplificazione della strategia di generazione dei
+transizioni sufficientemente variegate per l'apprendimento offline. \newline In secondo luogo, la semplificazione della strategia di generazione dei
 dati riflette una situazione realistica nell'offline reinforcement
 learning, dove il dataset disponibile è spesso raccolto mediante una
 politica comportamentale che non coincide necessariamente con la politica
 ottimale. L'algoritmo di Q-learning offline deve quindi essere in grado di
 estrarre una politica migliorata a partire da dati generati da una
 strategia imperfetta, dimostrando capacità di generalizzazione e
-robustezza rispetto alla distribuzione dei dati.
-
-Il dataset finale contiene un milione di transizioni, ciascuna
+robustezza rispetto alla distribuzione dei dati.\newline Il dataset finale contiene un milione di transizioni, ciascuna
 rappresentata dalla tupla $(s_t, a_t, r_t, s_{t+1})$, dove
 $s_t = (s_{\text{player}}, s_{\text{dealer}}, a_{\text{usable}})$ è lo
 stato al tempo $t$, $a_t \in \{0,1\}$ è l'azione intrapresa,
@@ -630,9 +651,7 @@ $r_t \in \{-1,0,1\}$ è la ricompensa osservata, e $s_{t+1}$ è lo stato
 successivo. Le ricompense sono state discretizzate in modo tale che le
 vittorie corrispondano a $r = 1$, le sconfitte a $r = -1$ e i pareggi a
 $r = 0$. Questa struttura rende il dataset direttamente utilizzabile per
-l'addestramento mediante Q-learning offline.
-
-È importante sottolineare che il codice modificato per la generazione del
+l'addestramento mediante Q-learning offline.\newline È importante sottolineare che il codice modificato per la generazione del
 dataset non è incluso nel repository GitHub del progetto, in quanto
 costituisce uno strumento ausiliario utilizzato esclusivamente per la fase
 di raccolta dati. La documentazione tecnica fornisce tuttavia una
@@ -647,18 +666,14 @@ interazione con l'ambiente durante il training. L'agente, rappresentato
 dalla classe 
 \texttt{Offline\allowbreak QLearning\allowbreak Agent}
 , è inizializzato con una
-Q-table vuota e iperparametri identici a quelli utilizzati nell'approccio online: $\alpha = 0.1$ e $\gamma = 0.9$.
-
-Il processo di addestramento consiste in un singolo passaggio sequenziale
+Q-table vuota e iperparametri identici a quelli utilizzati nell'approccio online: $\alpha = 0.1$ e $\gamma = 0.9$. \newline Il processo di addestramento consiste in un singolo passaggio sequenziale
 attraverso il dataset di transizioni. Per ogni tupla $(s_t, a_t, r_t,
 s_{t+1})$, l'agente aggiorna la propria stima della funzione Q secondo la
 regola:
 \begin{equation}
 Q(s_t, a_t) \leftarrow Q(s_t, a_t) +
 \alpha \left[r_t + \gamma \max_{a'} Q(s_{t+1}, a') - Q(s_t, a_t)\right]
-\end{equation}
-
-Questa regola di aggiornamento è formalmente identica a quella utilizzata
+\end{equation} \newline Questa regola di aggiornamento è formalmente identica a quella utilizzata
 nel Q-learning online, ma opera su dati statici piuttosto che su
 esperienze raccolte dinamicamente. L'assenza di esplorazione attiva
 implica che l'agente apprende esclusivamente dagli stati e dalle azioni
@@ -670,25 +685,19 @@ degli stati non rappresentate nei dati.
 Per valutare le prestazioni della politica appresa offline, è stato
 implementato un ambiente di test identico a quello utilizzato nell'approccio online. L'agente viene valutato su un milione di episodi,
 seguendo una politica greedy derivata dalla Q-table appresa, ovvero
-selezionando in ogni stato l'azione con valore Q massimo.
-
-I risultati sperimentali mostrano un \textit{win rate} pari a 0.3814,
-un \textit{loss rate} di 0.5666 e un \textit{draw rate} di 0.0520.
+selezionando in ogni stato l'azione con valore Q massimo. \newline I risultati sperimentali mostrano un \textit{win rate} pari a 0.3814 (38.14\%),
+un \textit{loss rate} di 0.5666 (56.66\%) e un \textit{draw rate} di 0.0520 (5.20\%).
 Rispetto alla versione online, si osserva una riduzione del
 \textit{win rate} di circa 2.15 punti percentuali, accompagnata da un
 aumento del \textit{loss rate}. Questa differenza, sebbene contenuta,
 indica che l'apprendimento offline produce una politica leggermente meno
-performante rispetto all'approccio online.
-
-L'analisi delle cause di tale discrepanza evidenzia due fattori
+performante rispetto all'approccio online.\newline L'analisi delle cause di tale discrepanza evidenzia due fattori
 principali. In primo luogo, il dataset offline è stato generato mediante
 una politica comportamentale subottimale, introducendo un bias nella
 distribuzione delle transizioni rispetto a quelle che sarebbero state
 osservate seguendo una politica ottimale. Questo fenomeno, noto come
 \textit{distributional shift} \cite{levine2020offline}, rappresenta una delle principali sfide
-nell'offline reinforcement learning.
-
-In secondo luogo, l'assenza di esplorazione attiva durante
+nell'offline reinforcement learning.\newline In secondo luogo, l'assenza di esplorazione attiva durante
 l'addestramento offline impedisce all'agente di correggere errori di
 stima della funzione Q in regioni dello spazio degli stati scarsamente
 rappresentate nel dataset. Nel Q-learning online, la strategia
@@ -699,11 +708,7 @@ stati rari, migliorando progressivamente la qualità delle stime.
 
 Nonostante le prestazioni leggermente inferiori, l'approccio offline
 presenta vantaggi significativi in termini di efficienza computazionale,
-riproducibilità e riutilizzo dei dati. In particolare, l'addestramento
-offline richiede meno di un secondo, risultando circa due ordini di
-grandezza più rapido rispetto alla versione online.
-
-Tali osservazioni sono coerenti con risultati recenti che mostrano come
+riproducibilità e riutilizzo dei dati.\newline     Tali osservazioni sono coerenti con risultati recenti che mostrano come
 l'ottimizzazione diretta di obiettivi di reinforcement learning in
 contesti offline possa comunque produrre politiche competitive, a
 condizione di disporre di dataset sufficientemente informativi
@@ -715,9 +720,7 @@ Le limitazioni principali dell'approccio offline sono strettamente
 connesse alla qualità e alla copertura del dataset. Il bias introdotto
 dalla politica comportamentale e l'assenza di esplorazione rendono
 l'algoritmo vulnerabile a errori di estrapolazione, fenomeno noto come
-\textit{off-policy evaluation problem}.
-
-La letteratura recente propone estensioni del Q-learning offline, come
+\textit{off-policy evaluation problem}.\newline La letteratura recente propone estensioni del Q-learning offline, come
 \textit{Conservative Q-Learning} e \textit{Implicit Q-Learning}, che
 introducono meccanismi di penalizzazione per azioni non sufficientemente
 supportate dal dataset, riducendo l'over-ottimismo nelle stime della
@@ -731,19 +734,14 @@ funzione Q \cite{tarasov2025offlineicrl}. L'integrazione di tali tecniche
 Il confronto sistematico tra le due implementazioni rivela differenze significative in termini di prestazioni, efficienza computazionale e robustezza. Dal punto di vista delle prestazioni pure, l'implementazione online si 
 dimostra superiore con un \textit{win rate} di 40.29\% contro il 38.14\% dell'approccio offline, 
 corrispondente a un vantaggio di 2.15 punti percentuali. Sebbene questa differenza possa apparire modesta in termini assoluti, 
-nel contesto del Blackjack rappresenta un divario non trascurabile: considerando che la strategia di base ottimale raggiunge 
-approssimativamente un \textit{win rate} del 42\% nelle condizioni regolamentari standard, l'approccio online si avvicina maggiormente 
-a questo benchmark teorico.
-
-L'analisi della distribuzione degli esiti rivela ulteriori differenze qualitative. 
+nel contesto del Blackjack rappresenta un divario non trascurabile.
+\newline L'analisi della distribuzione degli esiti rivela ulteriori differenze qualitative. 
 L'implementazione online presenta un \textit{draw rate} di 8.67\%, significativamente superiore al 5.20\% dell'approccio offline. 
 Questa discrepanza suggerisce che la politica appresa online adotta un comportamento più conservativo in situazioni ambigue, 
 optando per lo \textit{stand} quando la probabilità di vittoria è comparabile a quella di pareggio. 
-Al contrario, la politica offline, influenzata dalla strategia euristica del dataset che richiede carta fino a 17, 
+Al contrario, la politica offline, influenzata dalla strategia del dataset che richiede carta fino a 17, 
 tende ad assumere maggiori rischi, risultando in un numero inferiore di pareggi ma anche in un \textit{loss rate} 
-più elevato (56.66\% contro 51.04\%).
-
-Dal punto di vista della stabilità e convergenza, l'implementazione online beneficia del meccanismo di esplorazione 
+più elevato (56.66\% contro 51.04\%). \newline Dal punto di vista della stabilità e convergenza, l'implementazione online beneficia del meccanismo di esplorazione 
 $\varepsilon$-greedy, che garantisce la visita continua di diverse regioni dello spazio degli stati anche in fasi avanzate 
 dell'addestramento. Questo comportamento favorisce una convergenza più robusta e uniforme della Q-table, riducendo il rischio di 
 sovrastime o sottostime locali. L'approccio offline, invece, è vincolata alla distribuzione statistica del dataset e non può 
@@ -759,17 +757,13 @@ dataset statico di transizioni, evitando il costo computazionale associato
 alla simulazione dell'ambiente, alla gestione della dinamica di gioco e al
 calcolo iterativo delle ricompense. Di conseguenza, il training offline
 risulta generalmente più rapido rispetto all'approccio online, consentendo
-un utilizzo più efficiente delle risorse di calcolo.
-
-Nel contesto specifico del presente progetto, il beneficio computazionale
+un utilizzo più efficiente delle risorse di calcolo.\newline Nel contesto specifico del presente progetto, il beneficio computazionale
 complessivo risulta tuttavia limitato. Il dataset offline è stato infatti
 generato tramite simulazione, e il costo associato alla fase di raccolta dei
 dati è comparabile a quello richiesto dall’addestramento online. Pertanto,
 se si considera l’intero ciclo che comprende sia la generazione delle
 esperienze sia la fase di apprendimento, il vantaggio dell’approccio offline
-risulta marginale nel caso in esame.
-
-La situazione cambia in modo sostanziale quando il dataset è già disponibile
+risulta marginale nel caso in esame.\newline La situazione cambia in modo sostanziale quando il dataset è già disponibile
 o può essere riutilizzato per più cicli di sviluppo e sperimentazione. In
 questi scenari, il costo di raccolta dei dati viene ammortizzato su
 molteplici sessioni di addestramento, rendendo l'approccio offline
@@ -782,16 +776,12 @@ e scalabile.
 \subsubsection{Trade-off Fondamentali}
 
 I risultati sperimentali evidenziano un trade-off fondamentale tra prestazioni e efficienza. L'implementazione online raggiunge prestazioni superiori al costo di tempi di training più lunghi e di una maggiore variabilità stocastica tra esecuzioni diverse. 
-L'approccio offline offre training rapidi e risultati deterministici, ma soffre di prestazioni ridotte a causa del bias introdotto dalla politica di generazione del dataset.
-
-Un secondo trade-off riguarda la flessibilità rispetto alla dipendenza dai dati. 
+L'approccio offline offre training rapidi e risultati deterministici, ma soffre di prestazioni ridotte a causa del bias introdotto dalla politica di generazione del dataset.\newline Un secondo trade-off riguarda la flessibilità rispetto alla dipendenza dai dati. 
 L'approccio online è completamente autonomo e non richiede dati pre-raccolti, 
 adattandosi dinamicamente all'ambiente attraverso l'esplorazione. Tuttavia, questa flessibilità ha un costo in termini di sample complexity:
 l'agente deve interagire ripetutamente con l'ambiente per accumulare esperienza sufficiente. L'approccio offline, al contrario, 
 dipende criticamente dalla qualità del dataset disponibile, ma può estrarre politiche competitive da un numero relativamente limitato 
-di transizioni se i dati sono ben distribuiti e rappresentativi.
-
-Un terzo trade-off concerne la robustezza rispetto a errori di stima. L'approccio online beneficia del meccanismo di correzione continua
+di transizioni se i dati sono ben distribuiti e rappresentativi.\newline Un terzo trade-off concerne la robustezza rispetto a errori di stima. L'approccio online beneficia del meccanismo di correzione continua
 fornito dall'esplorazione, che permette all'agente di rivedere le proprie stime anche in stati visitati raramente. L'implementazione offline, 
 invece, può accumulare errori di estrapolazione in regioni dello spazio degli stati scarsamente rappresentate nel dataset, 
 senza possibilità di correzione attraverso nuove esperienze.
@@ -800,34 +790,27 @@ senza possibilità di correzione attraverso nuove esperienze.
 
 Alla luce dell'analisi comparativa condotta, la scelta finale ricade sul Q-learning online 
 per il deployment del sistema finale. Questa decisione è motivata da tre considerazioni principali che riflettono i 
-requisiti specifici del progetto e gli obiettivi di apprendimento prefissati.
-
-In primo luogo, le prestazioni superiori della l'approccio online rappresentano il criterio decisionale primario. 
+requisiti specifici del progetto e gli obiettivi di apprendimento prefissati.\newline In primo luogo, le prestazioni superiori della l'approccio online rappresentano il criterio decisionale primario. 
 Nel contesto del Blackjack, dove l'obiettivo è massimizzare il \textit{win rate} a lungo termine, il vantaggio di 2.15 punti 
 percentuali dell'approccio online si traduce in un beneficio economico concreto nel caso di applicazione del sistema in scenari 
 realistici. Sebbene la differenza possa sembrare modesta, nel lungo periodo di migliaia o milioni di mani giocate, questo divario 
 si amplifica significativamente.
-
-In secondo luogo, l'autonomia e la flessibilità dell'approccio online si allineano meglio con gli obiettivi didattici 
+\newline In secondo luogo, l'autonomia e la flessibilità dell'approccio online si allineano meglio con gli obiettivi didattici 
 del progetto nel contesto del corso di Fondamenti di Intelligenza Artificiale. L'implementazione del Q-learning online permette 
 di comprendere in modo più completo i meccanismi di esplorazione, convergenza e bilanciamento tra exploitation ed exploration che 
 costituiscono i pilastri fondamentali del reinforcement learning. L'approccio offline, sebbene interessante da un punto di vista 
 di ricerca avanzata, introduce complessità aggiuntive legate alla qualità dei dati e al distributional shift che esulano dagli 
-obiettivi formativi basilari del corso.
-
-In terzo luogo, la maggiore robustezza e affidabilità della versione online la rendono più adatta per un sistema che potrebbe 
+obiettivi formativi basilari del corso. \newline In terzo luogo, la maggiore robustezza e affidabilità della versione online la rendono più adatta per un sistema che potrebbe 
 essere esteso o modificato in futuri sviluppi. La capacità dell'agente online di adattarsi dinamicamente a variazioni delle regole 
 di gioco o a diversi livelli di difficoltà rappresenta un vantaggio strategico rispetto all'approccio offline, che richiederebbe 
 la rigenerazione del dataset ad ogni modifica dell'ambiente.
-
-È tuttavia importante sottolineare che l'approccio offline ha dimostrato potenzialità significative e 
+\newline È tuttavia importante sottolineare che l'approccio offline ha dimostrato potenzialità significative e 
 rappresenta una direzione promettente per futuri sviluppi del progetto. In particolare, l'implementazione di tecniche 
 avanzate di offline reinforcement learning quali Conservative Q-Learning o Behavior Cloning potrebbe permettere di superare 
 le limitazioni osservate e raggiungere prestazioni comparabili o superiori a quelle dell'approccio online. Inoltre, l'utilizzo 
 di dataset generati mediante strategie di esplorazione più sofisticate, quali la strategia di base ottimale del Blackjack, 
 potrebbe ridurre significativamente il gap prestazionale osservato.
-
-In conclusione, la scelta dell'approccio online riflette 
+\newline In conclusione, la scelta dell'approccio online riflette 
 una valutazione ponderata dei trade-off tra prestazioni, efficienza, robustezza e allineamento con 
 gli obiettivi formativi del progetto. Questa decisione non sminuisce il valore dell'approccio offline, 
 che ha fornito insights importanti sulla dipendenza delle prestazioni dalla qualità dei dati e ha permesso 
@@ -943,14 +926,6 @@ Nelle seguenti figure è possibile osservare il progredire del modello fino a ra
     \label{fig:SARSAonlineResult}
 \end{figure}
 
-\begin{figure}[!ht]
-    \centering
-    \includegraphics[width=1.00\textwidth]{img/SARSArewardDistribution.png}
-    \caption{Distribuzione dei reward – Online SARSA}
-    \label{fig:SARSAonlineResult2}
-\end{figure}
-
-%bisogna spostare le figure sopra
 
 \section{Confronto finale tra le implementazioni di Reinforcement Learning}
 Qui è possibile osservare una tabella di riepilogo che contiene tutti i risultati ottenuti con gli approcci che prevedevano l'utilizzo del Reinforcement Learning. 
@@ -971,8 +946,9 @@ Qui è possibile osservare una tabella di riepilogo che contiene tutti i risulta
 \end{table}
 
 
-\section{Considerazioni finali}
-Dopo tutte le analisi e le considerazioni effettuate, la decisione di implementare un prototipo del nostro agente non poteva che ricadere sui due modelli più performanti e che sono riusciti a raggiungere (o quasi) la base strategy per massimizzare il win rate. Abbiamo quindi implementato un 
+\section{Considerazioni finali e Demo implementate}
+Dopo tutte le analisi e le considerazioni effettuate, la decisione di implementare un prototipo del nostro agente non poteva che ricadere sui due modelli più performanti che sono riusciti a raggiungere (o quasi) la base strategy per massimizzare il \textbf{win rate}. Abbiamo quindi implementato una demo con il Q-Learning online e il SARSA online. Le demo sono di fatto uguali con l'unica differenza è che quella del Q-Learning gioca automaticamente mani di blackjack mentre l'implementazione con SARSA prevede una demo interattiva. La demo è stata implementata con la libreria python  \texttt{tkinker} che permette di realizzare interfacce grafiche.
+La demo permette quindi di visualizzare graficamente il banco e le carte in gioco sulla parte sinistra, mentre permette di visualizzare informazioni utili e le predizioni del modello nella parte a destra. La demo interattiva con SARSA include tre tasti: il primo permette di giocare una partita, il secondo di fare hit ed il terzo permette di fare stand. A destra sarà possibile visualizzare la scelta del modello consigliata per prendere le decisioni secondo la policy appresa dal modello.\newline Con riferimento alla demo che gioca automaticamente con Q-Learning le uniche differenze sono i tasti disattivati, non è quindi possibile interagire con il gioco in esecuzione.
 
 
 
