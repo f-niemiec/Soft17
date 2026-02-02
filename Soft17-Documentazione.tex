@@ -1047,6 +1047,57 @@ un thread separato al fine di preservare la responsività dell’interfaccia
 grafica. Durante il training, l’agente aggiorna la Q-table ad ogni
 transizione osservata secondo la regola del Q-Learning.
 
+\subsubsection{Valutazione della Policy}
+Al termine dell’addestramento, la demo attiva una modalità di gioco
+automatica in cui l’agente opera secondo una policy effettivamente greedy,
+senza esplorazione. Per ogni stato raggiunto, il sistema visualizza in
+tempo reale i valori $Q(s,\textit{Stand})$ e $Q(s,\textit{Hit})$ appresi
+durante il training, rendendo esplicito il processo decisionale
+dell’agente.
+
+Le decisioni vengono prese con intervalli temporali di cinque secondi,
+consentendo di osservare il processo di inferenza in modo chiaro e
+intuitivo. Al termine di ciascun episodio, una nuova mano viene avviata
+automaticamente, permettendo l’osservazione continua del comportamento
+della policy appresa.
+
+\subsection{Analisi della Policy – Q-Learning Online}
+
+La policy appresa dall’agente Q-Learning online è stata analizzata sia dal
+punto di vista quantitativo che qualitativo. A differenza dell’approccio
+adottato per SARSA, in cui la valutazione viene condotta in una fase
+separata disabilitando l’esplorazione, nel Q-Learning l’analisi delle
+prestazioni è integrata nel processo di addestramento, sfruttando metriche
+cumulative e strumenti di visualizzazione della policy finale.
+
+L’andamento della ricompensa media nel corso degli episodi mostra una
+progressiva stabilizzazione, indicando la convergenza del processo di
+apprendimento. In particolare, la reward media tende a valori prossimi allo
+zero, coerentemente con l’adozione di una funzione di ricompensa neutra,
+che assegna $+1$ alle vittorie, $-1$ alle sconfitte e $0$ ai pareggi.
+
+Un’ulteriore conferma della convergenza è fornita dall’analisi del win rate
+cumulativo, che cresce gradualmente nel corso dell’addestramento e tende
+ad avvicinarsi ai valori attesi dalla \textit{basic strategy} del Blackjack.
+Questo comportamento evidenzia la capacità del Q-Learning di apprendere
+una policy prossima a quella ottimale pur mantenendo una strategia di
+esplorazione durante il training, caratteristica tipica degli algoritmi
+\textit{off-policy}.
+
+La policy finale è stata inoltre visualizzata tramite heatmap separate per
+mani \textit{hard} e \textit{soft}. Per ogni combinazione di somma del
+giocatore e carta scoperta del dealer, le mappe indicano l’azione preferita
+dall’agente. Le policy risultanti mostrano una forte coerenza con la
+strategia ottimale teorica, in particolare nelle regioni dello spazio degli
+stati più frequentemente visitate. Le discrepanze osservate sono
+principalmente localizzate in stati rari o marginali, dove la frequenza di
+visita durante il training risulta inferiore.
+
+Nel complesso, l’analisi evidenzia come il Q-Learning online sia in grado di
+apprendere una policy stabile e competitiva, confermando l’efficacia
+dell’ap\-proccio off-policy nel contesto del Blackjack e giustificando le
+scelte progettuali adottate.
+
 \subsection{Risultati sperimentali e confronto con Q-Learning online}
 L'implementazione con \textbf{SARSA online} si è dimostrata ancora più efficace dell'implementazione con il Q-Learning online. Al termine del training su cinquecentomila episodi, la Q-table risultante contiene valori appresi per 280 azioni coppie-stato. I risultati finali hanno un \textit{win rate} del 42.67\%, contro il 40.29\% ottenuto con il Q-Learning online ed un miglioramento di più di 4 punti percentuale rispetto al Q-Learning offline.
 Si può osservare un leggero aumento del \textit{draw rate} che raggiunge il 9.43\% rispetto all '8.67\% dell'approccio con Q-Learning online. Infine si ha una significativa riduzione delle sconfitte che raggiungono il 47.90\%, il risultato più basso ottenuto tra tutti gli approcci analizzati. Nonostante il grande traguardo del limite di vittorie teorico raggiunto, anche questa implementazione ha gli stessi compromessi analizzati durante l'implementazione dell'online Q-Learning.
