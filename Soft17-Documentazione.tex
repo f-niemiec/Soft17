@@ -913,6 +913,51 @@ Le mappe risultanti mostrano una forte corrispondenza con la
     \label{fig:SARSAonlineResult2}
 \end{figure}
 
+\subsection{Implementazione Q-Learning Online}
+
+Dopo aver descritto l’implementazione dell’algoritmo SARSA, basato su un
+approccio \textit{on-policy}, viene ora introdotto il Q-Learning online,
+algoritmo appartenente alla famiglia \textit{off-policy}. L’obiettivo di
+questa sezione è analizzare l’impatto della separazione tra
+\textit{behavior policy} e \textit{target policy}, mantenendo invariati gli
+altri elementi progettuali al fine di garantire un confronto diretto e
+significativo.
+L’ambiente di simulazione, la rappresentazione dello stato, la struttura
+dell’agente, la strategia di esplorazione e la procedura di addestramento
+rimangono identici a quanto descritto nella sezione dedicata a SARSA.
+Questa scelta progettuale consente di isolare l’effetto della diversa
+regola di aggiornamento dei valori di stato–azione, che rappresenta
+l’unica reale differenza tra i due algoritmi considerati.
+Al termine dell’addestramento, l’agente entra in una fase di esecuzione
+completamente autonoma, durante la quale gioca automaticamente seguendo
+una policy greedy derivata dalla Q-table appresa. In questa modalità di
+demo, l’agente seleziona le azioni senza esplorazione e senza intervento
+esterno, consentendo di osservare in tempo reale il comportamento emergente
+della policy appresa e il processo decisionale associato.
+
+
+\subsubsection{Aggiornamento Q-Learning}
+
+L’aggiornamento dei valori di stato–azione nel Q-Learning rappresenta la
+principale differenza rispetto all’algoritmo SARSA. Mentre in SARSA
+l’aggior\-namento avviene in modo \textit{on-policy}, utilizzando l’azione
+effettivamente selezionata dalla policy corrente nello stato successivo,
+il Q-Learning adotta un approccio \textit{off-policy}, stimando
+direttamente i valori della policy ottimale.
+
+Per ogni transizione osservata $(s_t, a_t, r_t, s_{t+1})$, il valore
+$Q(s_t, a_t)$ viene aggiornato assumendo che, nello stato successivo,
+l’agente selezioni sempre l’azione con valore $Q$ massimo. In questo modo,
+l’aggiornamento risulta indipendente dalla strategia di esplorazione
+utilizzata durante l’interazione con l’ambiente e consente di apprendere
+una stima della \textit{target policy} greedy anche in presenza di azioni
+esplorative.
+
+Questa differenza rende il Q-Learning particolarmente adatto a scenari di
+apprendimento online, in cui l’esplorazione è necessaria per visitare lo
+spazio stato–azione, ma non deve influenzare direttamente la valutazione
+dei valori appresi, a differenza di quanto avviene nell’approccio SARSA.
+
 \subsection{Risultati sperimentali e confronto con Q-Learning online}
 L'implementazione con \textbf{SARSA online} si è dimostrata ancora più efficace dell'implementazione con il Q-Learning online. Al termine del training su cinquecentomila episodi, la Q-table risultante contiene valori appresi per 280 azioni coppie-stato. I risultati finali hanno un \textit{win rate} del 42.67\%, contro il 40.29\% ottenuto con il Q-Learning online ed un miglioramento di più di 4 punti percentuale rispetto al Q-Learning offline.
 Si può osservare un leggero aumento del \textit{draw rate} che raggiunge il 9.43\% rispetto all '8.67\% dell'approccio con Q-Learning online. Infine si ha una significativa riduzione delle sconfitte che raggiungono il 47.90\%, il risultato più basso ottenuto tra tutti gli approcci analizzati. Nonostante il grande traguardo del limite di vittorie teorico raggiunto, anche questa implementazione ha gli stessi compromessi analizzati durante l'implementazione dell'online Q-Learning.
